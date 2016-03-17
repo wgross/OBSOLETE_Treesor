@@ -1,6 +1,8 @@
 ﻿using NLog;
+using NLog.Fluent;
 using Owin;
 using Swashbuckle.Application;
+using System.Linq;
 using System.Web.Http;
 
 namespace Treesor.Service
@@ -34,7 +36,7 @@ namespace Treesor.Service
 
             //config.EnsureInitialized();
             //config.Routes.ToList().ForEach(r => log.Info().Message($"Route: {r.GetVirtualPath().Route}").Write());
-            //appBuilder.UseWebApi(config);
+            appBuilder.UseWebApi(config);
         }
     }
 }
