@@ -85,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\Endpoints\HelloController.cs" />
+    <Compile Include="Service\Endpoints\HierarchyController.cs" />
     <Compile Include="Service\TreesorService.cs" />
     <Compile Include="Service\StartupConfiguration.cs" />
   </ItemGroup>
