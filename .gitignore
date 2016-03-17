@@ -1,0 +1,7 @@
+obj/**
+bin/**
+packages/**
+.hg/**
+.hgignore
+**.nupkg
+TestResults/**
