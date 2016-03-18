@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treesor", "Treesor\Treesor.csproj", "{D045251B-CE34-4DE6-A822-801ABEF8E7D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treesor.Test", "Treesor.Test\Treesor.Test.csproj", "{1900B39F-B409-4DA1-B829-46128A56E06A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D045251B-CE34-4DE6-A822-801ABEF8E7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D045251B-CE34-4DE6-A822-801ABEF8E7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D045251B-CE34-4DE6-A822-801ABEF8E7D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1900B39F-B409-4DA1-B829-46128A56E06A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1900B39F-B409-4DA1-B829-46128A56E06A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1900B39F-B409-4DA1-B829-46128A56E06A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1900B39F-B409-4DA1-B829-46128A56E06A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
