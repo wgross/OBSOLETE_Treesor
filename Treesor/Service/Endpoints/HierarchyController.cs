@@ -1,4 +1,5 @@
 ﻿using Elementary.Hierarchy;
+using Elementary.Hierarchy.Collections;
 using System;
 using System.Web.Http;
 using Treesor.Application;
@@ -7,9 +8,16 @@ namespace Treesor.Service.Endpoints
 {
     public class HierarchyController : ApiController
     {
+       private static readonly MutableHierarchy<string, object>  defaultHierarchy = new MutableHierarchy<string,object>();
+
         public HierarchyController()
-            : this(service:new Treesor.Application.TreesorService())
+            : this(defaultHierarchy)
         {}
+
+        public HierarchyController(MutableHierarchy<string,object> hierarchy)
+            : this(service:new Treesor.Application.TreesorService(hierarchy))
+        {
+        }
 
         public HierarchyController(ITreesorService service)
         {
