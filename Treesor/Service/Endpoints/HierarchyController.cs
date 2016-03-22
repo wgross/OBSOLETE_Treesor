@@ -40,7 +40,7 @@ namespace Treesor.Service.Endpoints
             return this.NotFound();
         }
 
-        [HttpPost, Route("api/{*path}")]
+        [HttpPost, Route("api/{*path}", Name = "CreateNode")]
         public IHttpActionResult Post([FromUri] string path, [FromBody]HierarchyNodeRequestBody body)
         {
             this.service.SetValue(HierarchyPath.Parse(path,"/"), body.Value);
@@ -51,7 +51,7 @@ namespace Treesor.Service.Endpoints
                 Value = body.Value
             };
 
-            return this.CreatedAtRoute("NodeAccess", new { path = path }, response);
+            return this.CreatedAtRoute("CreateNode", new { path = path }, response);
         }
 
         [HttpDelete, Route("api/{*path}")]
