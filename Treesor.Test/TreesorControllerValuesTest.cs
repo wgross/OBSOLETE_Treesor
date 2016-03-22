@@ -101,5 +101,19 @@ namespace Treesor.Test
             
             this.service.Verify(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value), Times.Once);
         }
+
+        [Test]
+        public void Delete_a_value_from_a_sub_node()
+        {
+            // ACT
+
+            var result = this.controller.Delete("a/b") as OkResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create("a", "b")), Times.Once);
+        }
     }
 }

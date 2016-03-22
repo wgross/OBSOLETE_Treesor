@@ -53,5 +53,13 @@ namespace Treesor.Service.Endpoints
 
             return this.CreatedAtRoute("NodeAccess", new { path = path }, response);
         }
+
+        [HttpDelete, Route("api/{*path}")]
+        public IHttpActionResult Delete([FromUri] string path)
+        {
+            this.service.RemoveValue(HierarchyPath.Parse(path, "/"));
+            return this.Ok();
+        }
+
     }
 }
