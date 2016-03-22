@@ -29,7 +29,15 @@ namespace Treesor.Service.Endpoints
         [HttpGet, Route("api/{*path}")]
         public IHttpActionResult Get([FromUri] string path)
         {
-            return Ok(new { result = path ?? "empty" });
+            object value;
+            if (this.service.TryGetValue(HierarchyPath.Parse(path,"/"), out value))
+                return this.Ok(new HierarchyNodeBody
+                {
+                    Path = path,
+                    Value = value
+                });
+
+            return this.NotFound();
         }
 
         [HttpPost, Route("api/{*path}")]
@@ -43,7 +51,7 @@ namespace Treesor.Service.Endpoints
                 Value = body.Value
             };
 
-            return CreatedAtRoute("NodeAccess", new { path = path }, response);
+            return this.CreatedAtRoute("NodeAccess", new { path = path }, response);
         }
     }
 }

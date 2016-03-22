@@ -59,5 +59,47 @@ namespace Treesor.Test
 
             this.service.Verify(s => s.SetValue(HierarchyPath.Create("a","b"), value), Times.Once);
         }
+
+        [Test]
+        public void Read_a_value_from_a_subnode()
+        {
+            // ARRANGE
+            
+            object value = new { test = "text" };
+
+            this.service.Setup(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value)).Returns(true);
+            
+            // ACT
+
+            var result = this.controller.Get("a/b") as OkNegotiatedContentResult<HierarchyNodeBody>;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a/b", result.Content.Path);
+            Assert.AreSame(value, result.Content.Value);
+
+            this.service.Verify(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value), Times.Once);
+        }
+        
+        [Test]
+        public void Read_a_missing_value_from_a_subnode_fails_with_404()
+        {
+            // ARRANGE
+
+            object value = null;
+
+            this.service.Setup(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value)).Returns(false);
+
+            // ACT
+
+            var result = this.controller.Get("a/b") as NotFoundResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            
+            this.service.Verify(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value), Times.Once);
+        }
     }
 }
