@@ -26,5 +26,10 @@ namespace Treesor.Application
         {
             return this.hierarchy.TryGetValue(hierarchyPath, out value);
         }
+
+        public void RemoveValue(HierarchyPath<string> hierarchyPath)
+        {
+            this.hierarchy.Remove(hierarchyPath);
+        }
     }
 }

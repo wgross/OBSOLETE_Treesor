@@ -8,7 +8,7 @@ using Elementary.Hierarchy;
 namespace Treesor.Test
 {
     [TestFixture]
-    public class WriteAndReadValues
+    public class TreesorControllerValuesTest
     {
         private HierarchyController controller;
         private Mock<ITreesorService> service;

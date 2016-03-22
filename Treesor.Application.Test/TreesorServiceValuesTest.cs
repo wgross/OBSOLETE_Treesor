@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Treesor.Application.Test
 {
     [TestFixture]
-    public class TreesorServiceWriteValuesTest
+    public class TreesorServiceValuesTest
     {
         private MutableHierarchy<string, object> hierarchy;
         private TreesorService service;
@@ -26,7 +26,7 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void Write_and_Read_a_value_from_hierarchy()
+        public void Read_a_value_from_hierarchy()
         {
             // ARRANGE
 
@@ -41,6 +41,23 @@ namespace Treesor.Application.Test
 
             Assert.IsTrue(result);
             Assert.AreEqual("test", (string)value);
+        }
+
+        [Test]
+        public void Delete_a_value_from_hierarchy()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), "test");
+
+            // ACT
+
+            this.service.RemoveValue(HierarchyPath.Create("a"));
+
+            // ASSERT
+
+            object value;
+            Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
         }
     }
 }
