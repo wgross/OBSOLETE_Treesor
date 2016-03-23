@@ -6,3 +6,4 @@
 **.nupkg
 TestResults/**
 .vs/**
+/Treesor/Treesor.csproj.user
