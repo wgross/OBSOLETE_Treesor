@@ -65,29 +65,93 @@ namespace Treesor.IntegTest
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Store and read a value")]
-        [NUnit.Framework.CategoryAttribute("mytag")]
+        [NUnit.Framework.DescriptionAttribute("Create and read a value")]
+        [NUnit.Framework.CategoryAttribute("cmd")]
         [NUnit.Framework.TestCaseAttribute("a/b", "test", new string[0])]
         [NUnit.Framework.TestCaseAttribute("root-path", "test2", new string[0])]
-        public virtual void StoreAndReadAValue(string path, string value, string[] exampleTags)
+        public virtual void CreateAndReadAValue(string path, string value, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "mytag"};
+                    "cmd"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Store and read a value", @__tags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create and read a value", @__tags);
 #line 6
 this.ScenarioSetup(scenarioInfo);
 #line 7
  testRunner.Given("Treesor is running at localhost and 9002", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 8
- testRunner.Given(string.Format("I store {0} at hierarchy position {1}", value, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.And(string.Format("I create {0} at hierarchy position {1}", value, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
  testRunner.When(string.Format("I read {0}", path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
- testRunner.Then(string.Format("the response contains {0} and {1}", path, value), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("Read response is 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 11
+ testRunner.Then(string.Format("Read response contains {0} and {1}", path, value), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Create and delete a value")]
+        [NUnit.Framework.CategoryAttribute("cmd")]
+        [NUnit.Framework.TestCaseAttribute("a/b", "test", new string[0])]
+        [NUnit.Framework.TestCaseAttribute("root-path", "test2", new string[0])]
+        public virtual void CreateAndDeleteAValue(string path, string value, string[] exampleTags)
+        {
+            string[] @__tags = new string[] {
+                    "cmd"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create and delete a value", @__tags);
+#line 18
+this.ScenarioSetup(scenarioInfo);
+#line 19
+ testRunner.Given("Treesor is running at localhost and 9002", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 20
+ testRunner.And(string.Format("I create {0} at hierarchy position {1}", value, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 21
+ testRunner.When(string.Format("I delete at hierarchy position {0}", path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 22
+ testRunner.Then("Delete response is 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 23
+ testRunner.When(string.Format("I read {0}", path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 24
+ testRunner.Then("Read response is 404", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Create and update a value")]
+        [NUnit.Framework.CategoryAttribute("cmd")]
+        [NUnit.Framework.TestCaseAttribute("a/b", "test", "test3", new string[0])]
+        [NUnit.Framework.TestCaseAttribute("root-path", "test2", "test4", new string[0])]
+        public virtual void CreateAndUpdateAValue(string path, string value, string newValue, string[] exampleTags)
+        {
+            string[] @__tags = new string[] {
+                    "cmd"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create and update a value", @__tags);
+#line 31
+this.ScenarioSetup(scenarioInfo);
+#line 32
+ testRunner.Given("Treesor is running at localhost and 9002", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 33
+ testRunner.And(string.Format("I create {0} at hierarchy position {1}", value, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 34
+ testRunner.When(string.Format("I update with {0} at hierarchy position {1}", newValue, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 35
+ testRunner.Then("update response is 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 36
+ testRunner.And(string.Format("update result contains {0} and {1}", path, newValue), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

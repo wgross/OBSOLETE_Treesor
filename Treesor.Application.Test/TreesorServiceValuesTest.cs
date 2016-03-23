@@ -18,7 +18,7 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void Set_a_value_to_the_hierarchy()
+        public void Set_a_value_in_the_hierarchy()
         {
             // ACT
 
