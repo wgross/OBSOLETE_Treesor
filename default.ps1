@@ -16,6 +16,11 @@ Task package_restore {
 
 } -precondition { Test-Path $nuget }
 
+Task package_clean {
+
+    Remove-Item $PSScriptRoot\packages\* -Recurse
+}
+
 Task clean {
 
     & $msbuild $solutionFile /t:Clean /p:Configuration=Release
