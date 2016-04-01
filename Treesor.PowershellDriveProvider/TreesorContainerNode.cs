@@ -2,10 +2,10 @@
 
 namespace Treesor.PowershellDriveProvider
 {
-    internal class TreesorContainerNode
+    public class TreesorContainerNode : TreesorNode
     {
         internal void ClearPropertyValue(TreesorNodeProperty propertyDefinition)
-        {
+        {  
             throw new NotImplementedException();
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Treesor.PowershellDriveProvider
 {
-    internal class TreesorNode
+    public class TreesorNode
     {
         public string Name { get; internal set; }
     }

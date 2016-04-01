@@ -59,9 +59,9 @@ namespace Treesor.PowershellDriveProvider.IntegTest
         }
 
         [When]
-        public void When_I_create_test_P0_at_hierarchy_position_root_path(int p0)
+        public void When_i_set_VALUE_at_hierarchy_position_PATH(string value, string path)
         {
-            ScenarioContext.Current.Pending();
+            var result = this.powershell.AddCommand("Set-Item").AddParameter("Path",path).AddParameter("Value",value).Invoke();
         }
         
         [Then]

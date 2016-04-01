@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Elementary.Hierarchy;
+﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
+using NLog;
+using NLog.Fluent;
 
 namespace Treesor.Application
 {
     public class TreesorService : ITreesorService
     {
-        public TreesorService(MutableHierarchy<string,object> hierarchy)
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
+        public TreesorService(MutableHierarchy<string, object> hierarchy)
         {
             this.hierarchy = hierarchy;
         }
@@ -19,7 +18,11 @@ namespace Treesor.Application
 
         public void SetValue(HierarchyPath<string> path, object value)
         {
+            log.Debug().Message("Setting value at '{0}' to '{1}'", path, value).Write();
+
             this.hierarchy.Add(path, value);
+
+            log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
@@ -29,7 +32,12 @@ namespace Treesor.Application
 
         public void RemoveValue(HierarchyPath<string> hierarchyPath)
         {
-            this.hierarchy.Remove(hierarchyPath);
+            log.Debug().Message("Removing value at path '{0}'", hierarchyPath).Write();
+
+            if (this.hierarchy.Remove(hierarchyPath))
+                log.Info().Message("Removed value at '{0}'", hierarchyPath).Write();
+            else
+                log.Info().Message("Removing value at '{0}' failed", hierarchyPath).Write();
         }
     }
 }

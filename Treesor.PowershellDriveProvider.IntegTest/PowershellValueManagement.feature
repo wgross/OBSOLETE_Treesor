@@ -6,10 +6,10 @@
 Scenario Outline: Create a new value
 	Given Treesor is running at localhost and 9002
 	Given TreesorDriveProvider is imported
-	When I create <value> at hierarchy position <path>
+	When I set <value> at hierarchy position <path>
 	Then the result should be 120 on the screen
 
 Examples: 
 	| path		| value |
-	| root-path | test2 |
+	| treesor:/ | test2 |
 

@@ -2,7 +2,7 @@
 
 namespace Treesor.PowershellDriveProvider
 {
-    internal class TreesorNodeProperty
+    public class TreesorNodeProperty
     {
         private string propertyName;
         private Type type;

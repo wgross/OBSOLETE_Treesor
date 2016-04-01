@@ -6,7 +6,7 @@
 
     public sealed class TreesorNodePath
     {
-        public static readonly TreesorNodePath RootPath = new TreesorNodePath(itemPath: HierarchyPath.Create<string>());
+        public static readonly TreesorNodePath RootPath = new TreesorNodePath(itemPath: Elementary.Hierarchy.HierarchyPath.Create<string>());
 
         public static TreesorNodePath Parse(string drivePath)
         {
@@ -20,7 +20,7 @@
             if (string.IsNullOrEmpty(drivePath))
                 parsedPath = RootPath;
 
-            parsedPath = new TreesorNodePath(HierarchyPath.Parse(drivePath, "/"));
+            parsedPath = new TreesorNodePath(Elementary.Hierarchy.HierarchyPath.Parse(drivePath, "/"));
             return true; // currently no error cases are implemented
         }
 
@@ -32,7 +32,7 @@
 
         public static TreesorNodePath Create(params string[] pathItems)
         {
-            return new TreesorNodePath(HierarchyPath.Create(pathItems));
+            return new TreesorNodePath(Elementary.Hierarchy.HierarchyPath.Create(pathItems));
         }
 
         #region Construction and initialization of this instance
@@ -42,7 +42,7 @@
             this.itemPath = itemPath;
         }
 
-        public HierarchyPath<string> NodePath
+        public HierarchyPath<string> HierarchyPath
         {
             get
             {
@@ -74,12 +74,12 @@
             if (object.ReferenceEquals(this, other))
                 return true; // instances are same
 
-            return this.NodePath.Equals(otherAsNodePath.NodePath);
+            return this.HierarchyPath.Equals(otherAsNodePath.HierarchyPath);
         }
 
         public override int GetHashCode()
         {
-            return this.NodePath.GetHashCode();
+            return this.HierarchyPath.GetHashCode();
         }
 
         #endregion Override object behaviour

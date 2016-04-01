@@ -66,7 +66,7 @@ namespace Treesor.PowershellDriveProvider.IntegTest
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Create a new value")]
         [NUnit.Framework.CategoryAttribute("powershell")]
-        [NUnit.Framework.TestCaseAttribute("root-path", "test2", new string[0])]
+        [NUnit.Framework.TestCaseAttribute("treesor:/", "test2", new string[0])]
         public virtual void CreateANewValue(string path, string value, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -83,7 +83,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 8
  testRunner.Given("TreesorDriveProvider is imported", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.When(string.Format("I create {0} at hierarchy position {1}", value, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I set {0} at hierarchy position {1}", value, path), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
  testRunner.Then("the result should be 120 on the screen", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
