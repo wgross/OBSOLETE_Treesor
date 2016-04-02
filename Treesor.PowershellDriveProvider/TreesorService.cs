@@ -36,7 +36,13 @@ namespace Treesor.PowershellDriveProvider
         /// <returns></returns>
         public bool TryGetContainer(TreesorNodePath path, out TreesorContainerNode containerNode)
         {
-            containerNode = this.GetOrCreateContainerNode(path);
+            var result = "http://localhost:9002/api".GetJsonAsync<HierarchyNodeBody>().Result;
+
+            containerNode = new TreesorContainerNode
+            {
+                Name = null
+            };
+
             return true;
         }
 
@@ -71,20 +77,18 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public Task<TreesorNode> SetValue(TreesorNodePath treesorNodePath, object newItemValue)
+        public TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
         {
-            return "http://localhost:9002/api".PostJsonAsync(new
+            var result = "http://localhost:9002/api".PutJsonAsync(new
             {
                 value = newItemValue
-            })
-            .ReceiveJson<HierarchyNodeBody>()
-            .ContinueWith<TreesorNode>(t =>
+
+            }).ReceiveJson<HierarchyNodeBody>().Result;
+
+            return new TreesorContainerNode
             {
-                return (TreesorNode)(new TreesorContainerNode
-                {
-                    Name = t.Result.path
-                });
-            });
+                Name = null
+            };
         }
 
         public void RemoveContainer(TreesorNodePath path)

@@ -85,7 +85,7 @@
                 // create a odata endpoint at the specified place path from the latest parameter set depending
                 // on te given creation parameters
 
-                return this.treesorService.SetValue(treesorNodePath, newItemValue).Result;
+                return this.treesorService.SetValue(treesorNodePath, newItemValue);
             }
             else throw new InvalidOperationException($"Item type '{itemTypeName}' isn't supported");
         }

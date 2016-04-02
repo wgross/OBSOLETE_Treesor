@@ -17,6 +17,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treesor.PowershellDriveProv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treesor.PowershellDriveProvider.Test", "Treesor.PowershellDriveProvider.Test\Treesor.PowershellDriveProvider.Test.csproj", "{294D622C-1361-4414-AF17-6998FB577FEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treesor.Client", "Treesor.Client\Treesor.Client.csproj", "{59D182A0-6062-498B-A927-6DDBF9B06F61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treesor.Client.Test", "Treesor.Client.Test\Treesor.Client.Test.csproj", "{1A2DF6F2-74D4-4A6B-83A7-CBF6BD9DA59E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{3B91939E-8546-4BEB-87CC-9BE743CC98F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,8 +57,22 @@ Global
 		{294D622C-1361-4414-AF17-6998FB577FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{294D622C-1361-4414-AF17-6998FB577FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{294D622C-1361-4414-AF17-6998FB577FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59D182A0-6062-498B-A927-6DDBF9B06F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59D182A0-6062-498B-A927-6DDBF9B06F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59D182A0-6062-498B-A927-6DDBF9B06F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59D182A0-6062-498B-A927-6DDBF9B06F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A2DF6F2-74D4-4A6B-83A7-CBF6BD9DA59E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2DF6F2-74D4-4A6B-83A7-CBF6BD9DA59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2DF6F2-74D4-4A6B-83A7-CBF6BD9DA59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2DF6F2-74D4-4A6B-83A7-CBF6BD9DA59E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D045251B-CE34-4DE6-A822-801ABEF8E7D5} = {3B91939E-8546-4BEB-87CC-9BE743CC98F9}
+		{1900B39F-B409-4DA1-B829-46128A56E06A} = {3B91939E-8546-4BEB-87CC-9BE743CC98F9}
+		{59D182A0-6062-498B-A927-6DDBF9B06F61} = {3B91939E-8546-4BEB-87CC-9BE743CC98F9}
+		{1A2DF6F2-74D4-4A6B-83A7-CBF6BD9DA59E} = {3B91939E-8546-4BEB-87CC-9BE743CC98F9}
 	EndGlobalSection
 EndGlobal
