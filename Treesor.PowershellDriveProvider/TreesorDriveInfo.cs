@@ -1,5 +1,6 @@
 ﻿namespace Treesor.PowershellDriveProvider
 {
+    using Client;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -24,7 +25,7 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = new TreesorService(driveInfo.Name);
+            this.treesorService = new TreesorService(new RemoteHierarchy(driveInfo.Name));
         }
 
         public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)

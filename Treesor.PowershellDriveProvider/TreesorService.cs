@@ -8,25 +8,19 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Treesor.PowershellDriveProvider
 {
     public class TreesorService
     {
-        private string name;
-        private readonly IHierarchy<string, TreesorContainerNode> hierarchyModel;
+        private readonly IHierarchy<string, object> remoteHierarchy;
         
-        public TreesorService(IHierarchy<string, TreesorContainerNode> model, string name)
+        public TreesorService(IHierarchy<string, object> model)
         {
-            this.hierarchyModel = model;
-            this.name = name;
+            this.remoteHierarchy = model;
         }
-
-        public TreesorService(string name)
-        {
-            this.name = name;
-        }
-
+        
         /// <summary>
         /// Creates a container node in the hierachymodel.
         /// Containers ar always created on demand
@@ -36,11 +30,13 @@ namespace Treesor.PowershellDriveProvider
         /// <returns></returns>
         public bool TryGetContainer(TreesorNodePath path, out TreesorContainerNode containerNode)
         {
-            var result = "http://localhost:9002/api".GetJsonAsync<HierarchyNodeBody>().Result;
+            object remoteValue;
+
+            this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
 
             containerNode = new TreesorContainerNode
             {
-                Name = null
+                Name = path.HierarchyPath.Items.LastOrDefault()
             };
 
             return true;
@@ -48,13 +44,15 @@ namespace Treesor.PowershellDriveProvider
 
         private TreesorContainerNode GetOrCreateContainerNode(TreesorNodePath path)
         {
-            TreesorContainerNode node;
-            if (this.hierarchyModel.TryGetValue(path.HierarchyPath, out node))
-                return node;
-
-            node = new TreesorContainerNode();
-            this.hierarchyModel.Add(path.HierarchyPath, node);
-            return node;
+            object remoteValue;
+            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue))
+            {
+                return new TreesorContainerNode
+                {
+                    Name = null
+                };
+            }
+            return null;
         }
 
         public TreesorNode GetContainer(TreesorNodePath treesorNodePath)
@@ -79,15 +77,11 @@ namespace Treesor.PowershellDriveProvider
 
         public TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
         {
-            var result = "http://localhost:9002/api".PutJsonAsync(new
-            {
-                value = newItemValue
-
-            }).ReceiveJson<HierarchyNodeBody>().Result;
+            this.remoteHierarchy[treesorNodePath.HierarchyPath] = newItemValue;
 
             return new TreesorContainerNode
             {
-                Name = null
+                Name = treesorNodePath.HierarchyPath.Items.LastOrDefault()
             };
         }
 
