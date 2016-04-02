@@ -51,12 +51,12 @@ namespace Treesor.IntegTest
                 .AddUrlSegment("path", this.path(path))
                 .AddJsonBody(new HierarchyNodeRequestBody
                 {
-                    Value = value
+                    value = value
                 }));
 
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
-            Assert.AreEqual(value, response.Data.Value);
-            Assert.AreEqual(this.path(path), response.Data.Path);
+            Assert.AreEqual(value, response.Data.value);
+            Assert.AreEqual(this.path(path), response.Data.path);
         }
 
         [When]
@@ -84,8 +84,8 @@ namespace Treesor.IntegTest
         [Then]
         public void Then_Read_response_contains_PATH_and_VALUE(string path, string value)
         {
-            Assert.AreEqual(value, this.readPathResponse.Data.Value);
-            Assert.AreEqual(this.path(path), this.readPathResponse.Data.Path);
+            Assert.AreEqual(value, this.readPathResponse.Data.value);
+            Assert.AreEqual(this.path(path), this.readPathResponse.Data.path);
         }
 
         [Then]
@@ -116,8 +116,8 @@ namespace Treesor.IntegTest
         public void Then_update_result_contains_PATH_and_NEWVALUE(string path, string newValue)
         {
             Assert.IsNotNull(this.putPathResponse);
-            Assert.AreEqual(this.path(path), this.putPathResponse.Data.Path);
-            Assert.AreEqual(newValue, this.putPathResponse.Data.Value);
+            Assert.AreEqual(this.path(path), this.putPathResponse.Data.path);
+            Assert.AreEqual(newValue, this.putPathResponse.Data.value);
         }
     }
 }

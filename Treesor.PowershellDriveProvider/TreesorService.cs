@@ -82,7 +82,7 @@ namespace Treesor.PowershellDriveProvider
             {
                 return (TreesorNode)(new TreesorContainerNode
                 {
-                    Name = t.Result.Path
+                    Name = t.Result.path
                 });
             });
         }

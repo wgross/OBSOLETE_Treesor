@@ -34,8 +34,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
             this.httpTest.RespondWithJson(new HierarchyNodeBody
             {
-                Path = null,
-                Value = "value"
+                path = null,
+                value = "value"
             });
 
             // ACT
