@@ -16,7 +16,7 @@ namespace Treesor.Client.Test
         public void ArrangeAllTests()
         {
             this.httpTest = new HttpTest();
-            this.remoteHierarchy = new RemoteHierarchy();
+            this.remoteHierarchy = new RemoteHierarchy("http://localhost:9002/api");
         }
 
         [TearDown]

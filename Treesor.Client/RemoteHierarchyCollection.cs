@@ -8,7 +8,12 @@ namespace Treesor.Client
 {
     public class RemoteHierarchy : IHierarchy<string, object>
     {
-        private string remoteHierarchyAddress = "http://localhost:9002/api";
+        private string remoteHierarchyAddress;
+        
+        public RemoteHierarchy(string remoteHierarchyAddress)
+        {
+            this.remoteHierarchyAddress = remoteHierarchyAddress;
+        }
 
         public object this[HierarchyPath<string> hierarchyPath]
         {
