@@ -1,7 +1,7 @@
 ﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
+using Flurl;
 using Flurl.Http;
-using System;
 using Treesor.Service.Endpoints;
 
 namespace Treesor.Client
@@ -14,30 +14,38 @@ namespace Treesor.Client
         {
             set
             {
-                this.remoteHierarchyAddress.PutJsonAsync(new HierarchyNodeRequestBody
-                {
-                    value = value
-                }).Wait();
+                this.remoteHierarchyAddress
+                    .AppendPathSegments(hierarchyPath.Items)
+                    .PutJsonAsync(new HierarchyNodeRequestBody
+                    {
+                        value = value
+                    }).Wait();
             }
         }
 
         public void Add(HierarchyPath<string> hierarchyPath, object value)
         {
-            this.remoteHierarchyAddress.PostJsonAsync(new HierarchyNodeRequestBody
-            {
-                value = value
-            }).Wait();
+            this.remoteHierarchyAddress
+                .AppendPathSegments(hierarchyPath.Items)
+                .PostJsonAsync(new HierarchyNodeRequestBody
+                {
+                    value = value
+                }).Wait();
         }
 
         public bool Remove(HierarchyPath<string> hierarchyPath)
         {
-            this.remoteHierarchyAddress.DeleteAsync().Wait();
+            this.remoteHierarchyAddress
+                .AppendPathSegments(hierarchyPath.Items)
+                .DeleteAsync().Wait();
             return true;
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
         {
-            var responseData = this.remoteHierarchyAddress.GetJsonAsync<HierarchyNodeBody>().Result;
+            var responseData = this.remoteHierarchyAddress
+                .AppendPathSegments(hierarchyPath.Items)
+                .GetJsonAsync<HierarchyNodeBody>().Result;
             value = responseData.value;
             return true;
         }
