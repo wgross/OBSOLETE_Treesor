@@ -85,7 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TreesorDriveProviderTest.cs" />
+    <Compile Include="TreesorDriveProviderLoadingTest.cs" />
     <Compile Include="TreesorServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

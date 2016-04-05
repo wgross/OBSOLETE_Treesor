@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Treesor.PowershellDriveProvider.Test
 {
     [TestFixture]
-    public class TreesorDriveProviderTest
+    public class TreesorDriveProviderLoadingTest
     {
         private PowerShell powershell;
 
@@ -47,22 +47,17 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Powershell_loads_Treesor_DriveProvider()
+        public void Powershell_loads_Treesor_DriveProvider_automatically()
         {
-            // ARRANGE
-
-            var result = this.powershell.AddStatement().AddCommand("Get-Variable").AddArgument("PWD").Invoke();
-
             // ACT
 
             this.powershell.AddStatement().AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
             
             // ASSERT
-
-
-            var result2 = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
             
-            Assert.IsNotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "Treesor"));
+            var result = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
+            
+            Assert.IsNotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
         }
     }
 }
