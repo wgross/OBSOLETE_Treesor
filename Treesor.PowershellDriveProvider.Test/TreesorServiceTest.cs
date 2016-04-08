@@ -20,7 +20,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             this.httpTest = new HttpTest();
             this.remoteHierarchy= new Mock<IHierarchy<string, object>>();
-            this.treesorService = new TreesorService(this.remoteHierarchy.Object);
+            this.treesorService = TreesorService.Factory(this.remoteHierarchy.Object);
         }
 
         [TearDown]

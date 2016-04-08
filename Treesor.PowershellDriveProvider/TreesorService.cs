@@ -1,26 +1,34 @@
 ﻿using Elementary.Hierarchy.Collections;
 using System;
 using System.Collections.Generic;
-using Flurl;
-using Flurl.Http;
-using Treesor.Service.Endpoints;
-using System.Net;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace Treesor.PowershellDriveProvider
 {
     public class TreesorService
     {
-        private readonly IHierarchy<string, object> remoteHierarchy;
-        
+        #region Construction and Initialization of this instance
+
+        static TreesorService()
+        {
+            Factory = remoteHierarchy => new TreesorService(remoteHierarchy);
+        }
+
+        /// <summary>
+        /// Treesoreservice factory is a public property to provide an entry point for tests of teh
+        /// powershell drive provider.
+        /// </summary>
+        public static Func<IHierarchy<string, object>, TreesorService> Factory { get; set; }
+
         public TreesorService(IHierarchy<string, object> model)
         {
             this.remoteHierarchy = model;
         }
-        
+
+        private readonly IHierarchy<string, object> remoteHierarchy;
+
+        #endregion Construction and Initialization of this instance
+
         /// <summary>
         /// Creates a container node in the hierachymodel.
         /// Containers ar always created on demand
@@ -28,7 +36,7 @@ namespace Treesor.PowershellDriveProvider
         /// <param name="path"></param>
         /// <param name="containerNode"></param>
         /// <returns></returns>
-        public bool TryGetContainer(TreesorNodePath path, out TreesorContainerNode containerNode)
+        public virtual bool TryGetContainer(TreesorNodePath path, out TreesorContainerNode containerNode)
         {
             object remoteValue;
 
@@ -55,7 +63,7 @@ namespace Treesor.PowershellDriveProvider
             return null;
         }
 
-        public TreesorNode GetContainer(TreesorNodePath treesorNodePath)
+        public virtual TreesorContainerNode GetContainer(TreesorNodePath treesorNodePath)
         {
             throw new NotImplementedException();
         }
@@ -75,7 +83,7 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
+        public virtual TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
         {
             this.remoteHierarchy[treesorNodePath.HierarchyPath] = newItemValue;
 
@@ -85,7 +93,12 @@ namespace Treesor.PowershellDriveProvider
             };
         }
 
-        public void RemoveContainer(TreesorNodePath path)
+        public virtual void RemoveValue(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void RemoveContainer(TreesorNodePath path)
         {
             throw new NotImplementedException();
         }

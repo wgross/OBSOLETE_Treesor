@@ -1,12 +1,13 @@
 ﻿using NLog;
-using NLog.Fluent;
 using Owin;
 using Swashbuckle.Application;
-using System.Linq;
+using System.IO;
+using System.Reflection;
 using System.Web.Http;
 
-namespace Treesor.Service
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
+namespace Treesor.Service
 {
     public sealed class StartupConfiguration
     {
@@ -30,6 +31,7 @@ namespace Treesor.Service
                 .EnableSwagger(c =>
                 {
                     c.SingleApiVersion("v1", "Treesor");
+                    c.IncludeXmlComments(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Treesor.Xml"));
                     //c.CustomProvider(defaultProvider => new ODataSwaggerProvider(defaultProvider, c, config));
                 })
                 .EnableSwaggerUi();

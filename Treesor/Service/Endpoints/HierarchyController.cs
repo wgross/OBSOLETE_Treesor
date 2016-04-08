@@ -26,6 +26,10 @@ namespace Treesor.Service.Endpoints
 
         private readonly ITreesorService service;
 
+        /// <summary>
+        /// Retrieves a Hierachy node value 
+        /// </summary>
+        /// <returns>Http 'Ok' with the value of the node or 'NotFound'</returns>
         [HttpGet, Route("api")]
         public IHttpActionResult Get()
         {
@@ -40,6 +44,10 @@ namespace Treesor.Service.Endpoints
             return this.NotFound();
         }
 
+        /// <summary>
+        /// Retrieves a Hierachy node value 
+        /// </summary>
+        /// <returns>Http 'Ok' with the value of the node or 'NotFound'</returns>
         [HttpGet, Route("api/{*path}")]
         public IHttpActionResult Get([FromUri] string path)
         {

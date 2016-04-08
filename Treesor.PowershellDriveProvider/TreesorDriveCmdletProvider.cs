@@ -84,9 +84,9 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void ClearItem(string path)
         {
-            log.Debug().Message("ClearItem({0})", path ?? "null").Write();
+            log.Trace().Property(nameof(path),path).Write();
 
-            throw new PSNotSupportedException("ClearItem isn't supported yet");
+            this.GetTreesorDriveInfo().ClearItem(TreesorNodePath.Parse(path));
         }
 
         protected override string[] ExpandPath(string path)
@@ -126,7 +126,7 @@ namespace Treesor.PowershellDriveProvider
 
         protected override bool ItemExists(string path)
         {
-            log.Debug().Message("Processing ItemsExists({0})", path ?? "null").Write();
+            log.Trace().Property(nameof(path), path).Write();
 
             // is called by Test-Path
             return this.GetTreesorDriveInfo().ItemExists(TreesorNodePath.Parse(path));
@@ -134,11 +134,12 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void SetItem(string path, object value)
         {
-            log.Debug().Message("Processing SetItem({0}, {1})", path ?? "null", value ?? (object)"null").Write();
+            log.Trace().Property(nameof(path), path).Property(nameof(value.GetHashCode), value?.GetHashCode()).Write();
 
-            throw new PSNotSupportedException("SetItem");
+            this.GetTreesorDriveInfo().SetItem(TreesorNodePath.Parse(path), value);
         }
 
+        
         #endregion Override ItemCmdletProvider methods
 
         #region Override ContainerCmdletProvider methods

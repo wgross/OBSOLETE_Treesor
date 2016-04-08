@@ -1,6 +1,8 @@
 ﻿namespace Treesor.PowershellDriveProvider
 {
     using Client;
+    using NLog;
+    using NLog.Fluent;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -9,8 +11,15 @@
     using System.Threading.Tasks;
     public class TreesorDriveInfo : PSDriveInfo
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         public static TreesorDriveInfo CreateDefault(ProviderInfo provider)
         {
+            log.Debug()
+                .Message("Creating default drive provider")
+                .Property(nameof(provider.Name), provider.Name)
+                .Write();
+
             return new TreesorDriveInfo(new PSDriveInfo(
                name: "treesor",
                provider: provider,
@@ -25,7 +34,7 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = new TreesorService(new RemoteHierarchy(driveInfo.Name));
+            this.treesorService = TreesorService.Factory(new RemoteHierarchy(driveInfo.Name));
         }
 
         public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
@@ -49,13 +58,24 @@
 
         internal bool ItemExists(TreesorNodePath path)
         {
+            log.Trace().Property(nameof(path), path).Write();
+
             TreesorContainerNode jObjectAtPath;
             return this.treesorService.TryGetContainer(path, out jObjectAtPath);
         }
 
-        internal TreesorNode GetItem(TreesorNodePath TreesorNodePath)
+        internal TreesorNode GetItem(TreesorNodePath path)
         {
-            return this.treesorService.GetContainer(TreesorNodePath);
+            log.Trace().Property(nameof(path), path).Write();
+
+            return this.treesorService.GetContainer(path);
+        }
+
+        internal void SetItem(TreesorNodePath path, object value)
+        {
+            log.Trace().Property(nameof(path), path).Property(nameof(value.GetHashCode), value?.GetHashCode()).Write();
+
+            this.treesorService.SetValue(path, value);
         }
 
         #endregion Implement ItemCmdletProvider
@@ -68,6 +88,13 @@
                 return this.treesorService.GetContainerDescendants(treesorNodePath);
             else
                 return this.treesorService.GetContainerChildren(treesorNodePath);
+        }
+
+        internal void ClearItem(TreesorNodePath treesorNodePath)
+        {
+            log.Trace().Property(nameof(treesorNodePath),treesorNodePath).Write();
+
+            this.treesorService.RemoveValue(treesorNodePath);
         }
 
         internal TreesorNode NewItem(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue, out bool? isContainer)

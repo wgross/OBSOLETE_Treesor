@@ -3,6 +3,7 @@ using Elementary.Hierarchy.Collections;
 using NLog;
 using NLog.Fluent;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Treesor.Application
 {
     public class TreesorService : ITreesorService
@@ -25,6 +26,7 @@ namespace Treesor.Application
             log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }
 
+
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
         {
             return this.hierarchy.TryGetValue(hierarchyPath, out value);
@@ -41,3 +43,4 @@ namespace Treesor.Application
         }
     }
 }
+
