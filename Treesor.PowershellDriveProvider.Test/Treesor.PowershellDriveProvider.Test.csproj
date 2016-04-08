@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TreesorDriveProviderItemContainerCmdletTest.cs" />
     <Compile Include="TreesorDriveProviderItemManagementTest.cs" />
     <Compile Include="TreesorDriveProviderLoadingTest.cs" />
     <Compile Include="TreesorServiceTest.cs" />

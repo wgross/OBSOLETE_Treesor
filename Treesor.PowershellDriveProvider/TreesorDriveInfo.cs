@@ -8,7 +8,7 @@
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Management.Automation;
-    using System.Threading.Tasks;
+
     public class TreesorDriveInfo : PSDriveInfo
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
@@ -42,7 +42,7 @@
         }
 
         private readonly TreesorService treesorService;
-        
+
         #endregion Creation and initialization of this instance
 
         #region Get notified of end of life
@@ -77,6 +77,13 @@
 
             this.treesorService.SetValue(path, value);
         }
+        
+        internal void ClearItem(TreesorNodePath path)
+        {
+            log.Trace().Property(nameof(path), path).Write();
+
+            this.treesorService.RemoveValue(path);
+        }
 
         #endregion Implement ItemCmdletProvider
 
@@ -89,37 +96,49 @@
             else
                 return this.treesorService.GetContainerChildren(treesorNodePath);
         }
-
-        internal void ClearItem(TreesorNodePath treesorNodePath)
+        
+        internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
-            log.Trace().Property(nameof(treesorNodePath),treesorNodePath).Write();
+            log.Trace()
+                .Property(nameof(path), path)
+                .Property(nameof(itemTypeName), itemTypeName)
+                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
+                .Write();
 
-            this.treesorService.RemoveValue(treesorNodePath);
-        }
+            isContainer = true;
+            return this.treesorService.CreateContainer(path);
 
-        internal TreesorNode NewItem(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue, out bool? isContainer)
-        {
-            isContainer = null;
+            #region // Currently only directories are created
 
-            if ("Directory".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
-            {
-                isContainer = true;
-                return this.treesorService.CreateContainer(treesorNodePath);
-            }
-            else if ("File".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
-            {
-                isContainer = false;
+            //isContainer = null;
 
-                // create a odata endpoint at the specified place path from the latest parameter set depending
-                // on te given creation parameters
+            //if ("Directory".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
+            //{
+            //    isContainer = true;
+            //    return this.treesorService.CreateContainer(treesorNodePath);
+            //}
+            //else if ("File".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
+            //{
+            //    isContainer = false;
 
-                return this.treesorService.SetValue(treesorNodePath, newItemValue);
-            }
-            else throw new InvalidOperationException($"Item type '{itemTypeName}' isn't supported");
+            //    // create a odata endpoint at the specified place path from the latest parameter set depending
+            //    // on te given creation parameters
+
+            //    return this.treesorService.SetValue(treesorNodePath, newItemValue);
+            //}
+            //else throw new InvalidOperationException($"Item type '{itemTypeName}' isn't supported");
+
+            #endregion // Currently only directories are created
         }
 
         internal object NewItemDynamicParameters(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
         {
+            log.Trace()
+                .Property(nameof(treesorNodePath), treesorNodePath)
+                .Property(nameof(itemTypeName), itemTypeName)
+                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
+                .Write();
+
             if ("odata".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
                 return TreesorNewODataDynamicParameters.Get(treesorNodePath, itemTypeName);
             return null;

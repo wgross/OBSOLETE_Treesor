@@ -78,7 +78,7 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public TreesorNode CreateContainer(TreesorNodePath treesorNodePath)
+        public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath)
         {
             throw new NotImplementedException();
         }

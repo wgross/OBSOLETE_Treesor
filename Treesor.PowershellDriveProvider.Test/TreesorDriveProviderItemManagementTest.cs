@@ -28,8 +28,6 @@ namespace Treesor.PowershellDriveProvider.Test
         [SetUp]
         public void ArrangeAllTests()
         {
-            log.Info("das ist ein test");
-
             this.remoteHierachy = new Mock<IHierarchy<string, object>>();
             this.treesorService = new Mock<TreesorService>(this.remoteHierachy.Object);
 

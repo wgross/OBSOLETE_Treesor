@@ -191,7 +191,11 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void NewItem(string path, string itemTypeName, object newItemValue)
         {
-            log.Debug("Proessing NewItem({0}, {1}, {2})", path, itemTypeName, newItemValue);
+            log.Trace()
+                .Property(nameof(path), path)
+                .Property(nameof(itemTypeName), itemTypeName)
+                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
+                .Write();
 
             bool? isContainer;
             var newItem = this.GetTreesorDriveInfo().NewItem(TreesorNodePath.Parse(path), itemTypeName, newItemValue, out isContainer);
