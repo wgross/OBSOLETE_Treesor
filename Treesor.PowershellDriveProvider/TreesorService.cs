@@ -80,7 +80,12 @@ namespace Treesor.PowershellDriveProvider
 
         public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            this.remoteHierarchy[treesorNodePath.HierarchyPath] = null;
+
+            return new TreesorContainerNode
+            {
+                Name = treesorNodePath.HierarchyPath.Items.LastOrDefault()
+            };
         }
 
         public virtual TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)

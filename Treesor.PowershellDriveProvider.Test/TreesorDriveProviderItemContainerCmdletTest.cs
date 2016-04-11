@@ -50,7 +50,7 @@ namespace Treesor.PowershellDriveProvider.Test
             }
 
             [Test]
-            public void Powershell_new_item_at_root_creates_new_node()
+            public void Powershell_new_item_at_root_creates_new_node_without_value()
             {
                 // ARRANGE
 
@@ -59,7 +59,6 @@ namespace Treesor.PowershellDriveProvider.Test
                     Name = "child"
                 };
 
-                //this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out )).Returns(true);
                 this.treesorService.Setup(s => s.CreateContainer(TreesorNodePath.Create("child"))).Returns(childContainer);
 
                 // ACT

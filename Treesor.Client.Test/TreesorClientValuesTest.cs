@@ -42,7 +42,7 @@ namespace Treesor.Client.Test
                 .WithContentType("application/json")
                 .With(c => c.RequestBody.Contains("\"value\":\"value\""));
         }
-        
+
         [Test]
         public void Add_value_at_remote_hierachy_node()
         {
@@ -80,6 +80,22 @@ namespace Treesor.Client.Test
         }
 
         [Test]
+        public void Set_value_null_at_remote_hierachy_root()
+        {
+            // ACT
+
+            this.remoteHierarchy[HierarchyPath.Create<string>()] = null;
+
+            // ASSERT
+
+            this.httpTest
+                .ShouldHaveCalled("http://localhost:9002/api")
+                .WithVerb(HttpMethod.Put)
+                .WithContentType("application/json")
+                .With(c => c.RequestBody.Contains("\"value\":null"));
+        }
+
+        [Test]
         public void Set_value_at_remote_hierachy_node()
         {
             // ARRANGE
@@ -95,6 +111,24 @@ namespace Treesor.Client.Test
                 .WithVerb(HttpMethod.Put)
                 .WithContentType("application/json")
                 .With(c => c.RequestBody.Contains("\"value\":\"value\""));
+        }
+
+        [Test]
+        public void Set_value_null_at_remote_hierachy_node()
+        {
+            // ARRANGE
+
+            // ACT
+
+            this.remoteHierarchy[HierarchyPath.Create("a")] = null;
+
+            // ASSERT
+
+            this.httpTest
+                .ShouldHaveCalled("http://localhost:9002/api/a")
+                .WithVerb(HttpMethod.Put)
+                .WithContentType("application/json")
+                .With(c => c.RequestBody.Contains("\"value\":null"));
         }
 
         [Test]

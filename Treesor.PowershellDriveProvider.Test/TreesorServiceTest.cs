@@ -60,7 +60,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Get_value_at_hierarchy_root()
+        public void Get_value_from_hierarchy_root()
         {
             // ARRANGE
 
@@ -84,7 +84,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Get_value_at_hierarchy_node()
+        public void Get_value_from_hierarchy_node()
         {
             // ARRANGE
 
@@ -105,6 +105,20 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.AreEqual("a", resultNode.Name);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
+        }
+
+        [Test]
+        public void CreateContainer_without_value_under_root()
+        {
+            // ACT
+
+            var result = this.treesorService.CreateContainer(TreesorNodePath.Create("a"));
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a", result.Name);
+            this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create("a")] = null);
         }
     }
 }
