@@ -106,7 +106,7 @@
                 .Write();
 
             isContainer = true;
-            return this.treesorService.CreateContainer(path);
+            return this.treesorService.CreateContainer(path, newItemValue);
 
             #region // Currently only directories are created
 

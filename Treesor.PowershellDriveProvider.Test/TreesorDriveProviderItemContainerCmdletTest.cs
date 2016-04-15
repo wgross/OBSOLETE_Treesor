@@ -59,7 +59,7 @@ namespace Treesor.PowershellDriveProvider.Test
                     Name = "child"
                 };
 
-                this.treesorService.Setup(s => s.CreateContainer(TreesorNodePath.Create("child"))).Returns(childContainer);
+                this.treesorService.Setup(s => s.CreateContainer(TreesorNodePath.Create("child"), null)).Returns(childContainer);
 
                 // ACT
 
@@ -74,8 +74,58 @@ namespace Treesor.PowershellDriveProvider.Test
                 Assert.IsInstanceOf<TreesorContainerNode>(result.Single().BaseObject);
                 Assert.AreEqual("child", ((TreesorContainerNode)(result.Single().BaseObject)).Name);
                 
-                this.treesorService.Verify(s => s.CreateContainer(TreesorNodePath.Create("child")), Times.Once);
+                this.treesorService.Verify(s => s.CreateContainer(TreesorNodePath.Create("child"), null), Times.Once);
                 this.treesorService.VerifyAll();
+            }
+
+            [Test]
+            public void Powershell_new_item_at_root_creates_new_node_with_value()
+            {
+                // ARRANGE
+
+                var childContainer = new TreesorContainerNode
+                {
+                    Name = "child"
+                };
+
+                this.treesorService.Setup(s => s.CreateContainer(TreesorNodePath.Create("child"), "value")).Returns(childContainer);
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("New-Item")
+                    .AddParameter("Path", "treesor:/child")
+                    .AddParameter("Value", "value")
+                    .Invoke();
+
+                // ASSERT
+
+                Assert.AreEqual(1, result.Count);
+                Assert.IsInstanceOf<TreesorContainerNode>(result.Single().BaseObject);
+                Assert.AreEqual("child", ((TreesorContainerNode)(result.Single().BaseObject)).Name);
+                //?//Assert.AreEqual("value", ((TreesorContainerNode)(result.Single().BaseObject)).Value));
+
+                this.treesorService.Verify(s => s.CreateContainer(TreesorNodePath.Create("child"), "value"), Times.Once);
+                this.treesorService.VerifyAll();
+            }
+
+            [Test]
+            public void Powershell_get_childItem_at_root_node_returs_child_node()
+            {
+                // ARRANGE
+
+                //this.remoteHierachy
+                //    .Setup(h => h.TryGetValue)
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Get-ChildItem")
+                    .Invoke();
+
+                // ASSERT
+
+                Assert.AreEqual(2, result.Count);
             }
         }
     }

@@ -10,14 +10,14 @@ namespace Treesor.Test
     [TestFixture]
     public class TreesorControllerValuesTest
     {
-        private HierarchyController controller;
+        private HierarchyValueController controller;
         private Mock<ITreesorService> service;
 
         [SetUp]
         public void ArrangeAllTests()
         {
             this.service = new Mock<ITreesorService>();
-            this.controller = new HierarchyController(this.service.Object);
+            this.controller = new HierarchyValueController(this.service.Object);
         }
 
         #region POST /api/{path}, POST /api

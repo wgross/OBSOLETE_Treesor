@@ -6,20 +6,20 @@ using Treesor.Application;
 
 namespace Treesor.Service.Endpoints
 {
-    public class HierarchyController : ApiController
+    public class HierarchyValueController : ApiController
     {
         private static readonly MutableHierarchy<string, object> defaultHierarchy = new MutableHierarchy<string, object>();
 
-        public HierarchyController()
+        public HierarchyValueController()
             : this(defaultHierarchy)
         { }
 
-        public HierarchyController(MutableHierarchy<string, object> hierarchy)
+        public HierarchyValueController(MutableHierarchy<string, object> hierarchy)
             : this(service: new Treesor.Application.TreesorService(hierarchy))
         {
         }
 
-        public HierarchyController(ITreesorService service)
+        public HierarchyValueController(ITreesorService service)
         {
             this.service = service;
         }

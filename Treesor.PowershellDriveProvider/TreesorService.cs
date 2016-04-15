@@ -50,22 +50,17 @@ namespace Treesor.PowershellDriveProvider
             return true;
         }
 
-        private TreesorContainerNode GetOrCreateContainerNode(TreesorNodePath path)
+        public virtual TreesorContainerNode GetContainer(TreesorNodePath path)
         {
             object remoteValue;
-            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue))
+
+            this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
             {
                 return new TreesorContainerNode
                 {
-                    Name = null
+                    Name = path.HierarchyPath.Items.LastOrDefault()
                 };
             }
-            return null;
-        }
-
-        public virtual TreesorContainerNode GetContainer(TreesorNodePath treesorNodePath)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath treesorNodePath)
@@ -78,9 +73,9 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath)
+        public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath, object value = null)
         {
-            this.remoteHierarchy[treesorNodePath.HierarchyPath] = null;
+            this.remoteHierarchy[treesorNodePath.HierarchyPath] = value;
 
             return new TreesorContainerNode
             {

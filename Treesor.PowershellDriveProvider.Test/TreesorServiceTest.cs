@@ -3,8 +3,6 @@ using Elementary.Hierarchy.Collections;
 using Flurl.Http.Testing;
 using Moq;
 using NUnit.Framework;
-using System.Net.Http;
-using Treesor.Service.Endpoints;
 
 namespace Treesor.PowershellDriveProvider.Test
 {
@@ -13,22 +11,14 @@ namespace Treesor.PowershellDriveProvider.Test
     {
         private TreesorService treesorService;
         private Mock<IHierarchy<string, object>> remoteHierarchy;
-        private HttpTest httpTest;
-
+        
         [SetUp]
         public void ArrangeAllTests()
         {
-            this.httpTest = new HttpTest();
-            this.remoteHierarchy= new Mock<IHierarchy<string, object>>();
-            this.treesorService = TreesorService.Factory(this.remoteHierarchy.Object);
+            this.remoteHierarchy = new Mock<IHierarchy<string, object>>();
+            this.treesorService = new TreesorService(this.remoteHierarchy.Object);
         }
-
-        [TearDown]
-        public void CleanupAllTests()
-        {
-            this.httpTest.Dispose();
-        }
-
+        
         [Test]
         public void Set_value_at_hierarchy_root()
         {
@@ -54,13 +44,15 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create("a")] = "value", Times.Once);
-            
+
             Assert.IsNotNull(result);
             Assert.AreEqual("a", result.Name);
         }
 
+        #region TryGetContainer
+
         [Test]
-        public void Get_value_from_hierarchy_root()
+        public void TryGet_value_from_hierarchy_root()
         {
             // ARRANGE
 
@@ -84,7 +76,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Get_value_from_hierarchy_node()
+        public void TryGet_value_from_hierarchy_node()
         {
             // ARRANGE
 
@@ -100,19 +92,71 @@ namespace Treesor.PowershellDriveProvider.Test
             var result = this.treesorService.TryGetContainer(TreesorNodePath.Create("a"), out resultNode);
 
             // ASSERT
-            
+
             Assert.IsTrue(result);
             Assert.AreEqual("a", resultNode.Name);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
         }
 
+        #endregion TryGetContainer
+
+        #region GetContainer
+
+        [Test]
+        public void Get_value_from_hierarchy_root()
+        {
+            // ARRANGE
+
+            object remoteValue;
+
+            this.remoteHierarchy
+                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out remoteValue))
+                .Returns(true);
+
+            // ACT
+
+            var result = this.treesorService.GetContainer(TreesorNodePath.Create());
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.IsNull(result.Name);
+
+            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out remoteValue), Times.Once);
+        }
+
+        [Test]
+        public void Get_value_from_hierarchy_node()
+        {
+            // ARRANGE
+
+            object remoteValue;
+
+            this.remoteHierarchy
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue))
+                .Returns(true);
+
+            // ACT
+
+            var result = this.treesorService.GetContainer(TreesorNodePath.Create("a"));
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a", result.Name);
+
+            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
+        }
+
+        #endregion GetContainer
+
         [Test]
         public void CreateContainer_without_value_under_root()
         {
             // ACT
 
-            var result = this.treesorService.CreateContainer(TreesorNodePath.Create("a"));
+            var result = this.treesorService.CreateContainer(TreesorNodePath.Create("a"), null);
 
             // ASSERT
 
