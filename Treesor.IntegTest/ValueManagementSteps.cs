@@ -13,9 +13,9 @@ namespace Treesor.IntegTest
     public class ValueManagementSteps
     {
         private RestClient client;
-        private IRestResponse<HierarchyNodeBody> readPathResponse;
+        private IRestResponse<HierarchyValueBody> readPathResponse;
         private IRestResponse deletePathResponse;
-        private IRestResponse<HierarchyNodeBody> putPathResponse;
+        private IRestResponse<HierarchyValueBody> putPathResponse;
 
         private string path(string p) => p == "root-path" ? string.Empty : p;
 
@@ -47,9 +47,9 @@ namespace Treesor.IntegTest
         [Given]
         public void Given_I_create_VALUE_at_hierarchy_position_PATH(string value, string path)
         {
-            var response = this.client.Post<HierarchyNodeBody>(new RestRequest()
+            var response = this.client.Post<HierarchyValueBody>(new RestRequest()
                 .AddUrlSegment("path", this.path(path))
-                .AddJsonBody(new HierarchyNodeRequestBody
+                .AddJsonBody(new HierarchyValueRequestBody
                 {
                     value = value
                 }));
@@ -62,7 +62,7 @@ namespace Treesor.IntegTest
         [When]
         public void When_I_read_PATH(string path)
         {
-            this.readPathResponse = this.client.Get<HierarchyNodeBody>(new RestRequest()
+            this.readPathResponse = this.client.Get<HierarchyValueBody>(new RestRequest()
                 .AddUrlSegment("path", this.path(path)));
         }
 
@@ -76,7 +76,7 @@ namespace Treesor.IntegTest
         [When]
         public void When_I_update_with_NEWVALUE_at_hierarchy_position_PATH(string newValue, string path)
         {
-            this.putPathResponse = this.client.Put<HierarchyNodeBody>(new RestRequest()
+            this.putPathResponse = this.client.Put<HierarchyValueBody>(new RestRequest()
                 .AddUrlSegment("path", path)
                 .AddJsonBody(new { Value = (object)newValue }));
         }

@@ -21,7 +21,7 @@ namespace Treesor.Client
             {
                 this.remoteHierarchyAddress
                     .AppendPathSegments(hierarchyPath.Items)
-                    .PutJsonAsync(new HierarchyNodeRequestBody
+                    .PutJsonAsync(new HierarchyValueRequestBody
                     {
                         value = value
                     }).Wait();
@@ -32,7 +32,7 @@ namespace Treesor.Client
         {
             this.remoteHierarchyAddress
                 .AppendPathSegments(hierarchyPath.Items)
-                .PostJsonAsync(new HierarchyNodeRequestBody
+                .PostJsonAsync(new HierarchyValueRequestBody
                 {
                     value = value
                 }).Wait();
@@ -50,7 +50,7 @@ namespace Treesor.Client
         {
             var responseData = this.remoteHierarchyAddress
                 .AppendPathSegments(hierarchyPath.Items)
-                .GetJsonAsync<HierarchyNodeBody>().Result;
+                .GetJsonAsync<HierarchyValueBody>().Result;
             value = responseData.value;
             return true;
         }

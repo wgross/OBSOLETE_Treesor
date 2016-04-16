@@ -136,7 +136,7 @@ namespace Treesor.Client.Test
         {
             // ARRANGE
 
-            this.httpTest.RespondWithJson(new HierarchyNodeBody
+            this.httpTest.RespondWithJson(new HierarchyValueBody
             {
                 path = null,
                 value = "value"
@@ -162,7 +162,7 @@ namespace Treesor.Client.Test
         {
             // ARRANGE
 
-            this.httpTest.RespondWithJson(new HierarchyNodeBody
+            this.httpTest.RespondWithJson(new HierarchyValueBody
             {
                 path = null,
                 value = "value"

@@ -8,6 +8,8 @@ namespace Treesor.Service.Endpoints
 {
     public class HierarchyValueController : ApiController
     {
+        #region Construction and Initialization of this instance
+
         private static readonly MutableHierarchy<string, object> defaultHierarchy = new MutableHierarchy<string, object>();
 
         public HierarchyValueController()
@@ -26,8 +28,10 @@ namespace Treesor.Service.Endpoints
 
         private readonly ITreesorService service;
 
+        #endregion Construction and Initialization of this instance
+        
         /// <summary>
-        /// Retrieves a Hierachy node value 
+        /// Retrieves a Hierachy node value
         /// </summary>
         /// <returns>Http 'Ok' with the value of the node or 'NotFound'</returns>
         [HttpGet, Route("api")]
@@ -35,7 +39,7 @@ namespace Treesor.Service.Endpoints
         {
             object value;
             if (this.service.TryGetValue(HierarchyPath.Create<string>(), out value))
-                return this.Ok(new HierarchyNodeBody
+                return this.Ok(new HierarchyValueBody
                 {
                     path = string.Empty,
                     value = value
@@ -45,7 +49,7 @@ namespace Treesor.Service.Endpoints
         }
 
         /// <summary>
-        /// Retrieves a Hierachy node value 
+        /// Retrieves a Hierachy node value
         /// </summary>
         /// <returns>Http 'Ok' with the value of the node or 'NotFound'</returns>
         [HttpGet, Route("api/{*path}")]
@@ -56,7 +60,7 @@ namespace Treesor.Service.Endpoints
 
             object value;
             if (this.service.TryGetValue(HierarchyPath.Parse(path, "/"), out value))
-                return this.Ok(new HierarchyNodeBody
+                return this.Ok(new HierarchyValueBody
                 {
                     path = path,
                     value = value
@@ -66,11 +70,11 @@ namespace Treesor.Service.Endpoints
         }
 
         [HttpPost, Route("api", Name = "SetValueAtRoot")]
-        public IHttpActionResult Post([FromBody]HierarchyNodeRequestBody body)
+        public IHttpActionResult Post([FromBody]HierarchyValueRequestBody body)
         {
             this.service.SetValue(HierarchyPath.Create<string>(), body.value);
 
-            var response = new HierarchyNodeBody
+            var response = new HierarchyValueBody
             {
                 path = string.Empty,
                 value = body.value
@@ -80,14 +84,14 @@ namespace Treesor.Service.Endpoints
         }
 
         [HttpPost, Route("api/{*path}", Name = "SetValue")]
-        public IHttpActionResult Post([FromUri] string path, [FromBody]HierarchyNodeRequestBody body)
+        public IHttpActionResult Post([FromUri] string path, [FromBody]HierarchyValueRequestBody body)
         {
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
             this.service.SetValue(HierarchyPath.Parse(path, "/"), body.value);
 
-            var response = new HierarchyNodeBody
+            var response = new HierarchyValueBody
             {
                 path = path,
                 value = body.value
@@ -114,22 +118,22 @@ namespace Treesor.Service.Endpoints
         }
 
         [HttpPut, Route("api")]
-        public IHttpActionResult Put([FromBody] HierarchyNodeRequestBody value)
+        public IHttpActionResult Put([FromBody] HierarchyValueRequestBody value)
         {
             this.service.SetValue(HierarchyPath.Create<string>(), value.value);
 
-            return this.Ok(new HierarchyNodeBody { value = value.value, path = string.Empty });
+            return this.Ok(new HierarchyValueBody { value = value.value, path = string.Empty });
         }
 
         [HttpPut, Route("api/{*path}")]
-        public IHttpActionResult Put([FromUri] string path , [FromBody] HierarchyNodeRequestBody value)
+        public IHttpActionResult Put([FromUri] string path, [FromBody] HierarchyValueRequestBody value)
         {
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
             this.service.SetValue(HierarchyPath.Parse(path, "/"), value.value);
 
-            return this.Ok(new HierarchyNodeBody { value = value.value, path = path });
+            return this.Ok(new HierarchyValueBody { value = value.value, path = path });
         }
     }
 }

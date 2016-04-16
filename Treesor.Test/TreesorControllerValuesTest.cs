@@ -23,7 +23,7 @@ namespace Treesor.Test
         #region POST /api/{path}, POST /api
 
         [Test]
-        public void Write_value_to_hierachy_with_empty_path_fails()
+        public void Write_value_to_hierarchy_with_empty_path_fails()
         {
             // ARRANGE
 
@@ -31,7 +31,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Post("", new HierarchyNodeRequestBody { value = value }) as ExceptionResult;
+            var result = this.controller.Post("", new HierarchyValueRequestBody { value = value }) as ExceptionResult;
 
             // ASSERT
 
@@ -50,7 +50,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Post(new HierarchyNodeRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Post(new HierarchyValueRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
@@ -69,7 +69,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Post("a/b", new HierarchyNodeRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Post("a/b", new HierarchyValueRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
@@ -96,7 +96,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Get("a/b") as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Get("a/b") as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
@@ -152,7 +152,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
@@ -221,7 +221,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Put("a/b", new HierarchyNodeRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Put("a/b", new HierarchyValueRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
@@ -241,7 +241,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Put("", new HierarchyNodeRequestBody { value = value }) as ExceptionResult;
+            var result = this.controller.Put("", new HierarchyValueRequestBody { value = value }) as ExceptionResult;
 
             // ASSERT
 
@@ -260,7 +260,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Put(new HierarchyNodeRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Put(new HierarchyValueRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 

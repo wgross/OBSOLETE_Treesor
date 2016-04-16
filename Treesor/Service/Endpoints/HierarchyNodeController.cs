@@ -1,18 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Web.Http;
+using Treesor.Application;
 
 namespace Treesor.Service.Endpoints
 {
     public class HierarchyNodeController : ApiController
     {
-        [HttpGet, Route("api/node/{path*}")]
+        private readonly ITreesorService treesorService;
+
+        public HierarchyNodeController(ITreesorService treesorService)
+        {
+            this.treesorService = treesorService;
+        }
+
+        [HttpGet, Route("api/node")]
         public IHttpActionResult Get()
         {
-            return Ok();
+            return Ok(new HierarchyNodeCollectionBody
+            {
+                nodes = this.treesorService.Descendants().Select(kv => new HierarchyNodeBody
+                {
+                    path = kv.Key.ToString()
+                }).ToArray()
+            });
         }
     }
 }

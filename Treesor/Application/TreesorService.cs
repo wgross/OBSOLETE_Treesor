@@ -2,8 +2,11 @@
 using Elementary.Hierarchy.Collections;
 using NLog;
 using NLog.Fluent;
+using System.Collections.Generic;
+using System.Linq;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Treesor.Application
 {
     public class TreesorService : ITreesorService
@@ -26,7 +29,6 @@ namespace Treesor.Application
             log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }
 
-
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
         {
             return this.hierarchy.TryGetValue(hierarchyPath, out value);
@@ -41,6 +43,18 @@ namespace Treesor.Application
             else
                 log.Info().Message("Removing value at '{0}' failed", hierarchyPath).Write();
         }
+
+        public IEnumerable<KeyValuePair<HierarchyPath<string>, object>> Descendants()
+        {
+            return this.hierarchy.Traverse()
+                .DescendantsOrSelf(depthFirst: false)
+                .Select(n =>
+                {
+                    if (n.HasValue)
+                        return new KeyValuePair<HierarchyPath<string>, object>(n.Path, n.Value);
+                    else
+                        return new KeyValuePair<HierarchyPath<string>, object>(n.Path, null);
+                });
+        }
     }
 }
-

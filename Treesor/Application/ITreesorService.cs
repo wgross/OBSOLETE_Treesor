@@ -1,4 +1,5 @@
 ﻿using Elementary.Hierarchy;
+using System.Collections.Generic;
 
 namespace Treesor.Application
 {
@@ -9,5 +10,7 @@ namespace Treesor.Application
         bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value);
 
         void RemoveValue(HierarchyPath<string> hierarchyPath);
+
+        IEnumerable<KeyValuePair<HierarchyPath<string>, object>> Descendants();
     }
 }
