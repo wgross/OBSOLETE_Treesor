@@ -13,12 +13,12 @@ namespace Treesor.Service.Endpoints
             this.treesorService = treesorService;
         }
 
-        [HttpGet, Route("api/node")]
+        [HttpGet, Route("api/node/children")]
         public IHttpActionResult Get()
         {
             return Ok(new HierarchyNodeCollectionBody
             {
-                nodes = this.treesorService.Descendants().Select(kv => new HierarchyNodeBody
+                nodes = this.treesorService.DescendantsOrSelf(2).Select(kv => new HierarchyNodeBody
                 {
                     path = kv.Key.ToString()
                 }).ToArray()

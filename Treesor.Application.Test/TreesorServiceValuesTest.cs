@@ -72,19 +72,19 @@ namespace Treesor.Application.Test
 
             // ACT
 
-            var result = this.service.Descendants().ToArray();
+            var result = this.service.DescendantsOrSelf(2).ToArray();
 
             // ASSERT
 
-            Assert.AreEqual(4, result.Count());
+            Assert.AreEqual(3, result.Count());
             Assert.AreEqual(HierarchyPath.Create<string>(), result.ElementAt(0).Key);
             Assert.IsNull(result.ElementAt(0).Value);
             Assert.AreEqual(HierarchyPath.Create("a"), result.ElementAt(1).Key);
             Assert.AreEqual("test1", result.ElementAt(1).Value);
             Assert.AreEqual(HierarchyPath.Create("b"), result.ElementAt(2).Key);
             Assert.AreEqual("test3", result.ElementAt(2).Value);
-            Assert.AreEqual(HierarchyPath.Create("a", "b"), result.ElementAt(3).Key);
-            Assert.AreEqual("test2", result.ElementAt(3).Value);
+            //Assert.AreEqual(HierarchyPath.Create("a", "b"), result.ElementAt(3).Key);
+            //Assert.AreEqual("test2", result.ElementAt(3).Value);
         }
     }
 }

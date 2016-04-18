@@ -44,10 +44,10 @@ namespace Treesor.Application
                 log.Info().Message("Removing value at '{0}' failed", hierarchyPath).Write();
         }
 
-        public IEnumerable<KeyValuePair<HierarchyPath<string>, object>> Descendants()
+        public IEnumerable<KeyValuePair<HierarchyPath<string>, object>> DescendantsOrSelf(int maxDepth)
         {
             return this.hierarchy.Traverse()
-                .DescendantsOrSelf(depthFirst: false)
+                .DescendantsOrSelf(depthFirst: false, maxDepth: maxDepth)
                 .Select(n =>
                 {
                     if (n.HasValue)

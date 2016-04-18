@@ -28,11 +28,11 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            this.service.Setup(s => s.Descendants()).Returns(Enumerable.Empty<KeyValuePair<HierarchyPath<string>, object>>());
+            this.service.Setup(s => s.DescendantsOrSelf(2)).Returns(Enumerable.Empty<KeyValuePair<HierarchyPath<string>, object>>());
 
             // ACT
 
-            var result = this.controller.Get() as OkNegotiatedContentResult<object>;
+            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyNodeCollectionBody>;
 
             // ASSERT
 
@@ -54,7 +54,7 @@ namespace Treesor.Test
                 kv(HierarchyPath.Create("a","b"), "a/b")
             };
 
-            this.service.Setup(s => s.Descendants()).Returns(descandants);
+            this.service.Setup(s => s.DescendantsOrSelf(2)).Returns(descandants);
 
             // ACT
 
