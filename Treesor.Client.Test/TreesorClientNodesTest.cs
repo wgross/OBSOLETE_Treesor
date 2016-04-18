@@ -23,11 +23,11 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Get_child_nodes_of_root()
+        public void Get_descendants_nodes_of_root()
         {
             // ACT
 
-            // var result = this.remoteHierarchy.Children();
+            var result = this.remoteHierarchy.Descendants();
 
             // ASSERT
 

@@ -2,6 +2,7 @@
 using Elementary.Hierarchy.Collections;
 using Flurl;
 using Flurl.Http;
+using System;
 using Treesor.Service.Endpoints;
 
 namespace Treesor.Client
@@ -9,7 +10,7 @@ namespace Treesor.Client
     public class RemoteHierarchy : IHierarchy<string, object>
     {
         private string remoteHierarchyAddress;
-        
+
         public RemoteHierarchy(string remoteHierarchyAddress)
         {
             this.remoteHierarchyAddress = remoteHierarchyAddress;
@@ -26,6 +27,11 @@ namespace Treesor.Client
                         value = value
                     }).Wait();
             }
+        }
+
+        public object Descendants()
+        {
+            throw new NotImplementedException();
         }
 
         public void Add(HierarchyPath<string> hierarchyPath, object value)
@@ -53,6 +59,11 @@ namespace Treesor.Client
                 .GetJsonAsync<HierarchyValueBody>().Result;
             value = responseData.value;
             return true;
+        }
+
+        public IHierarchyNode<string, object> Traverse()
+        {
+            throw new NotImplementedException();
         }
     }
 }
