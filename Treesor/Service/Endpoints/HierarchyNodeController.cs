@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Elementary.Hierarchy;
+using System.Linq;
 using System.Web.Http;
 using Treesor.Application;
 
@@ -14,14 +15,30 @@ namespace Treesor.Service.Endpoints
         }
 
         [HttpGet, Route("api/node/children")]
-        public IHttpActionResult Get()
+        public IHttpActionResult GetChildren()
         {
             return Ok(new HierarchyNodeCollectionBody
             {
-                nodes = this.treesorService.DescendantsOrSelf(2).Select(kv => new HierarchyNodeBody
-                {
-                    path = kv.Key.ToString()
-                }).ToArray()
+                nodes = this.treesorService
+                    .DescendantsOrSelf(HierarchyPath.Create<string>(), 2)
+                    .Select(kv => new HierarchyNodeBody
+                    {
+                        path = kv.Key.ToString()
+                    }).ToArray()
+            });
+        }
+
+        [HttpGet, Route("api/node/{*path}/children")]
+        public IHttpActionResult GetChildren(string path)
+        {
+            return Ok(new HierarchyNodeCollectionBody
+            {
+                nodes = this.treesorService
+                    .DescendantsOrSelf(HierarchyPath.Parse(path, "/"), 2)
+                    .Select(kv => new HierarchyNodeBody
+                    {
+                        path = kv.Key.ToString()
+                    }).ToArray()
             });
         }
     }

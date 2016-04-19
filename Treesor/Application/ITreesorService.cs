@@ -11,6 +11,6 @@ namespace Treesor.Application
 
         void RemoveValue(HierarchyPath<string> hierarchyPath);
 
-        IEnumerable<KeyValuePair<HierarchyPath<string>, object>> DescendantsOrSelf(int maxDepth);
+        IEnumerable<KeyValuePair<HierarchyPath<string>, object>> DescendantsOrSelf(HierarchyPath path, int maxDepth);
     }
 }

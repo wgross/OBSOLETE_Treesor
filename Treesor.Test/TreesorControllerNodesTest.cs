@@ -28,11 +28,11 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            this.service.Setup(s => s.DescendantsOrSelf(2)).Returns(Enumerable.Empty<KeyValuePair<HierarchyPath<string>, object>>());
+            this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create<string>(), 2)).Returns(Enumerable.Empty<KeyValuePair<HierarchyPath<string>, object>>());
 
             // ACT
 
-            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyNodeCollectionBody>;
+            var result = this.controller.GetChildren() as OkNegotiatedContentResult<HierarchyNodeCollectionBody>;
 
             // ASSERT
 
@@ -40,7 +40,7 @@ namespace Treesor.Test
         }
 
         [Test]
-        public void Get_descandants_of_root_node()
+        public void Get_children_of_root_node()
         {
             // ARRANGE
 
@@ -54,18 +54,46 @@ namespace Treesor.Test
                 kv(HierarchyPath.Create("a","b"), "a/b")
             };
 
-            this.service.Setup(s => s.DescendantsOrSelf(2)).Returns(descandants);
+            this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create<string>(), 2)).Returns(descandants);
 
             // ACT
 
-            var result = (OkNegotiatedContentResult<HierarchyNodeCollectionBody>)this.controller.Get();
+            var result = (OkNegotiatedContentResult<HierarchyNodeCollectionBody>)this.controller.GetChildren();
 
             // ASSERT
 
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.Content.nodes.Length);
             CollectionAssert.AreEqual(new[] { string.Empty, "a", "b", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
+        }
 
+        [Test]
+        public void Get_children_of_inner_node()
+        {
+            // ARRANGE
+
+            Func<HierarchyPath<string>, string, KeyValuePair<HierarchyPath<string>, object>> kv = (k, v) => new KeyValuePair<HierarchyPath<string>, object>(k, v);
+
+            var descandants = new[]
+            {
+                kv(HierarchyPath.Create<string>(),"root"),
+                kv(HierarchyPath.Create("a"), "a"),
+                kv(HierarchyPath.Create("a","a"), "a/a"),
+                kv(HierarchyPath.Create("a","b"), "a/b"),
+                kv(HierarchyPath.Create("a","b","c"), "a/b/c")
+            };
+
+            this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create("a"), 2)).Returns(descandants);
+
+            // ACT
+
+            var result = (OkNegotiatedContentResult<HierarchyNodeCollectionBody>)this.controller.GetChildren("a");
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Content.nodes.Length);
+            CollectionAssert.AreEqual(new[] { "a", "a/b", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
         }
     }
 }

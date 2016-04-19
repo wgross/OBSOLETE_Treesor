@@ -72,7 +72,7 @@ namespace Treesor.Application.Test
 
             // ACT
 
-            var result = this.service.DescendantsOrSelf(2).ToArray();
+            var result = this.service.DescendantsOrSelf(HierarchyPath.Create<string>(), 2).ToArray();
 
             // ASSERT
 
