@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Treesor.IntegTest
+namespace Treesor.Client
 {
     public class Class1
     {

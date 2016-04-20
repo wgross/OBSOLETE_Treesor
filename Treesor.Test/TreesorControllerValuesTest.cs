@@ -10,20 +10,20 @@ namespace Treesor.Test
     [TestFixture]
     public class TreesorControllerValuesTest
     {
-        private HierarchyController controller;
+        private HierarchyValueController controller;
         private Mock<ITreesorService> service;
 
         [SetUp]
         public void ArrangeAllTests()
         {
             this.service = new Mock<ITreesorService>();
-            this.controller = new HierarchyController(this.service.Object);
+            this.controller = new HierarchyValueController(this.service.Object);
         }
 
         #region POST /api/{path}, POST /api
 
         [Test]
-        public void Write_value_to_hierachy_with_empty_path_fails()
+        public void Write_value_to_hierarchy_with_empty_path_fails()
         {
             // ARRANGE
 
@@ -31,7 +31,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Post("", new HierarchyNodeRequestBody { Value = value }) as ExceptionResult;
+            var result = this.controller.Post("", new HierarchyValueRequestBody { value = value }) as ExceptionResult;
 
             // ASSERT
 
@@ -50,13 +50,13 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Post(new HierarchyNodeRequestBody { Value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Post(new HierarchyValueRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("", result.Content.Path);
-            Assert.AreSame(value, result.Content.Value);
+            Assert.AreEqual("", result.Content.path);
+            Assert.AreSame(value, result.Content.value);
             Assert.AreEqual("", result.RouteValues["path"]);
 
             this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Once);
@@ -69,13 +69,13 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Post("a/b", new HierarchyNodeRequestBody { Value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Post("a/b", new HierarchyValueRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("a/b", result.Content.Path);
-            Assert.AreSame(value, result.Content.Value);
+            Assert.AreEqual("a/b", result.Content.path);
+            Assert.AreSame(value, result.Content.value);
             Assert.AreEqual("a/b", result.RouteValues["path"]);
 
             this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), value), Times.Once);
@@ -96,13 +96,13 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Get("a/b") as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Get("a/b") as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("a/b", result.Content.Path);
-            Assert.AreSame(value, result.Content.Value);
+            Assert.AreEqual("a/b", result.Content.path);
+            Assert.AreSame(value, result.Content.value);
 
             this.service.Verify(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value), Times.Once);
         }
@@ -152,13 +152,13 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(string.Empty, result.Content.Path);
-            Assert.AreSame(value, result.Content.Value);
+            Assert.AreEqual(string.Empty, result.Content.path);
+            Assert.AreSame(value, result.Content.value);
 
             this.service.VerifyAll();
         }
@@ -221,13 +221,13 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Put("a/b", new HierarchyNodeRequestBody { Value = value }) as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Put("a/b", new HierarchyValueRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreSame(value, result.Content.Value);
-            Assert.AreEqual("a/b", result.Content.Path);
+            Assert.AreSame(value, result.Content.value);
+            Assert.AreEqual("a/b", result.Content.path);
 
             this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), value), Times.Once);
         }
@@ -241,7 +241,7 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Put("", new HierarchyNodeRequestBody { Value = value }) as ExceptionResult;
+            var result = this.controller.Put("", new HierarchyValueRequestBody { value = value }) as ExceptionResult;
 
             // ASSERT
 
@@ -260,13 +260,13 @@ namespace Treesor.Test
 
             // ACT
 
-            var result = this.controller.Put(new HierarchyNodeRequestBody { Value = value }) as OkNegotiatedContentResult<HierarchyNodeBody>;
+            var result = this.controller.Put(new HierarchyValueRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyValueBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreSame(value, result.Content.Value);
-            Assert.AreEqual("", result.Content.Path);
+            Assert.AreSame(value, result.Content.value);
+            Assert.AreEqual("", result.Content.path);
 
             this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Once);
         }

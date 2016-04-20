@@ -1,16 +1,20 @@
-﻿using System;
+﻿using Elementary.Hierarchy;
+using Elementary.Hierarchy.Collections;
+using NLog;
+using NLog.Fluent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Elementary.Hierarchy;
-using Elementary.Hierarchy.Collections;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace Treesor.Application
 {
     public class TreesorService : ITreesorService
     {
-        public TreesorService(MutableHierarchy<string,object> hierarchy)
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
+        public TreesorService(MutableHierarchy<string, object> hierarchy)
         {
             this.hierarchy = hierarchy;
         }
@@ -19,7 +23,11 @@ namespace Treesor.Application
 
         public void SetValue(HierarchyPath<string> path, object value)
         {
+            log.Debug().Message("Setting value at '{0}' to '{1}'", path, value).Write();
+
             this.hierarchy.Add(path, value);
+
+            log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
@@ -29,7 +37,25 @@ namespace Treesor.Application
 
         public void RemoveValue(HierarchyPath<string> hierarchyPath)
         {
-            this.hierarchy.Remove(hierarchyPath);
+            log.Debug().Message("Removing value at path '{0}'", hierarchyPath).Write();
+
+            if (this.hierarchy.Remove(hierarchyPath))
+                log.Info().Message("Removed value at '{0}'", hierarchyPath).Write();
+            else
+                log.Info().Message("Removing value at '{0}' failed", hierarchyPath).Write();
+        }
+
+        public IEnumerable<KeyValuePair<HierarchyPath<string>, object>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth)
+        {
+            return this.hierarchy.Traverse(path)
+                .DescendantsOrSelf(depthFirst: false, maxDepth: maxDepth)
+                .Select(n =>
+                {
+                    if (n.HasValue)
+                        return new KeyValuePair<HierarchyPath<string>, object>(n.Path, n.Value);
+                    else
+                        return new KeyValuePair<HierarchyPath<string>, object>(n.Path, null);
+                });
         }
     }
 }

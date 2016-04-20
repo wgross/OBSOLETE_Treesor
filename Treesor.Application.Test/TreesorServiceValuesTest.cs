@@ -1,6 +1,7 @@
 ﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Treesor.Application.Test
 {
@@ -58,6 +59,52 @@ namespace Treesor.Application.Test
 
             object value;
             Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
+        }
+
+        [Test]
+        public void Retrieve_the_descandants_of_the_root_node_breadth_first()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), "test1");
+            this.service.SetValue(HierarchyPath.Create("a", "b"), "test2");
+            this.service.SetValue(HierarchyPath.Create("b"), "test3");
+
+            // ACT
+
+            var result = this.service.DescendantsOrSelf(HierarchyPath.Create<string>(), 2).ToArray();
+
+            // ASSERT
+
+            Assert.AreEqual(3, result.Count());
+            Assert.AreEqual(HierarchyPath.Create<string>(), result.ElementAt(0).Key);
+            Assert.IsNull(result.ElementAt(0).Value);
+            Assert.AreEqual(HierarchyPath.Create("a"), result.ElementAt(1).Key);
+            Assert.AreEqual("test1", result.ElementAt(1).Value);
+            Assert.AreEqual(HierarchyPath.Create("b"), result.ElementAt(2).Key);
+            Assert.AreEqual("test3", result.ElementAt(2).Value);
+            //Assert.AreEqual(HierarchyPath.Create("a", "b"), result.ElementAt(3).Key);
+            //Assert.AreEqual("test2", result.ElementAt(3).Value);
+        }
+
+        [Test]
+        public void Retrieve_the_descandants_of_inner_root_node_breadth_first()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), "test1");
+            this.service.SetValue(HierarchyPath.Create("a", "b"), "test2");
+            this.service.SetValue(HierarchyPath.Create("b"), "test3");
+
+            // ACT
+
+            var result = this.service.DescendantsOrSelf(HierarchyPath.Create("a"), 2).ToArray();
+
+            // ASSERT
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(HierarchyPath.Create("a"), result.ElementAt(1).Key);
+            Assert.AreEqual("test1", result.ElementAt(1).Value);
         }
     }
 }

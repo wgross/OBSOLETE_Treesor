@@ -1,12 +1,22 @@
 ﻿namespace Treesor.Service.Endpoints
 {
-    public class HierarchyNodeBody : HierarchyNodeRequestBody
+    public class HierarchyNodeCollectionBody
     {
-        public string Path { get; set; }
+        public HierarchyNodeBody[] nodes { get; set; }
     }
 
-    public class HierarchyNodeRequestBody
+    public class HierarchyNodeBody 
+    {
+        public string path { get; set; }
+    }
+
+    public class HierarchyValueBody : HierarchyValueRequestBody
+    {
+        public string path { get; set; }
+    }
+
+    public class HierarchyValueRequestBody
     { 
-        public object Value { get; set; }
+        public object value { get; set; }
     }
 }
