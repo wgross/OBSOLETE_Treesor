@@ -2,7 +2,6 @@
 using Elementary.Hierarchy.Collections;
 using Flurl;
 using Flurl.Http;
-using System;
 using Treesor.Service.Endpoints;
 
 namespace Treesor.Client
@@ -27,11 +26,6 @@ namespace Treesor.Client
                         value = value
                     }).Wait();
             }
-        }
-
-        public object Descendants()
-        {
-            throw new NotImplementedException();
         }
 
         public void Add(HierarchyPath<string> hierarchyPath, object value)
@@ -61,9 +55,30 @@ namespace Treesor.Client
             return true;
         }
 
+        #region Hierarchy traversal
+
         public IHierarchyNode<string, object> Traverse(HierarchyPath<string> path)
         {
-            throw new NotImplementedException();
+            var nodesCollection = this.remoteHierarchyAddress
+                .AppendPathSegment("nodes")
+                .AppendPathSegment(path.IsRoot ? "root" : path.ToString())
+                .AppendPathSegment("children")
+                .GetJsonAsync<HierarchyNodeCollectionBody>()
+                .Result;
+
+            var partialHierachySnapshot = new MutableHierarchy<string, object>();
+
+            foreach (var node in nodesCollection.nodes)
+            {
+                if (string.IsNullOrEmpty(node.path))
+                    partialHierachySnapshot.Add(HierarchyPath.Create<string>(),null);
+                else
+                    partialHierachySnapshot.Add(HierarchyPath.Parse(node.path,"/"), null);
+            }
+
+            return partialHierachySnapshot.Traverse(path);
         }
+
+        #endregion Hierarchy traversal
     }
 }

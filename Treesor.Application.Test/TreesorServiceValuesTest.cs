@@ -86,5 +86,25 @@ namespace Treesor.Application.Test
             //Assert.AreEqual(HierarchyPath.Create("a", "b"), result.ElementAt(3).Key);
             //Assert.AreEqual("test2", result.ElementAt(3).Value);
         }
+
+        [Test]
+        public void Retrieve_the_descandants_of_inner_root_node_breadth_first()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), "test1");
+            this.service.SetValue(HierarchyPath.Create("a", "b"), "test2");
+            this.service.SetValue(HierarchyPath.Create("b"), "test3");
+
+            // ACT
+
+            var result = this.service.DescendantsOrSelf(HierarchyPath.Create("a"), 2).ToArray();
+
+            // ASSERT
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(HierarchyPath.Create("a"), result.ElementAt(1).Key);
+            Assert.AreEqual("test1", result.ElementAt(1).Value);
+        }
     }
 }

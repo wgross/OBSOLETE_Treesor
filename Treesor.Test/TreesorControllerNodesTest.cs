@@ -76,11 +76,9 @@ namespace Treesor.Test
 
             var descandants = new[]
             {
-                kv(HierarchyPath.Create<string>(),"root"),
                 kv(HierarchyPath.Create("a"), "a"),
                 kv(HierarchyPath.Create("a","a"), "a/a"),
                 kv(HierarchyPath.Create("a","b"), "a/b"),
-                kv(HierarchyPath.Create("a","b","c"), "a/b/c")
             };
 
             this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create("a"), 2)).Returns(descandants);
@@ -92,8 +90,8 @@ namespace Treesor.Test
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Content.nodes.Length);
-            CollectionAssert.AreEqual(new[] { "a", "a/b", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
+            Assert.AreEqual(2, result.Content.nodes.Length);
+            CollectionAssert.AreEqual(new[] { "a/a", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
         }
     }
 }
