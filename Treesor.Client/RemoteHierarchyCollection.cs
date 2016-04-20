@@ -61,7 +61,7 @@ namespace Treesor.Client
             return true;
         }
 
-        public IHierarchyNode<string, object> Traverse()
+        public IHierarchyNode<string, object> Traverse(HierarchyPath<string> path)
         {
             throw new NotImplementedException();
         }
