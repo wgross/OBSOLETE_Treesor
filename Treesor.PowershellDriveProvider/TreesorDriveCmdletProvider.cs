@@ -103,14 +103,22 @@
             // Check to see if the path represents a valid drive.
             if (treesorNodePath.IsDrive)
             {
+                log.Debug()
+                    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(this.PSDriveInfo)},{nameof(path)}={treesorNodePath},isContainer={true})")
+                    .Write();
+                
                 this.WriteItemObject(this.PSDriveInfo, path, isContainer: true);
                 return;
             }
             else
             {
-                var treeItem = this.GetTreesorDriveInfo().GetItem(treesorNodePath);
+                var item = this.GetTreesorDriveInfo().GetItem(treesorNodePath);
 
-                this.WriteItemObject(treeItem, path, isContainer: true);
+                log.Debug()
+                    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item is TreesorContainerNode})")
+                    .Write();
+
+                this.WriteItemObject(item, path, isContainer: item is TreesorContainerNode);
             }
         }
 
@@ -162,9 +170,13 @@
         {
             log.Trace().Message($"{nameof(GetChildItems)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
 
-            foreach (var childITem in this.GetTreesorDriveInfo().GetChildItem(TreesorNodePath.Parse(path), recurse))
+            foreach (var childItem in this.GetTreesorDriveInfo().GetChildItem(TreesorNodePath.Parse(path), recurse))
             {
-                this.WriteItemObject(childITem, childITem.Name.ToString(), true);
+                log.Debug()
+                    .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem is TreesorContainerNode})")
+                    .Write();
+
+                this.WriteItemObject(childItem, childItem.Path.ToString(), childItem is TreesorContainerNode);
             }
         }
 
@@ -174,6 +186,10 @@
 
             foreach (var childName in this.GetTreesorDriveInfo().GetChildNames(TreesorNodePath.Parse(path), returnContainers))
             {
+                log.Debug()
+                    .Message($"{nameof(GetChildNames)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childName)}={childName},{nameof(path)}={path},isContainer={true})")
+                    .Write();
+
                 this.WriteItemObject(childName, path, true);
             }
         }
@@ -194,6 +210,10 @@
 
             bool? isContainer;
             var newItem = this.GetTreesorDriveInfo().NewItem(TreesorNodePath.Parse(path), itemTypeName, newItemValue, out isContainer);
+
+            log.Debug()
+                   .Message($"{nameof(NewItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(newItem)}.GetHashCode={newItem?.GetHashCode()},{nameof(path)}={path},isContainer={isContainer.GetValueOrDefault(false)})")
+                   .Write();
 
             this.WriteItemObject(newItem, path, isContainer.GetValueOrDefault(false));
         }

@@ -32,7 +32,8 @@ namespace Treesor.PowershellDriveProvider.Test
             this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create<string>()] = "value", Times.Once);
 
             Assert.IsNotNull(result);
-            Assert.IsNull(result.Name);
+            Assert.AreEqual(string.Empty, result.Name);
+            Assert.AreEqual(TreesorNodePath.RootPath, result.Path);
         }
 
         [Test]
@@ -48,6 +49,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.IsNotNull(result);
             Assert.AreEqual("a", result.Name);
+            Assert.AreEqual(TreesorNodePath.Create("a"), result.Path);
         }
 
         #region TryGetContainer
@@ -71,7 +73,8 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             Assert.IsTrue(result);
-            Assert.IsNull(resultNode.Name);
+            Assert.AreEqual(string.Empty, resultNode.Name);
+            Assert.AreEqual(TreesorNodePath.RootPath, resultNode.Path);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out remoteValue), Times.Once);
         }
@@ -96,6 +99,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.IsTrue(result);
             Assert.AreEqual("a", resultNode.Name);
+            Assert.AreEqual(TreesorNodePath.Create("a"), resultNode.Path);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
         }
@@ -122,7 +126,8 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.IsNull(result.Name);
+            Assert.AreEqual(string.Empty, result.Name);
+            Assert.AreEqual(TreesorNodePath.RootPath, result.Path);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out remoteValue), Times.Once);
         }
@@ -146,6 +151,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.IsNotNull(result);
             Assert.AreEqual("a", result.Name);
+            Assert.AreEqual(TreesorNodePath.Create("a"), result.Path);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
         }
@@ -172,7 +178,9 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.AreEqual(2, result.Length);
             Assert.AreEqual("a", result.ElementAt(0).Name);
+            Assert.AreEqual(TreesorNodePath.Create("a"), result.ElementAt(0).Path);
             Assert.AreEqual("b", result.ElementAt(1).Name);
+            Assert.AreEqual(TreesorNodePath.Create("b"), result.ElementAt(1).Path);
         }
 
         #endregion GetContainer
@@ -188,6 +196,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.IsNotNull(result);
             Assert.AreEqual("a", result.Name);
+            Assert.AreEqual(TreesorNodePath.Create("a"), result.Path);
             this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create("a")] = null);
         }
     }

@@ -4,6 +4,16 @@ namespace Treesor.PowershellDriveProvider
 {
     public class TreesorContainerNode : TreesorNode
     {
+        public TreesorContainerNode()
+            :this(TreesorNodePath.RootPath)
+        {
+
+        }
+
+        public TreesorContainerNode(TreesorNodePath path) : base(path)
+        {
+        }
+
         internal void ClearPropertyValue(TreesorNodeProperty propertyDefinition)
         {  
             throw new NotImplementedException();

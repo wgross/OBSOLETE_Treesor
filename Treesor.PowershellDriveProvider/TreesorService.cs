@@ -43,10 +43,7 @@ namespace Treesor.PowershellDriveProvider
 
             this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
 
-            containerNode = new TreesorContainerNode
-            {
-                Name = path.HierarchyPath.Items.LastOrDefault()
-            };
+            containerNode = new TreesorContainerNode(path);
 
             return true;
         }
@@ -57,10 +54,7 @@ namespace Treesor.PowershellDriveProvider
 
             this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
             {
-                return new TreesorContainerNode
-                {
-                    Name = path.HierarchyPath.Items.LastOrDefault()
-                };
+                return new TreesorContainerNode(path);
             }
         }
 
@@ -81,30 +75,22 @@ namespace Treesor.PowershellDriveProvider
             return this.remoteHierarchy
                 .Traverse(treesorNodePath.HierarchyPath)
                 .Children()
-                .Select(n => new TreesorContainerNode
-                {
-                    Name = n.Path.Leaf().ToString()
-                });
+                .Select(n => new TreesorContainerNode(TreesorNodePath.Create(n.Path)));
         }
 
         public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath, object value = null)
         {
             this.remoteHierarchy[treesorNodePath.HierarchyPath] = value;
 
-            return new TreesorContainerNode
-            {
-                Name = treesorNodePath.HierarchyPath.Items.LastOrDefault()
-            };
+            return new TreesorContainerNode(treesorNodePath);
+            
         }
 
         public virtual TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
         {
             this.remoteHierarchy[treesorNodePath.HierarchyPath] = newItemValue;
 
-            return new TreesorContainerNode
-            {
-                Name = treesorNodePath.HierarchyPath.Items.LastOrDefault()
-            };
+            return new TreesorContainerNode(treesorNodePath);
         }
 
         public virtual void RemoveValue(TreesorNodePath treesorNodePath)

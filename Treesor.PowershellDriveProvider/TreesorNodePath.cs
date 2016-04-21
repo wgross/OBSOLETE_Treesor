@@ -24,11 +24,10 @@
             return true; // currently no error cases are implemented
         }
 
-        // introdices ambiguity
-        //public static TreesorNodePath Create(HierarchyPath<string> treeKey)
-        //{
-        //    return new TreesorNodePath(treeKey);
-        //}
+                public static TreesorNodePath Create(HierarchyPath<string> treeKey)
+        {
+            return new TreesorNodePath(treeKey);
+        }
 
         public static TreesorNodePath Create(params string[] pathItems)
         {
@@ -82,6 +81,10 @@
             return this.HierarchyPath.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return this.HierarchyPath.ToString();
+        }
         #endregion Override object behaviour
     }
 }

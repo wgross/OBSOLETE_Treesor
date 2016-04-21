@@ -47,10 +47,7 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                var childContainer = new TreesorContainerNode
-                {
-                    Name = "child"
-                };
+                var childContainer = new TreesorContainerNode(TreesorNodePath.Create("child"));
 
                 this.treesorService.Setup(s => s.CreateContainer(TreesorNodePath.Create("child"), null)).Returns(childContainer);
 
@@ -76,10 +73,7 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                var childContainer = new TreesorContainerNode
-                {
-                    Name = "child"
-                };
+                var childContainer = new TreesorContainerNode(TreesorNodePath.Create("child"));
 
                 this.treesorService.Setup(s => s.CreateContainer(TreesorNodePath.Create("child"), "value")).Returns(childContainer);
 
@@ -120,8 +114,8 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Setup(s => s.GetContainerChildren(TreesorNodePath.Create()))
                     .Returns(new[]
                     {
-                        new TreesorContainerNode { Name="a" },
-                        new TreesorContainerNode { Name="b" },
+                        new TreesorContainerNode(TreesorNodePath.Create("a")),
+                        new TreesorContainerNode(TreesorNodePath.Create("b")),
                     });
 
                 // ACT
@@ -159,8 +153,8 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Setup(s => s.GetContainerDescendants(TreesorNodePath.Create()))
                     .Returns(new[]
                     {
-                        new TreesorContainerNode { Name="a" },
-                        new TreesorContainerNode { Name="b" },
+                        new TreesorContainerNode(TreesorNodePath.Create("a")),
+                        new TreesorContainerNode(TreesorNodePath.Create("b")),
                     });
 
                 // ACT

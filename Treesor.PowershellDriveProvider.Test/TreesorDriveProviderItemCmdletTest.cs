@@ -88,10 +88,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var rootContainer = new TreesorContainerNode
-            {
-                Name = ""
-            };
+            var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
 
             this.treesorService.Setup(s => s.SetValue(TreesorNodePath.Create(), "value")).Returns(rootContainer);
 
@@ -117,10 +114,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var rootContainer = new TreesorContainerNode
-            {
-                Name = ""
-            };
+            var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
 
             this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
             this.treesorService.Setup(s => s.RemoveValue(TreesorNodePath.Create()));
@@ -147,11 +141,8 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var rootContainer = new TreesorContainerNode
-            {
-                Name = ""
-            };
-
+            var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
+            
             this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
 
             // ACT
