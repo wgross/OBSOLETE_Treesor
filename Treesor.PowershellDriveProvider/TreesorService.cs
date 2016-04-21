@@ -1,4 +1,5 @@
-﻿using Elementary.Hierarchy.Collections;
+﻿using Elementary.Hierarchy;
+using Elementary.Hierarchy.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,9 +69,15 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath treesorNodePath)
+        public virtual IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            return this.remoteHierarchy
+                .Traverse(treesorNodePath.HierarchyPath)
+                .Children()
+                .Select(n => new TreesorContainerNode
+                {
+                    Name = n.Path.Leaf().ToString()
+                });
         }
 
         public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath, object value = null)

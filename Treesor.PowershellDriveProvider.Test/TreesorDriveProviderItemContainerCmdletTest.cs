@@ -50,7 +50,7 @@ namespace Treesor.PowershellDriveProvider.Test
             }
 
             [Test]
-            public void Powershell_new_item_at_root_creates_new_node_without_value()
+            public void Powershell_NewItem_root_creates_new_node_without_value()
             {
                 // ARRANGE
 
@@ -79,7 +79,7 @@ namespace Treesor.PowershellDriveProvider.Test
             }
 
             [Test]
-            public void Powershell_new_item_at_root_creates_new_node_with_value()
+            public void Powershell_NewItem_root_creates_new_node_with_value()
             {
                 // ARRANGE
 
@@ -110,17 +110,23 @@ namespace Treesor.PowershellDriveProvider.Test
             }
 
             [Test]
-            public void Powershell_get_childItem_at_root_node_returs_child_node()
+            public void Powershell_GetChildItem_at_root_node_returs_child_node()
             {
                 // ARRANGE
 
-                //this.remoteHierachy
-                //    .Setup(h => h.TryGetValue)
+                this.treesorService
+                    .Setup(s => s.GetContainerChildren(TreesorNodePath.Create()))
+                    .Returns(new[]
+                    {
+                        new TreesorContainerNode { Name="a" },
+                        new TreesorContainerNode { Name="b" },
+                    });
 
                 // ACT
 
                 var result = this.powershell.AddStatement()
                     .AddCommand("Get-ChildItem")
+                    .AddParameter("Path","treesor:/")
                     .Invoke();
 
                 // ASSERT

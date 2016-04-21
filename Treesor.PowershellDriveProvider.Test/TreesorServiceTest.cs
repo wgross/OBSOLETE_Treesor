@@ -3,6 +3,7 @@ using Elementary.Hierarchy.Collections;
 using Flurl.Http.Testing;
 using Moq;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Treesor.PowershellDriveProvider.Test
 {
@@ -101,7 +102,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
         #endregion TryGetContainer
 
-        #region GetContainer
+        #region GetContainer/GetContainerChildren
 
         [Test]
         public void Get_value_from_hierarchy_root()
@@ -147,6 +148,31 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.AreEqual("a", result.Name);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
+        }
+
+        [Test]
+        public void Get_children_of_root_container()
+        {
+            // ARRANGE
+
+            var fakeHierarchy = new MutableHierarchy<string, object>();
+            fakeHierarchy.Add(HierarchyPath.Create("a"), "v1");
+            fakeHierarchy.Add(HierarchyPath.Create("b"), "v2");
+            fakeHierarchy.Add(HierarchyPath.Create("a","b"), "v2");
+            
+            this.remoteHierarchy
+                .Setup(h => h.Traverse(HierarchyPath.Create<string>()))
+                .Returns(fakeHierarchy.Traverse(HierarchyPath.Create<string>()));
+            
+            // ACT
+
+            var result = this.treesorService.GetContainerChildren(TreesorNodePath.Create()).ToArray();
+
+            // ASSERT
+
+            Assert.AreEqual(2, result.Length);
+            Assert.AreEqual("a", result.ElementAt(0).Name);
+            Assert.AreEqual("b", result.ElementAt(1).Name);
         }
 
         #endregion GetContainer
