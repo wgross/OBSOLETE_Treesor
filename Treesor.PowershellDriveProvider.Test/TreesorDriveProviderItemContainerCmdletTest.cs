@@ -20,13 +20,6 @@ namespace Treesor.PowershellDriveProvider.Test
             private Mock<TreesorService> treesorService;
             private Mock<IHierarchy<string, object>> remoteHierachy;
 
-            [OneTimeSetUp]
-            public void SetUpFixture()
-            {
-                LogManager.Configuration = new XmlLoggingConfiguration(
-                  Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "NLog.Config"));
-            }
-
             [SetUp]
             public void ArrangeAllTests()
             {
@@ -73,7 +66,7 @@ namespace Treesor.PowershellDriveProvider.Test
                 Assert.AreEqual(1, result.Count);
                 Assert.IsInstanceOf<TreesorContainerNode>(result.Single().BaseObject);
                 Assert.AreEqual("child", ((TreesorContainerNode)(result.Single().BaseObject)).Name);
-                
+
                 this.treesorService.Verify(s => s.CreateContainer(TreesorNodePath.Create("child"), null), Times.Once);
                 this.treesorService.VerifyAll();
             }
@@ -110,9 +103,18 @@ namespace Treesor.PowershellDriveProvider.Test
             }
 
             [Test]
-            public void Powershell_GetChildItem_at_root_node_returs_child_node()
+            public void Powershell_GetChildItem_at_root_node_returns_Children()
             {
                 // ARRANGE
+
+                TreesorContainerNode rootContainer = new TreesorContainerNode();
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.GetContainer(TreesorNodePath.Create()))
+                    .Returns(rootContainer);
 
                 this.treesorService
                     .Setup(s => s.GetContainerChildren(TreesorNodePath.Create()))
@@ -126,12 +128,57 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 var result = this.powershell.AddStatement()
                     .AddCommand("Get-ChildItem")
-                    .AddParameter("Path","treesor:/")
+                    .AddParameter("Path", "treesor:/")
+                    .Invoke();
+
+                // ASSERT
+
+                this.treesorService.VerifyAll();
+                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Once);
+                this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create()), Times.Once);
+
+                Assert.AreEqual(2, result.Count);                
+            }
+
+            [Test]
+            public void Powershell_GetChildItem_Recurse_at_root_node_returns_Descandants()
+            {
+                // ARRANGE
+                
+                TreesorContainerNode rootContainer = new TreesorContainerNode();
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.GetContainer(TreesorNodePath.Create()))
+                    .Returns(rootContainer);
+
+                this.treesorService
+                    .Setup(s => s.GetContainerDescendants(TreesorNodePath.Create()))
+                    .Returns(new[]
+                    {
+                        new TreesorContainerNode { Name="a" },
+                        new TreesorContainerNode { Name="b" },
+                    });
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Get-ChildItem")
+                    .AddParameter("Path", "treesor:/")
+                    .AddParameter("Recurse")
                     .Invoke();
 
                 // ASSERT
 
                 Assert.AreEqual(2, result.Count);
+
+                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Once);
+                this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create()), Times.Once);
+                this.treesorService.VerifyAll();
             }
         }
     }

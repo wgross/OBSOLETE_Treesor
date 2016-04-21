@@ -18,13 +18,6 @@ namespace Treesor.PowershellDriveProvider.Test
         private Mock<TreesorService> treesorService;
         private Mock<IHierarchy<string, object>> remoteHierachy;
 
-        [OneTimeSetUp]
-        public void SetUpFixture()
-        {
-            LogManager.Configuration = new XmlLoggingConfiguration(
-              Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "NLog.Config"));
-        }
-
         [SetUp]
         public void ArrangeAllTests()
         {

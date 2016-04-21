@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Treesor.PowershellDriveProvider
+﻿namespace Treesor.PowershellDriveProvider
 {
     using Elementary.Hierarchy;
     using NLog;
@@ -84,21 +82,21 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void ClearItem(string path)
         {
-            log.Trace().Property(nameof(path),path).Write();
+            log.Trace().Message($"{nameof(ClearItem)}({nameof(path)}={path})").Write();
 
             this.GetTreesorDriveInfo().ClearItem(TreesorNodePath.Parse(path));
         }
 
         protected override string[] ExpandPath(string path)
         {
-            log.Debug().Message("Processing ExpandPath({0})", path ?? "null").Write();
+            log.Trace().Message($"{nameof(ExpandPath)}({nameof(path)}={path})").Write();
 
             throw new NotImplementedException("ExpandPath");
         }
 
         protected override void GetItem(string path)
         {
-            log.Debug().Message("Processing GetItem({0})", path ?? "null").Write();
+            log.Trace().Message($"{nameof(GetItem)}({nameof(path)}={path})").Write();
 
             var treesorNodePath = TreesorNodePath.Parse(path);
 
@@ -118,7 +116,7 @@ namespace Treesor.PowershellDriveProvider
 
         protected override bool IsValidPath(string path)
         {
-            log.Debug("Processing IsValidPath({0})", path ?? "null");
+            log.Trace().Message($"{nameof(IsValidPath)}({nameof(path)}={path})").Write();
 
             TreesorNodePath parsedPath;
             return TreesorNodePath.TryParse(path, out parsedPath);
@@ -126,7 +124,7 @@ namespace Treesor.PowershellDriveProvider
 
         protected override bool ItemExists(string path)
         {
-            log.Trace().Property(nameof(path), path).Write();
+            log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}={path})").Write();
 
             // is called by Test-Path
             return this.GetTreesorDriveInfo().ItemExists(TreesorNodePath.Parse(path));
@@ -134,19 +132,18 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void SetItem(string path, object value)
         {
-            log.Trace().Property(nameof(path), path).Property(nameof(value.GetHashCode), value?.GetHashCode()).Write();
+            log.Trace().Message($"{nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
 
             this.GetTreesorDriveInfo().SetItem(TreesorNodePath.Parse(path), value);
         }
 
-        
         #endregion Override ItemCmdletProvider methods
 
         #region Override ContainerCmdletProvider methods
 
         protected override bool ConvertPath(string path, string filter, ref string updatedPath, ref string updatedFilter)
         {
-            log.Debug().Message("Processing ConvertPath({0}, {1},..)", path ?? "null", filter ?? "null").Write();
+            log.Trace().Message($"{nameof(ConvertPath)}({nameof(path)}={path},{nameof(filter)}={filter})").Write();
 
             updatedPath = path; // TreesorNodePath.Parse(path).ToString();
             updatedFilter = filter;
@@ -156,14 +153,14 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void CopyItem(string path, string copyPath, bool recurse)
         {
-            log.Debug().Message("Processing CopyItem({0}, {1}, {2})", path ?? "null", copyPath ?? "null", recurse).Write();
+            log.Trace().Message($"{nameof(CopyItem)}({nameof(path)}={path},{nameof(copyPath)}={copyPath},{nameof(recurse)}={recurse})").Write();
 
             this.GetTreesorDriveInfo().CopyItem(sourcePath: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(copyPath), recurse: recurse);
         }
 
         protected override void GetChildItems(string path, bool recurse)
         {
-            log.Debug().Message("Processing GetChildItems({0}, {1})", path ?? "Null", recurse).Write();
+            log.Trace().Message($"{nameof(GetChildItems)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
 
             foreach (var childITem in this.GetTreesorDriveInfo().GetChildItem(TreesorNodePath.Parse(path), recurse))
             {
@@ -173,7 +170,7 @@ namespace Treesor.PowershellDriveProvider
 
         protected override void GetChildNames(string path, ReturnContainers returnContainers)
         {
-            log.Debug().Message("Processing GetChildNames({0})", path ?? "null").Write();
+            log.Trace().Message($"{nameof(GetChildNames)}({nameof(path)}={path},{nameof(returnContainers)}={returnContainers})").Write();
 
             foreach (var childName in this.GetTreesorDriveInfo().GetChildNames(TreesorNodePath.Parse(path), returnContainers))
             {
@@ -183,7 +180,7 @@ namespace Treesor.PowershellDriveProvider
 
         protected override bool HasChildItems(string path)
         {
-            log.Debug("Processing HasChildItems({0})", path ?? "null");
+            log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)})").Write();
 
             // Verifies if their are children under the specified node
             return this.GetTreesorDriveInfo().HasChildItems(TreesorNodePath.Parse(path));
@@ -192,9 +189,7 @@ namespace Treesor.PowershellDriveProvider
         protected override void NewItem(string path, string itemTypeName, object newItemValue)
         {
             log.Trace()
-                .Property(nameof(path), path)
-                .Property(nameof(itemTypeName), itemTypeName)
-                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
+                .Message($"{nameof(path)}={path},{nameof(itemTypeName)}={itemTypeName},{nameof(newItemValue)}={newItemValue})")
                 .Write();
 
             bool? isContainer;
@@ -235,21 +230,22 @@ namespace Treesor.PowershellDriveProvider
 
         protected override string GetChildName(string path)
         {
-            log.Debug("Processing GetChildName({0})", path ?? "null");
+            log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}={path})").Write();
 
             return TreesorNodePath.Parse(path).HierarchyPath.Leaf().ToString();
         }
 
         protected override string MakePath(string parent, string child)
         {
-            log.Debug("Processing MakePath({0}, {1})", parent ?? "null", child ?? "null");
+            log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}={parent},{nameof(child)}={child})").Write();
 
             return TreesorNodePath.Create(TreesorNodePath.Parse(parent).HierarchyPath.Join(TreesorNodePath.Parse(child).HierarchyPath).Items.ToArray()).HierarchyPath.ToString();
         }
 
         protected override string GetParentPath(string path, string root)
         {
-            log.Debug("Processing GetParentPath({0}, {1})", path ?? "null", root ?? "null");
+            log.Trace().Message($"{nameof(GetParentPath)}({nameof(path)}={path},{nameof(root)}={root})").Write();
+
             var parsedPath = TreesorNodePath.Parse(path).HierarchyPath;
             if (parsedPath.HasParentNode)
                 return parsedPath.Parent().ToString();
@@ -259,6 +255,8 @@ namespace Treesor.PowershellDriveProvider
 
         protected override bool IsItemContainer(string path)
         {
+            log.Trace().Message($"{nameof(IsItemContainer)}({nameof(path)}={path})").Write();
+
             return (this.GetTreesorDriveInfo().GetItem(TreesorNodePath.Parse(path)) != null);
         }
 

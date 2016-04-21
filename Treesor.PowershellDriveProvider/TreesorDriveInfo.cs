@@ -58,30 +58,22 @@
 
         internal bool ItemExists(TreesorNodePath path)
         {
-            log.Trace().Property(nameof(path), path).Write();
-
             TreesorContainerNode jObjectAtPath;
             return this.treesorService.TryGetContainer(path, out jObjectAtPath);
         }
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
-            log.Trace().Property(nameof(path), path).Write();
-
             return this.treesorService.GetContainer(path);
         }
 
         internal void SetItem(TreesorNodePath path, object value)
         {
-            log.Trace().Property(nameof(path), path).Property(nameof(value.GetHashCode), value?.GetHashCode()).Write();
-
             this.treesorService.SetValue(path, value);
         }
         
         internal void ClearItem(TreesorNodePath path)
-        {
-            log.Trace().Property(nameof(path), path).Write();
-
+        { 
             this.treesorService.RemoveValue(path);
         }
 
@@ -92,19 +84,19 @@
         internal IEnumerable<TreesorNode> GetChildItem(TreesorNodePath treesorNodePath, bool recursive)
         {
             if (recursive)
+            {
+                log.Debug().Message($"Calling {nameof(this.treesorService.GetContainerDescendants)} with path {treesorNodePath}").Write();
                 return this.treesorService.GetContainerDescendants(treesorNodePath);
+            }
             else
+            {
+                log.Debug().Message($"Calling {nameof(this.treesorService.GetContainerChildren)} with path {treesorNodePath}").Write();
                 return this.treesorService.GetContainerChildren(treesorNodePath);
+            }
         }
         
         internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
-            log.Trace()
-                .Property(nameof(path), path)
-                .Property(nameof(itemTypeName), itemTypeName)
-                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
-                .Write();
-
             isContainer = true;
             return this.treesorService.CreateContainer(path, newItemValue);
 
@@ -133,12 +125,6 @@
 
         internal object NewItemDynamicParameters(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
         {
-            log.Trace()
-                .Property(nameof(treesorNodePath), treesorNodePath)
-                .Property(nameof(itemTypeName), itemTypeName)
-                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
-                .Write();
-
             if ("odata".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
                 return TreesorNewODataDynamicParameters.Get(treesorNodePath, itemTypeName);
             return null;

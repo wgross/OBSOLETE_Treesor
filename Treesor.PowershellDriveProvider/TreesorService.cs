@@ -64,9 +64,16 @@ namespace Treesor.PowershellDriveProvider
             }
         }
 
-        public IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath treesorNodePath)
+        public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath treesorNodePath)
         {
             throw new NotImplementedException();
+            //return this.remoteHierarchy
+            //    .Traverse(treesorNodePath.HierarchyPath)
+            //    .Descendants()
+            //    .Select(n => new TreesorContainerNode
+            //    {
+            //        Name = n.Path.Leaf().ToString()
+            //    });
         }
 
         public virtual IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath treesorNodePath)

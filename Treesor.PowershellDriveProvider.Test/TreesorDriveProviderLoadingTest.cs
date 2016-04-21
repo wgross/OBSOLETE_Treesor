@@ -33,14 +33,6 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.That(result.Count > 0);
         }
 
-        //[Test]
-        //public void Powershell_throws_on_wrong_command()
-        //{
-        //    // ACT
-
-        //    Assert.Throws<CommandNotFoundException>(() => this.powershell.AddStatement().AddCommand("Get-Zumsel").Invoke());
-        //}
-
         [Test]
         public void Powershell_loads_Treesor_DriveProvider_automatically()
         {
