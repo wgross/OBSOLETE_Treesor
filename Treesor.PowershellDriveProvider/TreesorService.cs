@@ -53,9 +53,8 @@ namespace Treesor.PowershellDriveProvider
             object remoteValue;
 
             this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
-            {
-                return new TreesorContainerNode(path);
-            }
+
+            return new TreesorContainerNode(path);
         }
 
         public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath treesorNodePath)

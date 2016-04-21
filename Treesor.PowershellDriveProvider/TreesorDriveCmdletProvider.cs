@@ -104,11 +104,10 @@
             if (treesorNodePath.IsDrive)
             {
                 log.Debug()
-                    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(this.PSDriveInfo)},{nameof(path)}={treesorNodePath},isContainer={true})")
+                    .Message($"{nameof(GetItem)}:Sending drive to pipe:{nameof(this.WriteItemObject)}({nameof(this.PSDriveInfo)},{nameof(path)}={treesorNodePath},isContainer={true})")
                     .Write();
                 
                 this.WriteItemObject(this.PSDriveInfo, path, isContainer: true);
-                return;
             }
             else
             {
@@ -252,7 +251,11 @@
         {
             log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}={path})").Write();
 
-            return TreesorNodePath.Parse(path).HierarchyPath.Leaf().ToString();
+            var childName = TreesorNodePath.Parse(path).HierarchyPath.Leaf().ToString();
+
+            log.Debug().Message($"{nameof(GetChildName)}({nameof(path)}={path}) returns {childName}").Write();
+
+            return childName;
         }
 
         protected override string MakePath(string parent, string child)

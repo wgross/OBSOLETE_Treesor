@@ -64,6 +64,8 @@
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
+            log.Trace().Message($"{nameof(GetItem)}({nameof(path)}={path})").Write();
+
             return this.treesorService.GetContainer(path);
         }
 

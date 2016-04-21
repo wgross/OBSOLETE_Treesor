@@ -155,6 +155,7 @@ namespace Treesor.PowershellDriveProvider.Test
                     {
                         new TreesorContainerNode(TreesorNodePath.Create("a")),
                         new TreesorContainerNode(TreesorNodePath.Create("b")),
+                        new TreesorContainerNode(TreesorNodePath.Create("a","b")),
                     });
 
                 // ACT
@@ -167,10 +168,10 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 // ASSERT
 
-                Assert.AreEqual(2, result.Count);
+                Assert.AreEqual(3, result.Count);
 
                 this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
-                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Once);
+                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Exactly(2)); // from IsItemContainer
                 this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.VerifyAll();
             }
