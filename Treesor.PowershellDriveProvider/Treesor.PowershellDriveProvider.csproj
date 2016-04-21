@@ -83,9 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Treesor\Service\Endpoints\HierarchyControllerDto.cs">
-      <Link>Dto\HierarchyControllerDto.cs</Link>
-    </Compile>
     <Compile Include="TreesorDriveCmdletProvider.cs" />
     <Compile Include="TreesorDriveInfo.cs" />
     <Compile Include="ODataRepository.cs" />
