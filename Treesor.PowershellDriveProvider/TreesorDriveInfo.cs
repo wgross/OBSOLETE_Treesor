@@ -161,7 +161,11 @@
 
         internal void RemoveItem(TreesorNodePath path, bool recurse)
         {
+            log.Debug().Message($"Deleting {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
+
             this.treesorService.RemoveContainer(path);
+
+            log.Info().Message($"Deleted {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
         }
 
         internal bool HasChildItems(TreesorNodePath path)

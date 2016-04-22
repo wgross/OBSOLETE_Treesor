@@ -222,5 +222,25 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.AreEqual(TreesorNodePath.Create("a"), result.Path);
             this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create("a")] = null);
         }
+
+        [Test]
+        public void RemoveContainer_non_recursive()
+        {
+            // ARRANGE
+
+            this.remoteHierarchy
+                .Setup(h => h.Remove(HierarchyPath.Create("a")))
+                .Returns(true);
+
+            // ACT
+
+            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"));
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+
+            this.remoteHierarchy.Verify(h => h.Remove(HierarchyPath.Create("a")), Times.Once);
+        }
     }
 }

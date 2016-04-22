@@ -111,9 +111,9 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public virtual void RemoveContainer(TreesorNodePath path)
+        public virtual bool RemoveContainer(TreesorNodePath path)
         {
-            throw new NotImplementedException();
+            return this.remoteHierarchy.Remove(path.HierarchyPath);
         }
 
         public TreesorContainerNode RenameContainer(TreesorNodePath path, string newName)

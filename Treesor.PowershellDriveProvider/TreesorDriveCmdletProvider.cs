@@ -225,7 +225,7 @@
 
         protected override void RemoveItem(string path, bool recurse)
         {
-            log.Debug("Processing RemoveItem({0}, {1})", path ?? "null", recurse);
+            log.Trace().Message($"{nameof(RemoveItem)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
 
             this.GetTreesorDriveInfo().RemoveItem(TreesorNodePath.Parse(path), recurse);
         }
