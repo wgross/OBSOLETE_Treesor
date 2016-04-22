@@ -152,4 +152,4 @@ namespace Treesor.Client.Test
             Assert.AreEqual(HierarchyPath.Create("a", "a", "b"), result[1].Path);
         }
     }
-}
+}   
