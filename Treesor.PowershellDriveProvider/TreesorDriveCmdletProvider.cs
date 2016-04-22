@@ -106,7 +106,7 @@
                 log.Debug()
                     .Message($"{nameof(GetItem)}:Sending drive to pipe:{nameof(this.WriteItemObject)}({nameof(this.PSDriveInfo)},{nameof(path)}={treesorNodePath},isContainer={true})")
                     .Write();
-                
+
                 this.WriteItemObject(this.PSDriveInfo, path, isContainer: true);
             }
             else
@@ -168,7 +168,7 @@
 
             foreach (var childItem in this.GetTreesorDriveInfo().GetChildItem(TreesorNodePath.Parse(path), recurse))
             {
-                log.Debug()
+                log.Trace()
                     .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem is TreesorContainerNode})")
                     .Write();
 
@@ -182,7 +182,7 @@
 
             foreach (var childName in this.GetTreesorDriveInfo().GetChildNames(TreesorNodePath.Parse(path), returnContainers))
             {
-                log.Debug()
+                log.Trace()
                     .Message($"{nameof(GetChildNames)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childName)}={childName},{nameof(path)}={path},isContainer={true})")
                     .Write();
 
@@ -195,20 +195,24 @@
             log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)})").Write();
 
             // Verifies if their are children under the specified node
-            return this.GetTreesorDriveInfo().HasChildItems(TreesorNodePath.Parse(path));
+            var hasChildItems = this.GetTreesorDriveInfo().HasChildItems(TreesorNodePath.Parse(path));
+
+            log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)})->{hasChildItems}").Write();
+
+            return hasChildItems;
         }
 
         protected override void NewItem(string path, string itemTypeName, object newItemValue)
         {
             log.Trace()
-                .Message($"{nameof(path)}={path},{nameof(itemTypeName)}={itemTypeName},{nameof(newItemValue)}={newItemValue})")
+                .Message($"{nameof(NewItem)}({nameof(path)}='{path}',{nameof(itemTypeName)}='{itemTypeName}',{nameof(newItemValue)}='{newItemValue}')")
                 .Write();
 
             bool? isContainer;
             var newItem = this.GetTreesorDriveInfo().NewItem(TreesorNodePath.Parse(path), itemTypeName, newItemValue, out isContainer);
 
-            log.Debug()
-                   .Message($"{nameof(NewItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(newItem)}.GetHashCode={newItem?.GetHashCode()},{nameof(path)}={path},isContainer={isContainer.GetValueOrDefault(false)})")
+            log.Trace()
+                   .Message($"{nameof(NewItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(newItem)}.GetHashCode='{newItem?.GetHashCode()}',{nameof(path)}='{path}',isContainer='{isContainer.GetValueOrDefault(false)}'")
                    .Write();
 
             this.WriteItemObject(newItem, path, isContainer.GetValueOrDefault(false));
@@ -246,11 +250,11 @@
 
         protected override string GetChildName(string path)
         {
-            log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}={path})").Write();
+            log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')").Write();
 
             var childName = TreesorNodePath.Parse(path).HierarchyPath.Leaf().ToString();
 
-            log.Debug().Message($"{nameof(GetChildName)}({nameof(path)}={path}) returns {childName}").Write();
+            log.Debug().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')->'{childName}'").Write();
 
             return childName;
         }
@@ -268,13 +272,17 @@
 
         protected override string GetParentPath(string path, string root)
         {
-            log.Trace().Message($"{nameof(GetParentPath)}({nameof(path)}={path},{nameof(root)}={root})").Write();
+            log.Trace().Message($"{nameof(GetParentPath)}({nameof(path)}='{path}',{nameof(root)}='{root}')").Write();
 
             var parsedPath = TreesorNodePath.Parse(path).HierarchyPath;
+            string result;
             if (parsedPath.HasParentNode)
-                return parsedPath.Parent().ToString();
-            else return root;
-            //return TreesorNodePath.Parse(path).NodePath.Parent().ToString();
+                result = parsedPath.Parent().ToString();
+            else
+                result = root;
+
+            log.Debug().Message($"{nameof(GetParentPath)}({nameof(path)}='{path}',{nameof(root)}='{root}')->'{result}'").Write();
+            return result;
         }
 
         protected override bool IsItemContainer(string path)

@@ -58,30 +58,46 @@
 
         internal bool ItemExists(TreesorNodePath path)
         {
-            log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}='{path}')").Write();
+            log.Debug().Message($"Trying to get container '{path}')").Write();
 
-            TreesorContainerNode jObjectAtPath;
-            bool result = this.treesorService.TryGetContainer(path, out jObjectAtPath);
+            TreesorContainerNode containerNode;
+            if (this.treesorService.TryGetContainer(path, out containerNode))
+            {
+                log.Info().Message($"Got {nameof(TreesorContainerNode)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
+                return true;
+            }
 
-            log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}='{path}')->'{result}'").Write();
-            return result;
+            log.Info().Message($"{nameof(TreesorContainerNode)} at '{path}' wasn't found").Write();
+            return false;
         }
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
-            log.Trace().Message($"{nameof(GetItem)}({nameof(path)}='{path}')").Write();
+            log.Debug().Message($"Getting {nameof(TreesorContainerNode)} at '{path}')").Write();
 
-            return this.treesorService.GetContainer(path);
+            var item = this.treesorService.GetContainer(path);
+
+            log.Info().Message($"Got {nameof(TreesorContainerNode)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
+
+            return item;
         }
 
         internal void SetItem(TreesorNodePath path, object value)
         {
+            log.Debug().Message($"Setting value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
+
             this.treesorService.SetValue(path, value);
+
+            log.Info().Message($"Set value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
         }
-        
+
         internal void ClearItem(TreesorNodePath path)
-        { 
+        {
+            log.Debug().Message($"Clearing value at '{path}'").Write();
+
             this.treesorService.RemoveValue(path);
+
+            log.Debug().Message($"Cleared value at '{path}'").Write();
         }
 
         #endregion Implement ItemCmdletProvider
@@ -101,11 +117,17 @@
                 return this.treesorService.GetContainerChildren(treesorNodePath);
             }
         }
-        
+
         internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
+            log.Debug().Message($"Creating {nameof(TreesorContainerNode)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
+
             isContainer = true;
-            return this.treesorService.CreateContainer(path, newItemValue);
+            var node = this.treesorService.CreateContainer(path, newItemValue);
+
+            log.Info().Message($"Created {nameof(TreesorContainerNode)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
+
+            return node;
 
             #region // Currently only directories are created
 
@@ -150,7 +172,10 @@
         internal IEnumerable<string> GetChildNames(TreesorNodePath path, ReturnContainers returnContainers)
         {
             //if (returnContainers == ReturnContainers.ReturnAllContainers)
+            log.Debug().Message($"Retrieving {nameof(TreesorContainerNode)} names under:'{path}',{returnContainers}").Write();
+
             return this.treesorService.GetContainerChildren(path).Select(c => c.Name);
+
             //else
             //    throw new PSNotImplementedException(string.Format("GetChildNames(path={0},returnContainers={1})", path, returnContainers));
         }
