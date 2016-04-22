@@ -170,7 +170,13 @@
 
         internal bool HasChildItems(TreesorNodePath path)
         {
-            return this.treesorService.GetContainerChildren(path).Any();
+            log.Debug().Message($"Checking if {nameof(TreesorContainerNode)} at '{path}' has children").Write();
+
+            var hasChildren = this.treesorService.GetContainerChildren(path).Any();
+
+            log.Info().Message($"Checked if { nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
+
+            return hasChildren;
         }
 
         internal IEnumerable<string> GetChildNames(TreesorNodePath path, ReturnContainers returnContainers)

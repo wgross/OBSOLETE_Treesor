@@ -192,12 +192,11 @@
 
         protected override bool HasChildItems(string path)
         {
-            log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)})").Write();
+            log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)}={path})").Write();
 
-            // Verifies if their are children under the specified node
             var hasChildItems = this.GetTreesorDriveInfo().HasChildItems(TreesorNodePath.Parse(path));
 
-            log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)})->{hasChildItems}").Write();
+            log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)}={path})->{hasChildItems}").Write();
 
             return hasChildItems;
         }
