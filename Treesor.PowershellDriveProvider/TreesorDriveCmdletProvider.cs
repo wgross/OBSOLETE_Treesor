@@ -131,9 +131,6 @@
 
         protected override bool ItemExists(string path)
         {
-            log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}={path})").Write();
-
-            // is called by Test-Path
             return this.GetTreesorDriveInfo().ItemExists(TreesorNodePath.Parse(path));
         }
 
@@ -260,9 +257,13 @@
 
         protected override string MakePath(string parent, string child)
         {
-            log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}={parent},{nameof(child)}={child})").Write();
+            log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}='{parent}',{nameof(child)}='{child}')").Write();
 
-            return TreesorNodePath.Create(TreesorNodePath.Parse(parent).HierarchyPath.Join(TreesorNodePath.Parse(child).HierarchyPath).Items.ToArray()).HierarchyPath.ToString();
+            var result = TreesorNodePath.Create(TreesorNodePath.Parse(parent).HierarchyPath.Join(TreesorNodePath.Parse(child).HierarchyPath).Items.ToArray()).HierarchyPath.ToString();
+
+            log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}='{parent}',{nameof(child)}='{child}')->'{result}'").Write();
+
+            return result;
         }
 
         protected override string GetParentPath(string path, string root)

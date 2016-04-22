@@ -1,5 +1,7 @@
 ﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
+using NLog;
+using NLog.Fluent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,8 @@ namespace Treesor.PowershellDriveProvider
 {
     public class TreesorService
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         #region Construction and Initialization of this instance
 
         static TreesorService()
@@ -39,13 +43,24 @@ namespace Treesor.PowershellDriveProvider
         /// <returns></returns>
         public virtual bool TryGetContainer(TreesorNodePath path, out TreesorContainerNode containerNode)
         {
+            log.Debug().Message($"Retrieving container '{path}'").Write();
+
+            // retrieving a container means to retrieve a value from the
+            // hierarchical dictionary
+
             object remoteValue;
-
-            this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
-
-            containerNode = new TreesorContainerNode(path);
-
-            return true;
+            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue))
+            {
+                log.Info().Message($"Retrieved container {path}").Write();
+                containerNode = new TreesorContainerNode(path);
+                return true;
+            }
+            else
+            {
+                log.Warn().Message($"Couldn't retrieve container {path}").Write();
+                containerNode = null;
+                return false;
+            }
         }
 
         public virtual TreesorContainerNode GetContainer(TreesorNodePath path)
@@ -82,7 +97,6 @@ namespace Treesor.PowershellDriveProvider
             this.remoteHierarchy[treesorNodePath.HierarchyPath] = value;
 
             return new TreesorContainerNode(treesorNodePath);
-            
         }
 
         public virtual TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)

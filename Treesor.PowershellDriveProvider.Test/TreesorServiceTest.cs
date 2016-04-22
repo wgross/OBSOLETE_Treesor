@@ -1,6 +1,5 @@
 ﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
-using Flurl.Http.Testing;
 using Moq;
 using NUnit.Framework;
 using System.Linq;
@@ -12,14 +11,14 @@ namespace Treesor.PowershellDriveProvider.Test
     {
         private TreesorService treesorService;
         private Mock<IHierarchy<string, object>> remoteHierarchy;
-        
+
         [SetUp]
         public void ArrangeAllTests()
         {
             this.remoteHierarchy = new Mock<IHierarchy<string, object>>();
             this.treesorService = new TreesorService(this.remoteHierarchy.Object);
         }
-        
+
         [Test]
         public void Set_value_at_hierarchy_root()
         {
@@ -104,6 +103,30 @@ namespace Treesor.PowershellDriveProvider.Test
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
         }
 
+        [Test]
+        public void TryGet_value_from_hierarchy_node_returns_false_if_path_is_missing()
+        {
+            // ARRANGE
+
+            object remoteValue;
+
+            this.remoteHierarchy
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue))
+                .Returns(false);
+
+            // ACT
+
+            TreesorContainerNode resultNode;
+            var result = this.treesorService.TryGetContainer(TreesorNodePath.Create("a"), out resultNode);
+
+            // ASSERT
+
+            Assert.IsFalse(result);
+            Assert.IsNull(resultNode);
+
+            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
+        }
+
         #endregion TryGetContainer
 
         #region GetContainer/GetContainerChildren
@@ -164,12 +187,12 @@ namespace Treesor.PowershellDriveProvider.Test
             var fakeHierarchy = new MutableHierarchy<string, object>();
             fakeHierarchy.Add(HierarchyPath.Create("a"), "v1");
             fakeHierarchy.Add(HierarchyPath.Create("b"), "v2");
-            fakeHierarchy.Add(HierarchyPath.Create("a","b"), "v2");
-            
+            fakeHierarchy.Add(HierarchyPath.Create("a", "b"), "v2");
+
             this.remoteHierarchy
                 .Setup(h => h.Traverse(HierarchyPath.Create<string>()))
                 .Returns(fakeHierarchy.Traverse(HierarchyPath.Create<string>()));
-            
+
             // ACT
 
             var result = this.treesorService.GetContainerChildren(TreesorNodePath.Create()).ToArray();
@@ -183,7 +206,7 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.AreEqual(TreesorNodePath.Create("b"), result.ElementAt(1).Path);
         }
 
-        #endregion GetContainer
+        #endregion GetContainer/GetContainerChildren
 
         [Test]
         public void CreateContainer_without_value_under_root()

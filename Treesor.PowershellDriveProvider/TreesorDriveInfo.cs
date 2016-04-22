@@ -58,13 +58,18 @@
 
         internal bool ItemExists(TreesorNodePath path)
         {
+            log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}='{path}')").Write();
+
             TreesorContainerNode jObjectAtPath;
-            return this.treesorService.TryGetContainer(path, out jObjectAtPath);
+            bool result = this.treesorService.TryGetContainer(path, out jObjectAtPath);
+
+            log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}='{path}')->'{result}'").Write();
+            return result;
         }
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
-            log.Trace().Message($"{nameof(GetItem)}({nameof(path)}={path})").Write();
+            log.Trace().Message($"{nameof(GetItem)}({nameof(path)}='{path}')").Write();
 
             return this.treesorService.GetContainer(path);
         }

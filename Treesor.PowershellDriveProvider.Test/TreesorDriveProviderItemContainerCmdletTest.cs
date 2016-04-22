@@ -1,7 +1,6 @@
 ﻿using Elementary.Hierarchy.Collections;
 using Moq;
 using NLog;
-using NLog.Config;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
@@ -132,14 +131,14 @@ namespace Treesor.PowershellDriveProvider.Test
                 this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create()), Times.Once);
 
-                Assert.AreEqual(2, result.Count);                
+                Assert.AreEqual(2, result.Count);
             }
 
             [Test]
             public void Powershell_GetChildItem_Recurse_at_root_node_returns_Descandants()
             {
                 // ARRANGE
-                
+
                 TreesorContainerNode rootContainer = new TreesorContainerNode();
                 this.treesorService
                     .Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer))
@@ -174,6 +173,87 @@ namespace Treesor.PowershellDriveProvider.Test
                 this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Exactly(2)); // from IsItemContainer
                 this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.VerifyAll();
+            }
+
+            [Test]
+            public void Powershell_GetChildItem_at_inner_node_returns_Children()
+            {
+                // ARRANGE
+
+                TreesorContainerNode innerNodeContainer = new TreesorContainerNode();
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.GetContainer(TreesorNodePath.Create("a")))
+                    .Returns(innerNodeContainer);
+
+                this.treesorService
+                    .Setup(s => s.GetContainerChildren(TreesorNodePath.Create("a")))
+                    .Returns(new[]
+                    {
+                        new TreesorContainerNode(TreesorNodePath.Create("a","a")),
+                        new TreesorContainerNode(TreesorNodePath.Create("a","b")),
+                        
+                    });
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Get-ChildItem")
+                    .AddParameter("Path", "treesor:/a")
+                    .Invoke();
+
+                // ASSERT
+
+                this.treesorService.VerifyAll();
+                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
+                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create("a")), Times.Once);
+                this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create("a")), Times.Once);
+
+                Assert.AreEqual(2, result.Count);
+            }
+
+            [Test]
+            public void Powershell_GetChildItem_Recurse_at_inner_node_returns_Children()
+            {
+                // ARRANGE
+
+                TreesorContainerNode innerNodeContainer = new TreesorContainerNode();
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.GetContainer(TreesorNodePath.Create("a")))
+                    .Returns(innerNodeContainer);
+
+                this.treesorService
+                    .Setup(s => s.GetContainerDescendants(TreesorNodePath.Create("a")))
+                    .Returns(new[]
+                    {
+                        new TreesorContainerNode(TreesorNodePath.Create("a","a")),
+                        new TreesorContainerNode(TreesorNodePath.Create("a","b")),
+                        new TreesorContainerNode(TreesorNodePath.Create("a", "b", "a")),
+                    });
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Get-ChildItem")
+                    .AddParameter("Path", "treesor:/a")
+                    .AddParameter("Recurse")
+                    .Invoke();
+
+                // ASSERT
+
+                this.treesorService.VerifyAll();
+                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
+                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create("a")), Times.Exactly(2));
+                this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create("a")), Times.Once);
+
+                Assert.AreEqual(3, result.Count);
             }
         }
     }
