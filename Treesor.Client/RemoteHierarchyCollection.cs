@@ -2,6 +2,10 @@
 using Elementary.Hierarchy.Collections;
 using Flurl;
 using Flurl.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Treesor.Service.Endpoints;
 
 namespace Treesor.Client
@@ -57,26 +61,90 @@ namespace Treesor.Client
 
         #region Hierarchy traversal
 
-        public IHierarchyNode<string, object> Traverse(HierarchyPath<string> path)
+        private sealed class RemoteTraverser : IHierarchyNode<string, object>
         {
-            var nodesCollection = this.remoteHierarchyAddress
-                .AppendPathSegment("nodes")
-                .AppendPathSegment(path.IsRoot ? "root" : path.ToString())
-                .AppendPathSegment("children")
-                .GetJsonAsync<HierarchyNodeCollectionBody>()
-                .Result;
+            private readonly Lazy<IEnumerable<IHierarchyNode<string, object>>> childNodes;
+            private readonly HierarchyPath<string> path;
+            private readonly RemoteHierarchy remoteHierarchy;
 
-            var partialHierachySnapshot = new MutableHierarchy<string, object>();
-
-            foreach (var node in nodesCollection.nodes)
+            public RemoteTraverser(RemoteHierarchy remoteHierarchy, HierarchyPath<string> path)
             {
-                if (string.IsNullOrEmpty(node.path))
-                    partialHierachySnapshot.Add(HierarchyPath.Create<string>(),null);
-                else
-                    partialHierachySnapshot.Add(HierarchyPath.Parse(node.path,"/"), null);
+                this.remoteHierarchy = remoteHierarchy;
+                this.path = path;
+                this.childNodes = new Lazy<IEnumerable<IHierarchyNode<string, object>>>(() => this.MapNodeToTraverser(this.remoteHierarchy.GetChildNodes(path).nodes), mode: LazyThreadSafetyMode.None);
             }
 
-            return partialHierachySnapshot.Traverse(path);
+            private IEnumerable<RemoteTraverser> MapNodeToTraverser(IEnumerable<HierarchyNodeBody> nodes)
+            {
+                return nodes.Select(n => new RemoteTraverser(this.remoteHierarchy, HierarchyPath.Parse(n.path, "/")));
+            }
+
+            public IEnumerable<IHierarchyNode<string, object>> ChildNodes => this.childNodes.Value;
+
+            public bool HasChildNodes => this.childNodes.Value.Any();
+
+            public bool HasParentNode
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public bool HasValue
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public IHierarchyNode<string, object> ParentNode
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public HierarchyPath<string> Path => this.path;
+
+            public object Value
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+
+        public IHierarchyNode<string, object> Traverse(HierarchyPath<string> path)
+        {
+            return new RemoteTraverser(this, path);
+
+            //HierarchyNodeCollectionBody nodesCollection = this.GetChildNodes(path);
+            //return new Traverser
+            //var partialHierachySnapshot = new MutableHierarchy<string, object>();
+
+            //foreach (var node in nodesCollection.nodes)
+            //{
+            //    if (string.IsNullOrEmpty(node.path))
+            //        partialHierachySnapshot.Add(HierarchyPath.Create<string>(), null);
+            //    else
+            //        partialHierachySnapshot.Add(HierarchyPath.Parse(node.path, "/"), null);
+            //}
+
+            //return partialHierachySnapshot.Traverse(path);
+        }
+
+        private HierarchyNodeCollectionBody GetChildNodes(HierarchyPath<string> path)
+        {
+            return this.remoteHierarchyAddress
+                            .AppendPathSegment("nodes")
+                            .AppendPathSegment(path.IsRoot ? "root" : path.ToString())
+                            .AppendPathSegment("children")
+                            .GetJsonAsync<HierarchyNodeCollectionBody>()
+                            .Result;
         }
 
         #endregion Hierarchy traversal

@@ -216,7 +216,7 @@ namespace Treesor.PowershellDriveProvider.Test
             }
 
             [Test]
-            public void Powershell_GetChildItem_Recurse_at_inner_node_returns_Children()
+            public void Powershell_GetChildItem_Recurse_at_inner_node_returns_Descandants()
             {
                 // ARRANGE
 

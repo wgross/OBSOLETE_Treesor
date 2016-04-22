@@ -2,6 +2,8 @@
 {
     public class HierarchyNodeCollectionBody
     {
+        public string path;
+
         public HierarchyNodeBody[] nodes { get; set; }
     }
 
