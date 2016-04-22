@@ -21,6 +21,7 @@ namespace Treesor.Service.Endpoints
             {
                 nodes = this.treesorService
                     .DescendantsOrSelf(HierarchyPath.Create<string>(), 2)
+                    .Skip(1) // dont take the start node (root)
                     .Select(kv => new HierarchyNodeBody
                     {
                         path = kv.Key.ToString()
@@ -33,6 +34,7 @@ namespace Treesor.Service.Endpoints
         {
             return Ok(new HierarchyNodeCollectionBody
             {
+                path = path,
                 nodes = this.treesorService
                     .DescendantsOrSelf(HierarchyPath.Parse(path, "/"), 2)
                     .Skip(1) // dont take the start node
