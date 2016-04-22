@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TreesorDriveProviderItemContainerCmdletTest.cs" />
-    <Compile Include="TreesorDriveProviderItemManagementTest.cs" />
+    <Compile Include="TreesorDriveProviderItemCmdletTest.cs" />
     <Compile Include="TreesorDriveProviderLoadingTest.cs" />
     <Compile Include="TreesorServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

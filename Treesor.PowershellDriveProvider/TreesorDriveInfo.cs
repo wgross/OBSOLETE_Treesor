@@ -58,31 +58,46 @@
 
         internal bool ItemExists(TreesorNodePath path)
         {
-            log.Trace().Property(nameof(path), path).Write();
+            log.Debug().Message($"Trying to get container '{path}')").Write();
 
-            TreesorContainerNode jObjectAtPath;
-            return this.treesorService.TryGetContainer(path, out jObjectAtPath);
+            TreesorContainerNode containerNode;
+            if (this.treesorService.TryGetContainer(path, out containerNode))
+            {
+                log.Info().Message($"Got {nameof(TreesorContainerNode)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
+                return true;
+            }
+
+            log.Info().Message($"{nameof(TreesorContainerNode)} at '{path}' wasn't found").Write();
+            return false;
         }
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
-            log.Trace().Property(nameof(path), path).Write();
+            log.Debug().Message($"Getting {nameof(TreesorContainerNode)} at '{path}')").Write();
 
-            return this.treesorService.GetContainer(path);
+            var item = this.treesorService.GetContainer(path);
+
+            log.Info().Message($"Got {nameof(TreesorContainerNode)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
+
+            return item;
         }
 
         internal void SetItem(TreesorNodePath path, object value)
         {
-            log.Trace().Property(nameof(path), path).Property(nameof(value.GetHashCode), value?.GetHashCode()).Write();
+            log.Debug().Message($"Setting value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
 
             this.treesorService.SetValue(path, value);
+
+            log.Info().Message($"Set value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
         }
-        
+
         internal void ClearItem(TreesorNodePath path)
         {
-            log.Trace().Property(nameof(path), path).Write();
+            log.Debug().Message($"Clearing value at '{path}'").Write();
 
             this.treesorService.RemoveValue(path);
+
+            log.Debug().Message($"Cleared value at '{path}'").Write();
         }
 
         #endregion Implement ItemCmdletProvider
@@ -92,21 +107,27 @@
         internal IEnumerable<TreesorNode> GetChildItem(TreesorNodePath treesorNodePath, bool recursive)
         {
             if (recursive)
+            {
+                log.Debug().Message($"Calling {nameof(this.treesorService.GetContainerDescendants)} with path {treesorNodePath}").Write();
                 return this.treesorService.GetContainerDescendants(treesorNodePath);
+            }
             else
+            {
+                log.Debug().Message($"Calling {nameof(this.treesorService.GetContainerChildren)} with path {treesorNodePath}").Write();
                 return this.treesorService.GetContainerChildren(treesorNodePath);
+            }
         }
-        
+
         internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
-            log.Trace()
-                .Property(nameof(path), path)
-                .Property(nameof(itemTypeName), itemTypeName)
-                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
-                .Write();
+            log.Debug().Message($"Creating {nameof(TreesorContainerNode)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
 
             isContainer = true;
-            return this.treesorService.CreateContainer(path, newItemValue);
+            var node = this.treesorService.CreateContainer(path, newItemValue);
+
+            log.Info().Message($"Created {nameof(TreesorContainerNode)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
+
+            return node;
 
             #region // Currently only directories are created
 
@@ -133,12 +154,6 @@
 
         internal object NewItemDynamicParameters(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
         {
-            log.Trace()
-                .Property(nameof(treesorNodePath), treesorNodePath)
-                .Property(nameof(itemTypeName), itemTypeName)
-                .Property(nameof(newItemValue), newItemValue?.GetHashCode())
-                .Write();
-
             if ("odata".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
                 return TreesorNewODataDynamicParameters.Get(treesorNodePath, itemTypeName);
             return null;
@@ -146,18 +161,31 @@
 
         internal void RemoveItem(TreesorNodePath path, bool recurse)
         {
+            log.Debug().Message($"Deleting {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
+
             this.treesorService.RemoveContainer(path);
+
+            log.Info().Message($"Deleted {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
         }
 
         internal bool HasChildItems(TreesorNodePath path)
         {
-            return this.treesorService.GetContainerChildren(path).Any();
+            log.Debug().Message($"Checking if {nameof(TreesorContainerNode)} at '{path}' has children").Write();
+
+            var hasChildren = this.treesorService.GetContainerChildren(path).Any();
+
+            log.Info().Message($"Checked if { nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
+
+            return hasChildren;
         }
 
         internal IEnumerable<string> GetChildNames(TreesorNodePath path, ReturnContainers returnContainers)
         {
             //if (returnContainers == ReturnContainers.ReturnAllContainers)
+            log.Debug().Message($"Retrieving {nameof(TreesorContainerNode)} names under:'{path}',{returnContainers}").Write();
+
             return this.treesorService.GetContainerChildren(path).Select(c => c.Name);
+
             //else
             //    throw new PSNotImplementedException(string.Format("GetChildNames(path={0},returnContainers={1})", path, returnContainers));
         }

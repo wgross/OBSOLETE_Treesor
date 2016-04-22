@@ -37,6 +37,9 @@ namespace Treesor.Test
             // ASSERT
 
             Assert.IsNotNull(result);
+            Assert.IsNull(result.Content.path);
+            Assert.IsNotNull(result.Content.nodes);
+            Assert.IsFalse(result.Content.nodes.Any());
         }
 
         [Test]
@@ -48,23 +51,24 @@ namespace Treesor.Test
 
             var descandants = new[]
             {
-                kv(HierarchyPath.Create<string>(),"root"),
+                kv(HierarchyPath.Create<string>(), "root"),
                 kv(HierarchyPath.Create("a"), "a"),
                 kv(HierarchyPath.Create("b"), "b"),
-                kv(HierarchyPath.Create("a","b"), "a/b")
             };
 
             this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create<string>(), 2)).Returns(descandants);
 
             // ACT
 
-            var result = (OkNegotiatedContentResult<HierarchyNodeCollectionBody>)this.controller.GetChildren();
+            var result = this.controller.GetChildren() as OkNegotiatedContentResult<HierarchyNodeCollectionBody>;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Content.nodes.Length);
-            CollectionAssert.AreEqual(new[] { string.Empty, "a", "b", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
+            Assert.IsNull(result.Content.path);
+            Assert.IsNotNull(result.Content.nodes);
+            Assert.AreEqual(2, result.Content.nodes.Length);
+            CollectionAssert.AreEqual(new[] { "a", "b" }, result.Content.nodes.Select(n => n.path).ToArray());
         }
 
         [Test]
@@ -90,6 +94,7 @@ namespace Treesor.Test
             // ASSERT
 
             Assert.IsNotNull(result);
+            Assert.AreEqual(result.Content.path, "a");
             Assert.AreEqual(2, result.Content.nodes.Length);
             CollectionAssert.AreEqual(new[] { "a/a", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
         }
