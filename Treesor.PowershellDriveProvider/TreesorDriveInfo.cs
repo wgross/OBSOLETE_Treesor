@@ -34,7 +34,7 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = TreesorService.Factory(new RemoteHierarchy(driveInfo.Name));
+            this.treesorService = TreesorService.Factory(new RemoteHierarchy(driveInfo.Root));
         }
 
         public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)

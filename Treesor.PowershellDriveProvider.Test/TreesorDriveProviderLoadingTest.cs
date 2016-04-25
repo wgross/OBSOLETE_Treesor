@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Elementary.Hierarchy.Collections;
+using Moq;
+using NUnit.Framework;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -44,6 +46,43 @@ namespace Treesor.PowershellDriveProvider.Test
 
             var result = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
 
+            Assert.IsNotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
+        }
+
+        [Test]
+        public void Powershell_creates_drive_with_spoecific_url()
+        {
+            // ARRANGE
+
+            var remoteHierachy = new Mock<IHierarchy<string, object>>();
+            var treesorService = new Mock<TreesorService>(remoteHierachy.Object);
+
+            string  givenUri = null;
+            TreesorService.Factory = uri =>
+            {
+                // givenUri = uri;
+                return treesorService.Object;
+            };
+
+            this.powershell.AddStatement().AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
+
+            // ACT
+
+            var result = this.powershell.AddStatement()
+                .AddCommand("New-PsDrive")
+                .AddParameter("Name", "custTree")
+                .AddParameter("PsProvider", "Treesor")
+                .AddParameter("Root", "http://zumsel:9999")
+                .Invoke();
+
+            this.powershell.AddStatement().AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
+
+            // ASSERT
+
+            Assert.AreEqual("http://zumsel:9999", givenUri);
+
+            var drives = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
+            
             Assert.IsNotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
         }
     }
