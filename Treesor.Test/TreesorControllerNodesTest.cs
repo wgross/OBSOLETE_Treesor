@@ -23,6 +23,8 @@ namespace Treesor.Test
             this.controller = new HierarchyNodeController(this.service.Object);
         }
 
+        #region GetChildren
+
         [Test]
         public void Get_children_of_empty_root_node()
         {
@@ -98,5 +100,7 @@ namespace Treesor.Test
             Assert.AreEqual(2, result.Content.nodes.Length);
             CollectionAssert.AreEqual(new[] { "a/a", "a/b" }, result.Content.nodes.Select(n => n.path).ToArray());
         }
+
+        #endregion GetChildren
     }
 }
