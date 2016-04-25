@@ -34,7 +34,7 @@ namespace Treesor.Application
             return this.hierarchy.TryGetValue(hierarchyPath, out value);
         }
 
-        public void RemoveValue(HierarchyPath<string> hierarchyPath, int? depth = null)
+        public bool RemoveValue(HierarchyPath<string> hierarchyPath, int? depth = null)
         {
             log.Debug().Message($"Removing value at path '{hierarchyPath}', level={depth.GetValueOrDefault(1)}").Write();
 
@@ -42,17 +42,29 @@ namespace Treesor.Application
 
             if (depthCoalesced == 1)
             {
-                if (this.hierarchy.Remove(hierarchyPath))
+                var removed = this.hierarchy.Remove(hierarchyPath);
+
+                if (removed)
                     log.Info().Message("Removed value at '{0}'", hierarchyPath).Write();
                 else
                     log.Info().Message($"Removing value at '{hierarchyPath}' failed, level={depth.GetValueOrDefault(1)}", hierarchyPath).Write();
+
+                return removed;
             }
             else if (depthCoalesced > 1)
             {
-                // remove all nmodes from the hierarchy starting at 'hierarchyPath' 
+                var removed = false;
 
+                // remove all nmodes from the hierarchy starting at 'hierarchyPath' 
                 foreach (var nodes in this.hierarchy.Traverse(hierarchyPath).DescendantsOrSelf(depthFirst: false, maxDepth: depthCoalesced).ToArray())
-                    this.hierarchy.Remove(nodes.Path);
+                    removed = this.hierarchy.Remove(nodes.Path) || removed;
+
+                return removed;
+            }
+            else
+            {
+                log.Info().Message($"Didn't remove value at path '{hierarchyPath}', level was 0").Write();
+                return false;
             }
         }
 

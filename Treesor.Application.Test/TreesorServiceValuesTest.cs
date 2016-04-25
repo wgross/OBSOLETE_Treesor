@@ -55,11 +55,26 @@ namespace Treesor.Application.Test
 
             // ACT
 
-            this.service.RemoveValue(HierarchyPath.Create("a"));
+            var result = this.service.RemoveValue(HierarchyPath.Create("a"));
 
             // ASSERT
 
             object value;
+            Assert.IsTrue(result);
+            Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
+        }
+
+        [Test]
+        public void Delete_a_value_which_is_missing_returns_false()
+        {
+            // ACT
+
+            var result = this.service.RemoveValue(HierarchyPath.Create("a"));
+
+            // ASSERT
+
+            object value;
+            Assert.IsFalse(result);
             Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
         }
 
@@ -86,6 +101,29 @@ namespace Treesor.Application.Test
         }
 
         [Test]
+        public void Delete_value_returns_false_if_no_value_was_removed_from_subtree()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a", "b", "c"), "test3");
+
+            // ACT
+
+            var result = this.service.RemoveValue(HierarchyPath.Create("a"), 2);
+
+            // ASSERT
+
+            Assert.IsFalse(result);
+
+            object value;
+            Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
+            Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a", "b"), out value));
+            Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b", "c"), out value));
+            Assert.AreEqual("test3", value);
+        }
+
+
+        [Test]
         public void Delete_no_values_from_hierarchy_if_depth_is_0()
         {
             // ARRANGE
@@ -95,9 +133,11 @@ namespace Treesor.Application.Test
 
             // ACT
 
-            this.service.RemoveValue(HierarchyPath.Create("a"), 0);
+            var result = this.service.RemoveValue(HierarchyPath.Create("a"), 0);
 
             // ASSERT
+
+            Assert.IsFalse(result);
 
             object value;
             Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
