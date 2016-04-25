@@ -24,6 +24,7 @@ namespace Treesor.Client
             set
             {
                 this.remoteHierarchyAddress
+                    .AppendPathSegment("values")
                     .AppendPathSegments(hierarchyPath.Items)
                     .PutJsonAsync(new HierarchyValueRequestBody
                     {
@@ -35,6 +36,7 @@ namespace Treesor.Client
         public void Add(HierarchyPath<string> hierarchyPath, object value)
         {
             this.remoteHierarchyAddress
+                .AppendPathSegment("values")
                 .AppendPathSegments(hierarchyPath.Items)
                 .PostJsonAsync(new HierarchyValueRequestBody
                 {
@@ -42,17 +44,26 @@ namespace Treesor.Client
                 }).Wait();
         }
 
-        public bool Remove(HierarchyPath<string> hierarchyPath)
+        public bool Remove(HierarchyPath<string> hierarchyPath, int? maxDepth)
         {
-            this.remoteHierarchyAddress
-                .AppendPathSegments(hierarchyPath.Items)
-                .DeleteAsync().Wait();
+            var query = this.remoteHierarchyAddress
+                .AppendPathSegment("values")
+                .AppendPathSegments(hierarchyPath.Items);
+
+            if(maxDepth!=null)
+            {
+                query = query.SetQueryParam("$expand", $"{int.MaxValue}");
+            }
+
+            query.DeleteAsync().Wait();
+
             return true;
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
         {
             var responseData = this.remoteHierarchyAddress
+                .AppendPathSegment("values")
                 .AppendPathSegments(hierarchyPath.Items)
                 .GetJsonAsync<HierarchyValueBody>().Result;
             value = responseData.value;

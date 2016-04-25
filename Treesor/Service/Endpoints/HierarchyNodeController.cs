@@ -14,7 +14,7 @@ namespace Treesor.Service.Endpoints
             this.treesorService = treesorService;
         }
 
-        [HttpGet, Route("api/node/children")]
+        [HttpGet, Route("api/v1/nodes/children")]
         public IHttpActionResult GetChildren()
         {
             return Ok(new HierarchyNodeCollectionBody
@@ -29,7 +29,7 @@ namespace Treesor.Service.Endpoints
             });
         }
 
-        [HttpGet, Route("api/node/{*path}/children")]
+        [HttpGet, Route("api/v1/nodes/{*path}/children")]
         public IHttpActionResult GetChildren(string path)
         {
             return Ok(new HierarchyNodeCollectionBody

@@ -229,7 +229,7 @@ namespace Treesor.PowershellDriveProvider.Test
             // ARRANGE
 
             this.remoteHierarchy
-                .Setup(h => h.Remove(HierarchyPath.Create("a")))
+                .Setup(h => h.Remove(HierarchyPath.Create("a"), null))
                 .Returns(true);
 
             // ACT
@@ -240,7 +240,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.IsTrue(result);
 
-            this.remoteHierarchy.Verify(h => h.Remove(HierarchyPath.Create("a")), Times.Once);
+            this.remoteHierarchy.Verify(h => h.Remove(HierarchyPath.Create("a"), null), Times.Once);
         }
     }
 }
