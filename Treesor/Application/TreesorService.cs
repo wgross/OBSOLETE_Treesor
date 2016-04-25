@@ -2,7 +2,6 @@
 using Elementary.Hierarchy.Collections;
 using NLog;
 using NLog.Fluent;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,14 +34,26 @@ namespace Treesor.Application
             return this.hierarchy.TryGetValue(hierarchyPath, out value);
         }
 
-        public void RemoveValue(HierarchyPath<string> hierarchyPath)
+        public void RemoveValue(HierarchyPath<string> hierarchyPath, int? depth = null)
         {
-            log.Debug().Message("Removing value at path '{0}'", hierarchyPath).Write();
+            log.Debug().Message($"Removing value at path '{hierarchyPath}', level={depth.GetValueOrDefault(1)}").Write();
 
-            if (this.hierarchy.Remove(hierarchyPath))
-                log.Info().Message("Removed value at '{0}'", hierarchyPath).Write();
-            else
-                log.Info().Message("Removing value at '{0}' failed", hierarchyPath).Write();
+            var depthCoalesced = depth.GetValueOrDefault(1);
+
+            if (depthCoalesced == 1)
+            {
+                if (this.hierarchy.Remove(hierarchyPath))
+                    log.Info().Message("Removed value at '{0}'", hierarchyPath).Write();
+                else
+                    log.Info().Message($"Removing value at '{hierarchyPath}' failed, level={depth.GetValueOrDefault(1)}", hierarchyPath).Write();
+            }
+            else if (depthCoalesced > 1)
+            {
+                // remove all nmodes from the hierarchy starting at 'hierarchyPath' 
+
+                foreach (var nodes in this.hierarchy.Traverse(hierarchyPath).DescendantsOrSelf(depthFirst: false, maxDepth: depthCoalesced).ToArray())
+                    this.hierarchy.Remove(nodes.Path);
+            }
         }
 
         public IEnumerable<KeyValuePair<HierarchyPath<string>, object>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth)

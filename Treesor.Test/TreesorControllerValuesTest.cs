@@ -165,7 +165,7 @@ namespace Treesor.Test
 
         #endregion GET /api/{path}, GET /api
 
-        #region DELETE /api/{path}, DELETE /api
+        #region DELETE /api/{path}, DELETE /api, DELETE /api?$expand
 
         [Test]
         public void Delete_value_from_root_node()
@@ -178,7 +178,7 @@ namespace Treesor.Test
 
             Assert.IsNotNull(result);
 
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>()), Times.Once);
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), null), Times.Once);
         }
 
         [Test]
@@ -192,7 +192,21 @@ namespace Treesor.Test
 
             Assert.IsNotNull(result);
 
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create("a", "b")), Times.Once);
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create("a", "b"),null), Times.Once);
+        }
+
+        [Test]
+        public void Delete_value_from_root_node_and_child_node()
+        {
+            // ACT
+
+            var result = this.controller.Delete() as OkResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(),2), Times.Once);
         }
 
         [Test]
@@ -208,7 +222,7 @@ namespace Treesor.Test
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
         }
 
-        #endregion DELETE /api/{path}, DELETE /api
+        #endregion DELETE /api/{path}, DELETE /api, DELETE /api?$expand
 
         #region PUT /api/{path}, PUT /api
 

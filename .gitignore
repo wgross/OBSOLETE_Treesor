@@ -7,3 +7,4 @@
 TestResults/**
 .vs/**
 /Treesor/Treesor.csproj.user
+/Treesor.Test/TreesorControllerValuesTest.cs~RF36d93f.TMP
