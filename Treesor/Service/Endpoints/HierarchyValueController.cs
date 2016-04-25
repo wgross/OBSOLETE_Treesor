@@ -101,19 +101,19 @@ namespace Treesor.Service.Endpoints
         }
 
         [HttpDelete, Route("api")]
-        public IHttpActionResult Delete()
+        public IHttpActionResult Delete([FromUri(Name="$expand")] int? expand=null)
         {
-            this.service.RemoveValue(HierarchyPath.Create<string>());
+            this.service.RemoveValue(HierarchyPath.Create<string>(), expand.GetValueOrDefault(1));
             return this.Ok();
         }
 
         [HttpDelete, Route("api/{*path}")]
-        public IHttpActionResult Delete([FromUri] string path)
+        public IHttpActionResult Delete([FromUri] string path, [FromUri(Name = "$expand")] int? expand = null)
         {
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
-            this.service.RemoveValue(HierarchyPath.Parse(path, "/"));
+            this.service.RemoveValue(HierarchyPath.Parse(path, "/"),expand.GetValueOrDefault(1));
             return this.Ok();
         }
 

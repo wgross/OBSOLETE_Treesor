@@ -172,13 +172,13 @@ namespace Treesor.Test
         {
             // ACT
 
-            var result = this.controller.Delete() as OkResult;
+            var result = this.controller.Delete((int?)null) as OkResult;
 
             // ASSERT
 
             Assert.IsNotNull(result);
 
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), null), Times.Once);
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), 1), Times.Once);
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace Treesor.Test
 
             Assert.IsNotNull(result);
 
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create("a", "b"),null), Times.Once);
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create("a", "b"), 1), Times.Once);
         }
 
         [Test]
@@ -200,13 +200,13 @@ namespace Treesor.Test
         {
             // ACT
 
-            var result = this.controller.Delete() as OkResult;
+            var result = this.controller.Delete(2) as OkResult;
 
             // ASSERT
 
             Assert.IsNotNull(result);
 
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(),2), Times.Once);
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), 2), Times.Once);
         }
 
         [Test]
