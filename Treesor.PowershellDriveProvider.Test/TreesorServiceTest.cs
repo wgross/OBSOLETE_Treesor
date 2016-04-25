@@ -229,18 +229,38 @@ namespace Treesor.PowershellDriveProvider.Test
             // ARRANGE
 
             this.remoteHierarchy
-                .Setup(h => h.Remove(HierarchyPath.Create("a"), null))
+                .Setup(h => h.Remove(HierarchyPath.Create("a"), 1))
                 .Returns(true);
 
             // ACT
 
-            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"));
+            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"),false);
 
             // ASSERT
 
             Assert.IsTrue(result);
 
-            this.remoteHierarchy.Verify(h => h.Remove(HierarchyPath.Create("a"), null), Times.Once);
+            this.remoteHierarchy.Verify(h => h.Remove(HierarchyPath.Create("a"), 1), Times.Once);
+        }
+
+        [Test]
+        public void RemoveContainer_recursive()
+        {
+            // ARRANGE
+
+            this.remoteHierarchy
+                .Setup(h => h.Remove(HierarchyPath.Create("a"), int.MaxValue))
+                .Returns(true);
+
+            // ACT
+
+            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"), true);
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+
+            this.remoteHierarchy.Verify(h => h.Remove(HierarchyPath.Create("a"), int.MaxValue), Times.Once);
         }
     }
 }

@@ -163,7 +163,7 @@
         {
             log.Debug().Message($"Deleting {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
 
-            this.treesorService.RemoveContainer(path);
+            this.treesorService.RemoveContainer(path, recurse);
 
             log.Info().Message($"Deleted {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
         }

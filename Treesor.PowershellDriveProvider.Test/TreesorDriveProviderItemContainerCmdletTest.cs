@@ -320,13 +320,42 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Returns(true);
 
                 this.treesorService
-                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a")));
+                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a"), false));
 
                 // ACT
 
                 var result = this.powershell.AddStatement()
                     .AddCommand("Remove-Item")
                     .AddParameter("Path", "treesor:/a")
+                    .Invoke();
+
+                // ASSERT
+
+                Assert.IsFalse(result.Any());
+                Assert.IsFalse(this.powershell.HadErrors);
+
+                this.treesorService.VerifyAll();
+            }
+
+            [Test]
+            public void Powershell_RemoveItem_Recursce_at_inner_node_deletes_node_and_descendants()
+            {
+                // ARRANGE
+                var node = new TreesorContainerNode(TreesorNodePath.Create("a"));
+
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out node))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a"), true));
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Remove-Item")
+                    .AddParameter("Path", "treesor:/a")
+                    .AddParameter("Recurse")
                     .Invoke();
 
                 // ASSERT
