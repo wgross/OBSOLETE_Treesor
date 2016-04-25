@@ -172,7 +172,7 @@
         {
             log.Debug().Message($"Checking if {nameof(TreesorContainerNode)} at '{path}' has children").Write();
 
-            var hasChildren = this.treesorService.GetContainerChildren(path).Any();
+            var hasChildren = this.treesorService.HasChildNodes(path);
 
             log.Info().Message($"Checked if { nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
 

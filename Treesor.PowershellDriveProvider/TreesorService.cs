@@ -72,11 +72,11 @@ namespace Treesor.PowershellDriveProvider
             return new TreesorContainerNode(path);
         }
 
-        public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath treesorNodePath)
+        public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath path)
         {
             throw new NotImplementedException();
             //return this.remoteHierarchy
-            //    .Traverse(treesorNodePath.HierarchyPath)
+            //    .Traverse(path.HierarchyPath)
             //    .Descendants()
             //    .Select(n => new TreesorContainerNode
             //    {
@@ -84,29 +84,34 @@ namespace Treesor.PowershellDriveProvider
             //    });
         }
 
-        public virtual IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath treesorNodePath)
+        public virtual bool HasChildNodes(TreesorNodePath path)
+        {
+            return this.GetContainerChildren(path).Any();
+        }
+
+        public virtual IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath path)
         {
             return this.remoteHierarchy
-                .Traverse(treesorNodePath.HierarchyPath)
+                .Traverse(path.HierarchyPath)
                 .Children()
                 .Select(n => new TreesorContainerNode(TreesorNodePath.Create(n.Path)));
         }
 
-        public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath, object value = null)
+        public virtual TreesorContainerNode CreateContainer(TreesorNodePath path, object value = null)
         {
-            this.remoteHierarchy[treesorNodePath.HierarchyPath] = value;
+            this.remoteHierarchy[path.HierarchyPath] = value;
 
-            return new TreesorContainerNode(treesorNodePath);
+            return new TreesorContainerNode(path);
         }
 
-        public virtual TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
+        public virtual TreesorNode SetValue(TreesorNodePath path, object newItemValue)
         {
-            this.remoteHierarchy[treesorNodePath.HierarchyPath] = newItemValue;
+            this.remoteHierarchy[path.HierarchyPath] = newItemValue;
 
-            return new TreesorContainerNode(treesorNodePath);
+            return new TreesorContainerNode(path);
         }
 
-        public virtual void RemoveValue(TreesorNodePath treesorNodePath)
+        public virtual void RemoveValue(TreesorNodePath path)
         {
             throw new NotImplementedException();
         }

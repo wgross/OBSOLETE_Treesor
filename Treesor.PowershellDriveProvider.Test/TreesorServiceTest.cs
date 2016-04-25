@@ -209,6 +209,56 @@ namespace Treesor.PowershellDriveProvider.Test
         #endregion GetContainer/GetContainerChildren
 
         [Test]
+        public void HasChildNodes_checks_if_any_children_are_there_TRUE()
+        {
+            // ARRANGE
+
+            var fakeHierarchy = new MutableHierarchy<string, object>();
+            fakeHierarchy.Add(HierarchyPath.Create("a"), "v1");
+            fakeHierarchy.Add(HierarchyPath.Create("b"), "v2");
+            fakeHierarchy.Add(HierarchyPath.Create("a", "b"), "v2");
+
+            this.remoteHierarchy
+                .Setup(h => h.Traverse(HierarchyPath.Create("a")))
+                .Returns(fakeHierarchy.Traverse(HierarchyPath.Create("a")));
+
+            // ACT
+
+            var result = this.treesorService.HasChildNodes(TreesorNodePath.Create("a"));
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+
+            this.remoteHierarchy.Verify(h => h.Traverse(HierarchyPath.Create("a")));
+            this.remoteHierarchy.VerifyAll();
+        }
+
+        [Test]
+        public void HasChildNodes_checks_if_any_children_are_there_FALSE()
+        {
+            // ARRANGE
+
+            var fakeHierarchy = new MutableHierarchy<string, object>();
+            fakeHierarchy.Add(HierarchyPath.Create("a"), "v1");
+
+            this.remoteHierarchy
+                .Setup(h => h.Traverse(HierarchyPath.Create("a")))
+                .Returns(fakeHierarchy.Traverse(HierarchyPath.Create("a")));
+
+            // ACT
+
+            var result = this.treesorService.HasChildNodes(TreesorNodePath.Create("a"));
+
+            // ASSERT
+
+            Assert.IsFalse(result);
+
+            this.remoteHierarchy.Verify(h => h.Traverse(HierarchyPath.Create("a")));
+            this.remoteHierarchy.VerifyAll();
+        }
+
+        [Test]
         public void CreateContainer_without_value_under_root()
         {
             // ACT
@@ -234,7 +284,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"),false);
+            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"), false);
 
             // ASSERT
 
