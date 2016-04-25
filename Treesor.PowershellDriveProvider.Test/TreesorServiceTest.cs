@@ -208,6 +208,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
         #endregion GetContainer/GetContainerChildren
 
+        #region HasChildNodes
+
         [Test]
         public void HasChildNodes_checks_if_any_children_are_there_TRUE()
         {
@@ -257,6 +259,8 @@ namespace Treesor.PowershellDriveProvider.Test
             this.remoteHierarchy.Verify(h => h.Traverse(HierarchyPath.Create("a")));
             this.remoteHierarchy.VerifyAll();
         }
+
+        #endregion HasChildNodes
 
         [Test]
         public void CreateContainer_without_value_under_root()

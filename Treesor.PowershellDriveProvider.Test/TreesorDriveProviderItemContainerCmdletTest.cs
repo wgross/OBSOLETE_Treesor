@@ -376,6 +376,7 @@ namespace Treesor.PowershellDriveProvider.Test
             public void PowerShell_RemoveItem_Recurse_at_non_empty_nodes_asks_for_permission()
             {
                 // ARRANGE
+
                 var node = new TreesorContainerNode(TreesorNodePath.Create("a"));
 
                 this.treesorService
@@ -385,7 +386,9 @@ namespace Treesor.PowershellDriveProvider.Test
                 this.treesorService
                     .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a"), true));
 
-                //this.treesorService
+                this.treesorService
+                    .Setup(s => s.HasChildNodes(TreesorNodePath.Create("a")))
+                    .Returns(true);
                 
                 // ACT
 
