@@ -50,7 +50,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Powershell_creates_drive_with_spoecific_url()
+        public void Powershell_creates_drive_with_specific_url()
         {
             // ARRANGE
 
@@ -60,7 +60,7 @@ namespace Treesor.PowershellDriveProvider.Test
             string  givenUri = null;
             TreesorService.Factory = uri =>
             {
-                // givenUri = uri;
+                givenUri = uri;
                 return treesorService.Object;
             };
 
@@ -75,15 +75,14 @@ namespace Treesor.PowershellDriveProvider.Test
                 .AddParameter("Root", "http://zumsel:9999")
                 .Invoke();
 
-            this.powershell.AddStatement().AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
-
             // ASSERT
 
             Assert.AreEqual("http://zumsel:9999", givenUri);
 
             var drives = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
             
-            Assert.IsNotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
+            Assert.IsNotNull(drives.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
+            Assert.IsNotNull(drives.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "custTree"));
         }
     }
 }

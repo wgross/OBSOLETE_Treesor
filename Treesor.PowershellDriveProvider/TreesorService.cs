@@ -5,6 +5,7 @@ using NLog.Fluent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treesor.Client;
 
 namespace Treesor.PowershellDriveProvider
 {
@@ -16,14 +17,14 @@ namespace Treesor.PowershellDriveProvider
 
         static TreesorService()
         {
-            Factory = remoteHierarchy => new TreesorService(remoteHierarchy);
+            Factory = url => new TreesorService(new RemoteHierarchy(url));
         }
 
         /// <summary>
         /// Treesoreservice factory is a public property to provide an entry point for tests of teh
         /// powershell drive provider.
         /// </summary>
-        public static Func<IHierarchy<string, object>, TreesorService> Factory { get; set; }
+        public static Func<string, TreesorService> Factory { get; set; }
 
         public TreesorService(IHierarchy<string, object> model)
         {
