@@ -2,6 +2,7 @@
 using Elementary.Hierarchy.Collections;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Linq;
 
 namespace Treesor.PowershellDriveProvider.Test
@@ -20,35 +21,64 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Set_value_at_hierarchy_root()
+        public void Set_value_at_hierarchy_root_fails_with_InvalidOperationException()
         {
+            // ARRANGE
+
+            object root = new TreesorContainerNode();
+
+            this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out root)).Returns(true);
+
             // ACT
 
-            var result = this.treesorService.SetValue(TreesorNodePath.Create(), "value");
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetValue(TreesorNodePath.Create(), "value"));
 
             // ASSERT
 
-            this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create<string>()] = "value", Times.Once);
+            Assert.That(result.Message.Contains("Container may not have a value"));
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(string.Empty, result.Name);
-            Assert.AreEqual(TreesorNodePath.RootPath, result.Path);
+            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out root), Times.Once);
+            this.remoteHierarchy.VerifyAll();
         }
 
         [Test]
-        public void Set_value_at_hierarchy_node()
+        public void Remove_value_at_hierarchy_root_fails_with_InvalidOperationException()
         {
+            // ARRANGE
+
+            object root = new TreesorContainerNode();
+
+            this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out root)).Returns(true);
+
             // ACT
 
-            var result = this.treesorService.SetValue(TreesorNodePath.Create("a"), "value");
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.RemoveValue(TreesorNodePath.Create()));
 
             // ASSERT
 
-            this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create("a")] = "value", Times.Once);
+            Assert.That(result.Message.Contains("Container may not have a value"));
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("a", result.Name);
-            Assert.AreEqual(TreesorNodePath.Create("a"), result.Path);
+            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out root), Times.Once);
+            this.remoteHierarchy.VerifyAll();
+        }
+
+        [Test]
+        public void Set_value_at_container_node_fails_with_InvalidOperationException()
+        {
+            // ARRANGE
+
+            object a = new TreesorContainerNode();
+
+            this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out a)).Returns(true);
+
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetValue(TreesorNodePath.Create("a"), "value"));
+
+            // ASSERT
+
+            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out a), Times.Once);
+            this.remoteHierarchy.VerifyAll();
         }
 
         #region TryGetContainer

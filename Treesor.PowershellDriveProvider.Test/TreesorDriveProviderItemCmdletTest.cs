@@ -91,7 +91,9 @@ namespace Treesor.PowershellDriveProvider.Test
 
             var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
 
-            this.treesorService.Setup(s => s.SetValue(TreesorNodePath.Create(), "value")).Throws(new InvalidOperationException("Container may not have a value"));
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create(), "value"))
+                .Throws(new InvalidOperationException("Container may not have a value"));
 
             // ACT
 
@@ -116,14 +118,16 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Powershell_ClearItem_root_deletes_value()
+        public void Powershell_ClearItem_root_fails_with_PSNotSupportedException()
         {
             // ARRANGE
 
             var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
 
             this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
-            this.treesorService.Setup(s => s.RemoveValue(TreesorNodePath.Create()));
+            this.treesorService
+                .Setup(s => s.RemoveValue(TreesorNodePath.Create()))
+                .Throws(new InvalidOperationException("Container may not have a value"));
 
             // ACT
 

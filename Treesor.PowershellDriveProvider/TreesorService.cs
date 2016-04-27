@@ -107,14 +107,21 @@ namespace Treesor.PowershellDriveProvider
 
         public virtual TreesorNode SetValue(TreesorNodePath path, object newItemValue)
         {
-            this.remoteHierarchy[path.HierarchyPath] = newItemValue;
+            object container;
+            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out container))
+                throw new InvalidOperationException("Container may not have a value");
+            else
+                return null;
 
-            return new TreesorContainerNode(path);
+            //this.remoteHierarchy[path.HierarchyPath] = newItemValue;
+            //return new TreesorContainerNode(path);
         }
 
         public virtual void RemoveValue(TreesorNodePath path)
         {
-            throw new NotImplementedException();
+            object container;
+            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out container))
+                throw new InvalidOperationException("Container may not have a value");
         }
 
         public virtual bool RemoveContainer(TreesorNodePath path, bool recursive)
