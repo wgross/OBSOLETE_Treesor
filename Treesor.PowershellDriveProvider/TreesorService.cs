@@ -5,6 +5,7 @@ using NLog.Fluent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treesor.Client;
 
 namespace Treesor.PowershellDriveProvider
 {
@@ -16,14 +17,14 @@ namespace Treesor.PowershellDriveProvider
 
         static TreesorService()
         {
-            Factory = remoteHierarchy => new TreesorService(remoteHierarchy);
+            Factory = url => new TreesorService(new RemoteHierarchy(url));
         }
 
         /// <summary>
         /// Treesoreservice factory is a public property to provide an entry point for tests of teh
         /// powershell drive provider.
         /// </summary>
-        public static Func<IHierarchy<string, object>, TreesorService> Factory { get; set; }
+        public static Func<string, TreesorService> Factory { get; set; }
 
         public TreesorService(IHierarchy<string, object> model)
         {
@@ -72,11 +73,11 @@ namespace Treesor.PowershellDriveProvider
             return new TreesorContainerNode(path);
         }
 
-        public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath treesorNodePath)
+        public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath path)
         {
             throw new NotImplementedException();
             //return this.remoteHierarchy
-            //    .Traverse(treesorNodePath.HierarchyPath)
+            //    .Traverse(path.HierarchyPath)
             //    .Descendants()
             //    .Select(n => new TreesorContainerNode
             //    {
@@ -84,36 +85,48 @@ namespace Treesor.PowershellDriveProvider
             //    });
         }
 
-        public virtual IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath treesorNodePath)
+        public virtual bool HasChildNodes(TreesorNodePath path)
+        {
+            return this.GetContainerChildren(path).Any();
+        }
+
+        public virtual IEnumerable<TreesorNode> GetContainerChildren(TreesorNodePath path)
         {
             return this.remoteHierarchy
-                .Traverse(treesorNodePath.HierarchyPath)
+                .Traverse(path.HierarchyPath)
                 .Children()
                 .Select(n => new TreesorContainerNode(TreesorNodePath.Create(n.Path)));
         }
 
-        public virtual TreesorContainerNode CreateContainer(TreesorNodePath treesorNodePath, object value = null)
+        public virtual TreesorContainerNode CreateContainer(TreesorNodePath path, object value = null)
         {
-            this.remoteHierarchy[treesorNodePath.HierarchyPath] = value;
+            this.remoteHierarchy[path.HierarchyPath] = value;
 
-            return new TreesorContainerNode(treesorNodePath);
+            return new TreesorContainerNode(path);
         }
 
-        public virtual TreesorNode SetValue(TreesorNodePath treesorNodePath, object newItemValue)
+        public virtual TreesorNode SetValue(TreesorNodePath path, object newItemValue)
         {
-            this.remoteHierarchy[treesorNodePath.HierarchyPath] = newItemValue;
+            object container;
+            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out container))
+                throw new InvalidOperationException("Container may not have a value");
+            else
+                return null;
 
-            return new TreesorContainerNode(treesorNodePath);
+            //this.remoteHierarchy[path.HierarchyPath] = newItemValue;
+            //return new TreesorContainerNode(path);
         }
 
-        public virtual void RemoveValue(TreesorNodePath treesorNodePath)
+        public virtual void RemoveValue(TreesorNodePath path)
         {
-            throw new NotImplementedException();
+            object container;
+            if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out container))
+                throw new InvalidOperationException("Container may not have a value");
         }
 
-        public virtual bool RemoveContainer(TreesorNodePath path)
+        public virtual bool RemoveContainer(TreesorNodePath path, bool recursive)
         {
-            return this.remoteHierarchy.Remove(path.HierarchyPath);
+            return this.remoteHierarchy.Remove(path.HierarchyPath, recursive ? int.MaxValue : 1);
         }
 
         public TreesorContainerNode RenameContainer(TreesorNodePath path, string newName)

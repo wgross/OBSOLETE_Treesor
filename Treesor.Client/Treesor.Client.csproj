@@ -48,8 +48,8 @@
       <HintPath>..\packages\Elementary.Hierarchy.1.4.0.0\lib\portable-net45+win+wpa81+wp80\Elementary.Hierarchy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Elementary.Hierarchy.Collections, Version=0.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elementary.Hierarchy.Collections.0.0.7.0\lib\portable-net45+win+wpa81+wp80\Elementary.Hierarchy.Collections.dll</HintPath>
+    <Reference Include="Elementary.Hierarchy.Collections, Version=0.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elementary.Hierarchy.Collections.0.0.8.0\lib\portable-net45+win+wpa81+wp80\Elementary.Hierarchy.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Flurl, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">

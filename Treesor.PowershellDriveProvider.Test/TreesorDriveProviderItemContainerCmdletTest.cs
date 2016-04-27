@@ -127,6 +127,8 @@ namespace Treesor.PowershellDriveProvider.Test
                 this.treesorService.VerifyAll();
             }
 
+            #region Get-ChildItem (-Recurse)
+
             [Test]
             public void Powershell_GetChildItem_at_root_node_returns_Children()
             {
@@ -309,6 +311,10 @@ namespace Treesor.PowershellDriveProvider.Test
                 Assert.IsFalse(this.powershell.HadErrors);
             }
 
+            #endregion Get-ChildItem (-Recurse)
+            
+            #region Remove-Item (-Recurse)
+
             [Test]
             public void Powershell_RemoveItem_at_inner_node_deletes_node()
             {
@@ -320,7 +326,7 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Returns(true);
 
                 this.treesorService
-                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a")));
+                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a"), false));
 
                 // ACT
 
@@ -336,6 +342,70 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 this.treesorService.VerifyAll();
             }
+
+            [Test]
+            public void Powershell_RemoveItem_Recursce_at_inner_node_deletes_node_and_descendants()
+            {
+                // ARRANGE
+                var node = new TreesorContainerNode(TreesorNodePath.Create("a"));
+
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out node))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a"), true));
+
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Remove-Item")
+                    .AddParameter("Path", "treesor:/a")
+                    .AddParameter("Recurse")
+                    .Invoke();
+
+                // ASSERT
+
+                Assert.IsFalse(result.Any());
+                Assert.IsFalse(this.powershell.HadErrors);
+
+                this.treesorService.VerifyAll();
+            }
+
+            [Test]
+            public void PowerShell_RemoveItem_Recurse_at_non_empty_nodes_asks_for_permission()
+            {
+                // ARRANGE
+
+                var node = new TreesorContainerNode(TreesorNodePath.Create("a"));
+
+                this.treesorService
+                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out node))
+                    .Returns(true);
+
+                this.treesorService
+                    .Setup(s => s.RemoveContainer(TreesorNodePath.Create("a"), true));
+
+                this.treesorService
+                    .Setup(s => s.HasChildNodes(TreesorNodePath.Create("a")))
+                    .Returns(true);
+                
+                // ACT
+
+                var result = this.powershell.AddStatement()
+                    .AddCommand("Remove-Item")
+                    .AddParameter("Path", "treesor:/a")
+                    .AddParameter("Recurse")
+                    .Invoke();
+
+                // ASSERT
+
+                Assert.IsFalse(result.Any());
+                Assert.IsFalse(this.powershell.HadErrors);
+
+                this.treesorService.VerifyAll();
+            }
+            #endregion Remove-Item (-Recurse)
         }
     }
 }

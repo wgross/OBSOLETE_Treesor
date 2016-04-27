@@ -9,7 +9,7 @@ namespace Treesor.Application
 
         bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value);
 
-        void RemoveValue(HierarchyPath<string> hierarchyPath);
+        bool RemoveValue(HierarchyPath<string> hierarchyPath, int? depth = 0);
 
         IEnumerable<KeyValuePair<HierarchyPath<string>, object>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth);
     }

@@ -2,7 +2,6 @@
 using Elementary.Hierarchy.Collections;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Linq;
 
 namespace Treesor.PowershellDriveProvider.Test
@@ -21,64 +20,35 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Set_value_at_hierarchy_root_fails_with_InvalidOperationException()
+        public void Set_value_at_hierarchy_root()
         {
-            // ARRANGE
-
-            object root = new TreesorContainerNode();
-
-            this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out root)).Returns(true);
-
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetValue(TreesorNodePath.Create(), "value"));
+            var result = this.treesorService.SetValue(TreesorNodePath.Create(), "value");
 
             // ASSERT
 
-            Assert.That(result.Message.Contains("Container may not have a value"));
+            this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create<string>()] = "value", Times.Once);
 
-            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out root), Times.Once);
-            this.remoteHierarchy.VerifyAll();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(string.Empty, result.Name);
+            Assert.AreEqual(TreesorNodePath.RootPath, result.Path);
         }
 
         [Test]
-        public void Remove_value_at_hierarchy_root_fails_with_InvalidOperationException()
+        public void Set_value_at_hierarchy_node()
         {
-            // ARRANGE
-
-            object root = new TreesorContainerNode();
-
-            this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out root)).Returns(true);
-
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.RemoveValue(TreesorNodePath.Create()));
+            var result = this.treesorService.SetValue(TreesorNodePath.Create("a"), "value");
 
             // ASSERT
 
-            Assert.That(result.Message.Contains("Container may not have a value"));
+            this.remoteHierarchy.VerifySet(h => h[HierarchyPath.Create("a")] = "value", Times.Once);
 
-            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out root), Times.Once);
-            this.remoteHierarchy.VerifyAll();
-        }
-
-        [Test]
-        public void Set_value_at_container_node_fails_with_InvalidOperationException()
-        {
-            // ARRANGE
-
-            object a = new TreesorContainerNode();
-
-            this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out a)).Returns(true);
-
-            // ACT
-
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetValue(TreesorNodePath.Create("a"), "value"));
-
-            // ASSERT
-
-            this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out a), Times.Once);
-            this.remoteHierarchy.VerifyAll();
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a", result.Name);
+            Assert.AreEqual(TreesorNodePath.Create("a"), result.Path);
         }
 
         #region TryGetContainer
@@ -238,59 +208,28 @@ namespace Treesor.PowershellDriveProvider.Test
 
         #endregion GetContainer/GetContainerChildren
 
-        #region HasChildNodes
-
         [Test]
-        public void HasChildNodes_checks_if_any_children_are_there_TRUE()
+        public void HasChildNodes_checks_if_any_children_are_there()
         {
             // ARRANGE
 
-            var fakeHierarchy = new MutableHierarchy<string, object>();
-            fakeHierarchy.Add(HierarchyPath.Create("a"), "v1");
-            fakeHierarchy.Add(HierarchyPath.Create("b"), "v2");
-            fakeHierarchy.Add(HierarchyPath.Create("a", "b"), "v2");
+            object remoteValue;
 
             this.remoteHierarchy
-                .Setup(h => h.Traverse(HierarchyPath.Create("a")))
-                .Returns(fakeHierarchy.Traverse(HierarchyPath.Create("a")));
-
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue))
+                .Returns(true);
+            
             // ACT
 
-            var result = this.treesorService.HasChildNodes(TreesorNodePath.Create("a"));
-
-            // ASSERT
-
-            Assert.IsTrue(result);
-
-            this.remoteHierarchy.Verify(h => h.Traverse(HierarchyPath.Create("a")));
-            this.remoteHierarchy.VerifyAll();
-        }
-
-        [Test]
-        public void HasChildNodes_checks_if_any_children_are_there_FALSE()
-        {
-            // ARRANGE
-
-            var fakeHierarchy = new MutableHierarchy<string, object>();
-            fakeHierarchy.Add(HierarchyPath.Create("a"), "v1");
-
-            this.remoteHierarchy
-                .Setup(h => h.Traverse(HierarchyPath.Create("a")))
-                .Returns(fakeHierarchy.Traverse(HierarchyPath.Create("a")));
-
-            // ACT
-
-            var result = this.treesorService.HasChildNodes(TreesorNodePath.Create("a"));
+            var result = treesorServiceMock.Object.HasChildNodes(TreesorNodePath.Create("a"));
 
             // ASSERT
 
             Assert.IsFalse(result);
 
-            this.remoteHierarchy.Verify(h => h.Traverse(HierarchyPath.Create("a")));
-            this.remoteHierarchy.VerifyAll();
+            treesorServiceMock.Verify(s => s.GetContainerChildren(TreesorNodePath.Create("a")), Times.Once);
+            treesorServiceMock.VerifyAll();
         }
-
-        #endregion HasChildNodes
 
         [Test]
         public void CreateContainer_without_value_under_root()
@@ -318,7 +257,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"), false);
+            var result = this.treesorService.RemoveContainer(TreesorNodePath.Create("a"),false);
 
             // ASSERT
 

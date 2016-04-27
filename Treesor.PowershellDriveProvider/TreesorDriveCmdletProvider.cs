@@ -23,6 +23,8 @@
 
         protected override PSDriveInfo NewDrive(PSDriveInfo drive)
         {
+            log.Trace().Message($"{nameof(NewDrive)}(drive.Root='{drive.Root}',drive.Name='{drive.Name}')").Write();
+
             // Check if the drive object is null.
             if (drive == null)
             {
@@ -45,10 +47,10 @@
             //}
 
             TreesorDriveInfo treesorDriveInfo = drive as TreesorDriveInfo;
-
+            
             if (treesorDriveInfo == null)
             {
-                return null;
+                treesorDriveInfo = new TreesorDriveInfo(drive);
             }
 
             return treesorDriveInfo;
@@ -56,7 +58,7 @@
 
         protected override Collection<PSDriveInfo> InitializeDefaultDrives()
         {
-            log.Info().Message($"Created default drive for provider '{this.ProviderInfo.Description}'").Write();
+            log.Trace().Message($"{nameof(InitializeDefaultDrives)}()").Write();
 
             return new Collection<PSDriveInfo> { TreesorDriveInfo.CreateDefault(this.ProviderInfo) };
         }
@@ -136,7 +138,7 @@
 
         protected override void SetItem(string path, object value)
         {
-            log.Trace().Message($"{nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
+            log.Trace().Message($"{nameof(SetItem)}({nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
 
             this.GetTreesorDriveInfo().SetItem(TreesorNodePath.Parse(path), value);
         }

@@ -34,7 +34,7 @@ namespace Treesor.Service.Endpoints
         /// Retrieves a Hierachy node value
         /// </summary>
         /// <returns>Http 'Ok' with the value of the node or 'NotFound'</returns>
-        [HttpGet, Route("api")]
+        [HttpGet, Route("api/v1/values/")]
         public IHttpActionResult Get()
         {
             object value;
@@ -52,7 +52,7 @@ namespace Treesor.Service.Endpoints
         /// Retrieves a Hierachy node value
         /// </summary>
         /// <returns>Http 'Ok' with the value of the node or 'NotFound'</returns>
-        [HttpGet, Route("api/{*path}")]
+        [HttpGet, Route("api/v1/values/{*path}")]
         public IHttpActionResult Get([FromUri] string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -69,7 +69,7 @@ namespace Treesor.Service.Endpoints
             return this.NotFound();
         }
 
-        [HttpPost, Route("api", Name = "SetValueAtRoot")]
+        [HttpPost, Route("api/v1/values", Name = "SetValueAtRoot")]
         public IHttpActionResult Post([FromBody]HierarchyValueRequestBody body)
         {
             this.service.SetValue(HierarchyPath.Create<string>(), body.value);
@@ -83,7 +83,7 @@ namespace Treesor.Service.Endpoints
             return this.CreatedAtRoute("SetValueAtRoot", new { path = string.Empty }, response);
         }
 
-        [HttpPost, Route("api/{*path}", Name = "SetValue")]
+        [HttpPost, Route("api/v1/values/{*path}", Name = "SetValue")]
         public IHttpActionResult Post([FromUri] string path, [FromBody]HierarchyValueRequestBody body)
         {
             if (string.IsNullOrEmpty(path))
@@ -100,24 +100,24 @@ namespace Treesor.Service.Endpoints
             return this.CreatedAtRoute("SetValue", new { path = path }, response);
         }
 
-        [HttpDelete, Route("api")]
-        public IHttpActionResult Delete()
+        [HttpDelete, Route("api/v1/values")]
+        public IHttpActionResult Delete([FromUri(Name="$expand")] int? expand=null)
         {
-            this.service.RemoveValue(HierarchyPath.Create<string>());
+            this.service.RemoveValue(HierarchyPath.Create<string>(), expand.GetValueOrDefault(1));
             return this.Ok();
         }
 
-        [HttpDelete, Route("api/{*path}")]
-        public IHttpActionResult Delete([FromUri] string path)
+        [HttpDelete, Route("api/v1/values/{*path}")]
+        public IHttpActionResult Delete([FromUri] string path, [FromUri(Name = "$expand")] int? expand = null)
         {
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
-            this.service.RemoveValue(HierarchyPath.Parse(path, "/"));
+            this.service.RemoveValue(HierarchyPath.Parse(path, "/"),expand.GetValueOrDefault(1));
             return this.Ok();
         }
 
-        [HttpPut, Route("api")]
+        [HttpPut, Route("api/v1/values")]
         public IHttpActionResult Put([FromBody] HierarchyValueRequestBody value)
         {
             this.service.SetValue(HierarchyPath.Create<string>(), value.value);
@@ -125,7 +125,7 @@ namespace Treesor.Service.Endpoints
             return this.Ok(new HierarchyValueBody { value = value.value, path = string.Empty });
         }
 
-        [HttpPut, Route("api/{*path}")]
+        [HttpPut, Route("api/v1/values/{*path}")]
         public IHttpActionResult Put([FromUri] string path, [FromBody] HierarchyValueRequestBody value)
         {
             if (string.IsNullOrEmpty(path))

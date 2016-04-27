@@ -1,6 +1,5 @@
 ﻿namespace Treesor.PowershellDriveProvider
 {
-    using Client;
     using NLog;
     using NLog.Fluent;
     using System;
@@ -34,12 +33,12 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = TreesorService.Factory(new RemoteHierarchy(driveInfo.Name));
+            this.treesorService = TreesorService.Factory(driveInfo.Root);
         }
 
-        public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
-        {
-        }
+        //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
+        //{
+        //}
 
         private readonly TreesorService treesorService;
 
@@ -86,7 +85,16 @@
         {
             log.Debug().Message($"Setting value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
 
-            this.treesorService.SetValue(path, value);
+            try
+            {
+                this.treesorService.SetValue(path, value);
+            }
+            catch (InvalidOperationException ex)
+            {
+                log.Error().Message($"Set-Item '{path}' value='{value?.GetHashCode()}' isn't supported:{ex.Message}");
+
+                throw new PSNotSupportedException($"Set-Item '{path}' value='{value?.GetHashCode()}' isn't supported", ex);
+            }
 
             log.Info().Message($"Set value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
         }
@@ -95,9 +103,18 @@
         {
             log.Debug().Message($"Clearing value at '{path}'").Write();
 
-            this.treesorService.RemoveValue(path);
+            try
+            {
+                this.treesorService.RemoveValue(path);
+            }
+            catch (InvalidOperationException ex)
+            {
+                log.Error().Message($"Clear-Item '{path}' isn't supported:{ex.Message}");
 
-            log.Debug().Message($"Cleared value at '{path}'").Write();
+                throw new PSNotSupportedException($"Clear-Item '{path}' isn't supported", ex);
+            }
+
+            log.Info().Message($"Cleared value at '{path}'").Write();
         }
 
         #endregion Implement ItemCmdletProvider
@@ -163,7 +180,7 @@
         {
             log.Debug().Message($"Deleting {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
 
-            this.treesorService.RemoveContainer(path);
+            this.treesorService.RemoveContainer(path, recurse);
 
             log.Info().Message($"Deleted {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
         }
@@ -172,9 +189,9 @@
         {
             log.Debug().Message($"Checking if {nameof(TreesorContainerNode)} at '{path}' has children").Write();
 
-            var hasChildren = this.treesorService.GetContainerChildren(path).Any();
+            var hasChildren = this.treesorService.HasChildNodes(path);
 
-            log.Info().Message($"Checked if { nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
+            log.Info().Message($"Checked if {nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
 
             return hasChildren;
         }

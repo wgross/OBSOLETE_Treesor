@@ -16,7 +16,7 @@ namespace Treesor.Client.Test
         public void ArrangeAllTests()
         {
             this.httpTest = new HttpTest();
-            this.remoteHierarchy = new RemoteHierarchy("http://localhost:9002/api");
+            this.remoteHierarchy = new RemoteHierarchy("http://localhost:9002/api/v1");
         }
 
         [TearDown]
@@ -55,7 +55,7 @@ namespace Treesor.Client.Test
             // ASSERT
 
             this.httpTest
-                .ShouldHaveCalled("http://localhost:9002/api/a")
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values/a")
                 .WithVerb(HttpMethod.Post)
                 .WithContentType("application/json")
                 .With(c => c.RequestBody.Contains("\"value\":\"value\""));
@@ -96,7 +96,7 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Set_value_at_remote_hierachy_node()
+        public void Set_value_at_remote_hierarchy_node()
         {
             // ARRANGE
 
@@ -107,7 +107,7 @@ namespace Treesor.Client.Test
             // ASSERT
 
             this.httpTest
-                .ShouldHaveCalled("http://localhost:9002/api/a")
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values/a")
                 .WithVerb(HttpMethod.Put)
                 .WithContentType("application/json")
                 .With(c => c.RequestBody.Contains("\"value\":\"value\""));
@@ -125,7 +125,7 @@ namespace Treesor.Client.Test
             // ASSERT
 
             this.httpTest
-                .ShouldHaveCalled("http://localhost:9002/api/a")
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values/a")
                 .WithVerb(HttpMethod.Put)
                 .WithContentType("application/json")
                 .With(c => c.RequestBody.Contains("\"value\":null"));
@@ -179,7 +179,7 @@ namespace Treesor.Client.Test
             Assert.AreEqual("value", value);
 
             this.httpTest
-                .ShouldHaveCalled("http://localhost:9002/api/a")
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values/a")
                 .WithVerb(HttpMethod.Get);
         }
 
@@ -188,14 +188,30 @@ namespace Treesor.Client.Test
         {
             // ACT
 
-            var result = this.remoteHierarchy.Remove(HierarchyPath.Create<string>());
+            var result = this.remoteHierarchy.Remove(HierarchyPath.Create<string>(), null);
 
             // ASSERT
 
             Assert.IsTrue(result);
 
             this.httpTest
-                .ShouldHaveCalled("http://localhost:9002/api")
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values")
+                .WithVerb(HttpMethod.Delete);
+        }
+
+        [Test]
+        public void Remove_value_from_remote_hierarchy_root_recursive()
+        {
+            // ACT
+
+            var result = this.remoteHierarchy.Remove(HierarchyPath.Create<string>(), int.MaxValue);
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+
+            this.httpTest
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values?$expand=2147483647")
                 .WithVerb(HttpMethod.Delete);
         }
 
@@ -204,14 +220,14 @@ namespace Treesor.Client.Test
         {
             // ACT
 
-            var result = this.remoteHierarchy.Remove(HierarchyPath.Create("a"));
+            var result = this.remoteHierarchy.Remove(HierarchyPath.Create("a"), null);
 
             // ASSERT
 
             Assert.IsTrue(result);
 
             this.httpTest
-                .ShouldHaveCalled("http://localhost:9002/api/a")
+                .ShouldHaveCalled("http://localhost:9002/api/v1/values/a")
                 .WithVerb(HttpMethod.Delete);
         }
     }
