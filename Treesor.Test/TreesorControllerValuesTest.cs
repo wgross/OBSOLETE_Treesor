@@ -20,7 +20,7 @@ namespace Treesor.Test
             this.controller = new HierarchyValueController(this.service.Object);
         }
 
-        #region POST /api/{path}, POST /api
+        #region POST /api/values/{path}, POST /api/values
 
         [Test]
         public void Write_value_to_hierarchy_with_empty_path_fails()
@@ -42,24 +42,23 @@ namespace Treesor.Test
         }
 
         [Test]
-        public void Write_new_value_to_root()
+        public void Write_value_to_root_fails()
         {
             // ARRANGE
 
-            object value = new { test = "text" };
+            object value = "text";
 
             // ACT
 
-            var result = this.controller.Post(new HierarchyValueRequestBody { value = value }) as CreatedAtRouteNegotiatedContentResult<HierarchyValueBody>;
+            var result = this.controller.Post(new HierarchyValueRequestBody { value = value }) as ExceptionResult;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("", result.Content.path);
-            Assert.AreSame(value, result.Content.value);
-            Assert.AreEqual("", result.RouteValues["path"]);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Once);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Never);
+            this.service.VerifyAll();
         }
 
         [Test]
@@ -81,9 +80,9 @@ namespace Treesor.Test
             this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), value), Times.Once);
         }
 
-        #endregion POST /api/{path}, POST /api
+        #endregion POST /api/values/{path}, POST /api/values
 
-        #region GET /api/{path}, GET /api
+        #region GET /api/values/{path}, GET /api/values
 
         [Test]
         public void Read_value_from_a_subnode()
@@ -143,42 +142,40 @@ namespace Treesor.Test
         }
 
         [Test]
-        public void Read_value_from_root_node()
+        public void Read_value_from_root_node_fails_with_InvalidOperationException()
         {
-            // ARRANGE
-
-            object value = new { test = "text" };
-            this.service.Setup(s => s.TryGetValue(HierarchyPath.Create<string>(), out value)).Returns(true);
-
             // ACT
 
-            var result = this.controller.Get() as OkNegotiatedContentResult<HierarchyValueBody>;
+            var result = this.controller.Get() as ExceptionResult;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(string.Empty, result.Content.path);
-            Assert.AreSame(value, result.Content.value);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
+            object value = null;
+            this.service.Verify(s => s.TryGetValue(It.IsAny<HierarchyPath<string>>(), out value), Times.Never);
             this.service.VerifyAll();
         }
 
-        #endregion GET /api/{path}, GET /api
+        #endregion GET /api/values/{path}, GET /api/values
 
-        #region DELETE /api/{path}, DELETE /api, DELETE /api?$expand
+        #region DELETE /api/v1/values/{path}?$expand, DELETE /api/v1/values?$expand
 
         [Test]
-        public void Delete_value_from_root_node()
+        public void Delete_value_from_root_node_fails_with_InvalidOperationException()
         {
             // ACT
 
-            var result = this.controller.Delete((int?)null) as OkResult;
+            var result = this.controller.Delete((int?)null) as ExceptionResult;
 
             // ASSERT
 
             Assert.IsNotNull(result);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), 1), Times.Once);
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), 1), Times.Never);
+            this.service.VerifyAll();
         }
 
         [Test]
@@ -222,9 +219,9 @@ namespace Treesor.Test
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
         }
 
-        #endregion DELETE /api/{path}, DELETE /api, DELETE /api?$expand
+        #endregion DELETE /api/v1/values/{path}?$expand, DELETE /api/v1/values?$expand
 
-        #region PUT /api/{path}, PUT /api
+        #region PUT /api/v1/values/{*path}, PUT /api/v1/values
 
         [Test]
         public void Update_value_of_a_sub_node()
@@ -266,25 +263,25 @@ namespace Treesor.Test
         }
 
         [Test]
-        public void Update_value_of_root()
+        public void Update_value_of_root_fails_with_InvalidOperationException()
         {
             // ARRANGE
 
-            object value = new { test = "text" };
+            object value = "text";
 
             // ACT
 
-            var result = this.controller.Put(new HierarchyValueRequestBody { value = value }) as OkNegotiatedContentResult<HierarchyValueBody>;
+            var result = this.controller.Put(new HierarchyValueRequestBody { value = value }) as ExceptionResult;
 
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreSame(value, result.Content.value);
-            Assert.AreEqual("", result.Content.path);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Once);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Never);
+            this.service.VerifyAll();
         }
 
-        #endregion PUT /api/{path}, PUT /api
+        #endregion PUT /api/v1/values/{*path}, PUT /api/v1/values
     }
 }

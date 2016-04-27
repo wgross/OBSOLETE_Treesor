@@ -37,15 +37,17 @@ namespace Treesor.Service.Endpoints
         [HttpGet, Route("api/v1/values/")]
         public IHttpActionResult Get()
         {
-            object value;
-            if (this.service.TryGetValue(HierarchyPath.Create<string>(), out value))
-                return this.Ok(new HierarchyValueBody
-                {
-                    path = string.Empty,
-                    value = value
-                });
+            return this.InternalServerError(new InvalidOperationException("Root may not have a value"));
 
-            return this.NotFound();
+            //object value;
+            //if (this.service.TryGetValue(HierarchyPath.Create<string>(), out value))
+            //    return this.Ok(new HierarchyValueBody
+            //    {
+            //        path = string.Empty,
+            //        value = value
+            //    });
+
+            //return this.NotFound();
         }
 
         /// <summary>
@@ -72,6 +74,9 @@ namespace Treesor.Service.Endpoints
         [HttpPost, Route("api/v1/values", Name = "SetValueAtRoot")]
         public IHttpActionResult Post([FromBody]HierarchyValueRequestBody body)
         {
+            if (body.value != null)
+                return this.InternalServerError(new InvalidOperationException("Root may not have a value"));
+
             this.service.SetValue(HierarchyPath.Create<string>(), body.value);
 
             var response = new HierarchyValueBody
@@ -103,6 +108,9 @@ namespace Treesor.Service.Endpoints
         [HttpDelete, Route("api/v1/values")]
         public IHttpActionResult Delete([FromUri(Name="$expand")] int? expand=null)
         {
+            if (expand == null || expand == 1)
+                return this.InternalServerError(new InvalidOperationException("Root may not have a value"));
+
             this.service.RemoveValue(HierarchyPath.Create<string>(), expand.GetValueOrDefault(1));
             return this.Ok();
         }
@@ -120,6 +128,7 @@ namespace Treesor.Service.Endpoints
         [HttpPut, Route("api/v1/values")]
         public IHttpActionResult Put([FromBody] HierarchyValueRequestBody value)
         {
+            return this.InternalServerError
             this.service.SetValue(HierarchyPath.Create<string>(), value.value);
 
             return this.Ok(new HierarchyValueBody { value = value.value, path = string.Empty });

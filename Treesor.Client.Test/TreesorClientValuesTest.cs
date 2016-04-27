@@ -26,7 +26,7 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Add_value_at_remote_hierachy_root()
+        public void Add_value_at_remote_hierarchy_root()
         {
             // ARRANGE
 
@@ -44,7 +44,7 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Add_value_at_remote_hierachy_node()
+        public void Add_value_at_remote_hierarchy_node()
         {
             // ARRANGE
 
@@ -62,7 +62,7 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Set_value_at_remote_hierachy_root()
+        public void Set_value_at_remote_hierarchy_root()
         {
             // ARRANGE
 
@@ -80,7 +80,7 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Set_value_null_at_remote_hierachy_root()
+        public void Set_value_null_at_remote_hierarchy_root()
         {
             // ACT
 
@@ -114,7 +114,7 @@ namespace Treesor.Client.Test
         }
 
         [Test]
-        public void Set_value_null_at_remote_hierachy_node()
+        public void Set_value_null_at_remote_hierarchy_node()
         {
             // ARRANGE
 
