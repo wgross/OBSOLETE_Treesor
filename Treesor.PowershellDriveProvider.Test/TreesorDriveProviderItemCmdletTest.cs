@@ -3,6 +3,7 @@ using Moq;
 using NLog;
 using NLog.Config;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -84,13 +85,13 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Powershell_SetItem_root_set_value()
+        public void Powershell_SetItem_root_fails_with_PSNotSupportedException()
         {
             // ARRANGE
 
             var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
 
-            this.treesorService.Setup(s => s.SetValue(TreesorNodePath.Create(), "value")).Returns(rootContainer);
+            this.treesorService.Setup(s => s.SetValue(TreesorNodePath.Create(), "value")).Throws(new InvalidOperationException("Container may not have a value"));
 
             // ACT
 
@@ -104,6 +105,11 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             Assert.IsFalse(result.Any());
+            Assert.IsTrue(this.powershell.HadErrors);
+            Assert.AreEqual(PSInvocationState.Failed, this.powershell.InvocationStateInfo.State);
+            Assert.IsInstanceOf<CmdletInvocationException>(this.powershell.InvocationStateInfo.Reason);
+            Assert.IsTrue(this.powershell.InvocationStateInfo.Reason.Message.Contains("Set-Item"));
+            Assert.IsTrue(this.powershell.InvocationStateInfo.Reason.Message.Contains("isn't supported"));
 
             this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create(), "value"), Times.Once);
             this.treesorService.VerifyAll();
@@ -130,6 +136,11 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             Assert.IsFalse(result.Any());
+            Assert.IsTrue(this.powershell.HadErrors);
+            Assert.AreEqual(PSInvocationState.Failed, this.powershell.InvocationStateInfo.State);
+            Assert.IsInstanceOf<CmdletInvocationException>(this.powershell.InvocationStateInfo.Reason);
+            Assert.IsTrue(this.powershell.InvocationStateInfo.Reason.Message.Contains("Clear-Item"));
+            Assert.IsTrue(this.powershell.InvocationStateInfo.Reason.Message.Contains("isn't supported"));
 
             this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
             this.treesorService.Verify(s => s.RemoveValue(TreesorNodePath.Create()), Times.Once);

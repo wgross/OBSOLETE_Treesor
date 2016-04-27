@@ -138,7 +138,7 @@
 
         protected override void SetItem(string path, object value)
         {
-            log.Trace().Message($"{nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
+            log.Trace().Message($"{nameof(SetItem)}({nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
 
             this.GetTreesorDriveInfo().SetItem(TreesorNodePath.Parse(path), value);
         }

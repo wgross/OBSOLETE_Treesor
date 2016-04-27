@@ -85,7 +85,16 @@
         {
             log.Debug().Message($"Setting value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
 
-            this.treesorService.SetValue(path, value);
+            try
+            {
+                this.treesorService.SetValue(path, value);
+            }
+            catch (InvalidOperationException ex)
+            {
+                log.Error().Message($"Set-Item '{path}' value='{value?.GetHashCode()}' isn't supported:{ex.Message}");
+
+                throw new PSNotSupportedException($"Set-Item '{path}' value='{value?.GetHashCode()}' isn't supported", ex);
+            }
 
             log.Info().Message($"Set value at '{path}': value.GetHashCode={value?.GetHashCode()}").Write();
         }
@@ -94,9 +103,18 @@
         {
             log.Debug().Message($"Clearing value at '{path}'").Write();
 
-            this.treesorService.RemoveValue(path);
+            try
+            {
+                this.treesorService.RemoveValue(path);
+            }
+            catch (InvalidOperationException ex)
+            {
+                log.Error().Message($"Clear-Item '{path}' isn't supported:{ex.Message}");
 
-            log.Debug().Message($"Cleared value at '{path}'").Write();
+                throw new PSNotSupportedException($"Clear-Item '{path}' isn't supported", ex);
+            }
+
+            log.Info().Message($"Cleared value at '{path}'").Write();
         }
 
         #endregion Implement ItemCmdletProvider
@@ -173,7 +191,7 @@
 
             var hasChildren = this.treesorService.HasChildNodes(path);
 
-            log.Info().Message($"Checked if { nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
+            log.Info().Message($"Checked if {nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
 
             return hasChildren;
         }
