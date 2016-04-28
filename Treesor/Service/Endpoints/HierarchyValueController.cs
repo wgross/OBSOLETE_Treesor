@@ -128,10 +128,11 @@ namespace Treesor.Service.Endpoints
         [HttpPut, Route("api/v1/values")]
         public IHttpActionResult Put([FromBody] HierarchyValueRequestBody value)
         {
-            return this.InternalServerError
-            this.service.SetValue(HierarchyPath.Create<string>(), value.value);
+            return this.InternalServerError(new InvalidOperationException("Root may not have a value"));
 
-            return this.Ok(new HierarchyValueBody { value = value.value, path = string.Empty });
+            //this.service.SetValue(HierarchyPath.Create<string>(), value.value);
+
+            //return this.Ok(new HierarchyValueBody { value = value.value, path = string.Empty });
         }
 
         [HttpPut, Route("api/v1/values/{*path}")]

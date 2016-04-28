@@ -248,7 +248,7 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            object value = new { test = "text" };
+            object value = "text";
 
             // ACT
 
@@ -260,6 +260,7 @@ namespace Treesor.Test
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
             this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<object>()), Times.Never);
+            this.service.VerifyAll();
         }
 
         [Test]
