@@ -1,6 +1,7 @@
 ﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
 using NUnit.Framework;
+using System;
 using System.Linq;
 
 namespace Treesor.Application.Test
@@ -19,11 +20,55 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void Set_a_value_in_the_hierarchy()
+        public void SetValue_at_hierarchy_node()
         {
             // ACT
 
             this.service.SetValue(HierarchyPath.Create("a"), new TreesorNodeValue("test"));
+        }
+
+        [Test]
+        public void SetValue_at_hierarchy_root_fails_with_InvalidOperationException()
+        {
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.service.SetValue(HierarchyPath.Create<string>(), new TreesorNodeValue("test")));
+
+            // ASSERT
+
+            Assert.That(result.Message.Contains("Root may not have a value"));
+        }
+
+        [Test]
+        public void SetValue_of_null_fails_with_ArgumentNullException()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.service.SetValue(HierarchyPath.Create("a"), null));
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("value", result.ParamName);
+        }
+
+        [Test]
+        public void SetValue_converts_a_container_if_it_has_no_children()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorNodeValueContainer());
+
+            // ACT
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorNodeValue("test2"));
+
+            // ASSERT
+
+            TreesorNodeValueBase value;
+            this.service.TryGetValue(HierarchyPath.Create("a"), out value);
+            Assert.IsInstanceOf<TreesorNodeValue>(value);
+            Assert.AreEqual("test2", ((TreesorNodeValue)value).Value);
         }
 
         [Test]
@@ -121,7 +166,6 @@ namespace Treesor.Application.Test
             Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b", "c"), out value));
             Assert.AreEqual("test3", ((TreesorNodeValue)value).Value);
         }
-
 
         [Test]
         public void Delete_no_values_from_hierarchy_if_depth_is_0()

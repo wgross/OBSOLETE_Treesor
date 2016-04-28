@@ -2,6 +2,7 @@
 using Elementary.Hierarchy.Collections;
 using NLog;
 using NLog.Fluent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,8 +24,14 @@ namespace Treesor.Application
         public void SetValue(HierarchyPath<string> path, TreesorNodeValueBase value)
         {
             log.Debug().Message("Setting value at '{0}' to '{1}'", path, value).Write();
+            
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
-            this.hierarchy.Add(path, value);
+            if (path.IsRoot && !value.IsContainer)
+                throw new InvalidOperationException("Root may not have a value");
+
+                this.hierarchy[path] = value;
 
             log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }
@@ -55,7 +62,7 @@ namespace Treesor.Application
             {
                 var removed = false;
 
-                // remove all nmodes from the hierarchy starting at 'hierarchyPath' 
+                // remove all nmodes from the hierarchy starting at 'hierarchyPath'
                 foreach (var nodes in this.hierarchy.Traverse(hierarchyPath).DescendantsOrSelf(depthFirst: false, maxDepth: depthCoalesced).ToArray())
                     removed = this.hierarchy.Remove(nodes.Path) || removed;
 
