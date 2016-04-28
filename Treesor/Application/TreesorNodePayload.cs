@@ -1,8 +1,8 @@
 ﻿namespace Treesor.Application
 {
-    public abstract class TreesorNodeValueBase
+    public abstract class TreesorNodePayload
     {
-        public TreesorNodeValueBase(bool isContainer)
+        public TreesorNodePayload(bool isContainer)
         {
             this.IsContainer = isContainer;
         }

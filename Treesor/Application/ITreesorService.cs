@@ -5,12 +5,12 @@ namespace Treesor.Application
 {
     public interface ITreesorService
     {
-        void SetValue(HierarchyPath<string> path, TreesorNodeValueBase value);
+        void SetValue(HierarchyPath<string> path, TreesorNodePayload value);
 
-        bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodeValueBase value);
+        bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodePayload value);
 
         bool RemoveValue(HierarchyPath<string> hierarchyPath, int? depth = 0);
 
-        IEnumerable<KeyValuePair<HierarchyPath<string>, TreesorNodeValueBase>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth);
+        IEnumerable<KeyValuePair<HierarchyPath<string>, TreesorNodePayload>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth);
     }
 }

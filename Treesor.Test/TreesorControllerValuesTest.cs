@@ -38,7 +38,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodeValueBase>()), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodePayload>()), Times.Never);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), new TreesorNodeValue(value)), Times.Never);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), new TreesorValue(value)), Times.Never);
             this.service.VerifyAll();
         }
 
@@ -77,7 +77,7 @@ namespace Treesor.Test
             Assert.AreSame(value, result.Content.value);
             Assert.AreEqual("a/b", result.RouteValues["path"]);
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), new TreesorNodeValue(value)), Times.Once);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue(value)), Times.Once);
         }
 
         #endregion POST /api/values/{path}, POST /api/values
@@ -89,7 +89,7 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            TreesorNodeValueBase value = new TreesorNodeValue("text");
+            TreesorNodePayload value = new TreesorValue("text");
 
             this.service.Setup(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value)).Returns(true);
 
@@ -111,7 +111,7 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            TreesorNodeValueBase value = new TreesorNodeValue(null);
+            TreesorNodePayload value = new TreesorValue(null);
 
             this.service.Setup(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value)).Returns(false);
 
@@ -138,7 +138,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodeValueBase>()), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodePayload>()), Times.Never);
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
-            TreesorNodeValueBase value = null;
+            TreesorNodePayload value = null;
             this.service.Verify(s => s.TryGetValue(It.IsAny<HierarchyPath<string>>(), out value), Times.Never);
             this.service.VerifyAll();
         }
@@ -240,7 +240,7 @@ namespace Treesor.Test
             Assert.AreSame(value, result.Content.value);
             Assert.AreEqual("a/b", result.Content.path);
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"),new TreesorNodeValue(value)), Times.Once);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"),new TreesorValue(value)), Times.Once);
             this.service.VerifyAll();
         }
 
@@ -260,7 +260,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodeValueBase>()), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodePayload>()), Times.Never);
             this.service.VerifyAll();
         }
 
@@ -280,7 +280,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("Root may not have a value"));
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), new TreesorNodeValue(value)), Times.Never);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), new TreesorValue(value)), Times.Never);
             this.service.VerifyAll();
         }
 

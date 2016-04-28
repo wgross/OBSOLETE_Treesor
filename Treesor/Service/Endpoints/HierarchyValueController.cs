@@ -10,13 +10,13 @@ namespace Treesor.Service.Endpoints
     {
         #region Construction and Initialization of this instance
 
-        private static readonly MutableHierarchy<string, TreesorNodeValueBase> defaultHierarchy = new MutableHierarchy<string, TreesorNodeValueBase>();
+        private static readonly MutableHierarchy<string, TreesorNodePayload> defaultHierarchy = new MutableHierarchy<string, TreesorNodePayload>();
 
         public HierarchyValueController()
             : this(defaultHierarchy)
         { }
 
-        public HierarchyValueController(MutableHierarchy<string, TreesorNodeValueBase> hierarchy)
+        public HierarchyValueController(MutableHierarchy<string, TreesorNodePayload> hierarchy)
             : this(service: new Treesor.Application.TreesorService(hierarchy))
         {
         }
@@ -60,7 +60,7 @@ namespace Treesor.Service.Endpoints
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
-            TreesorNodeValueBase value;
+            TreesorNodePayload value;
             if (this.service.TryGetValue(HierarchyPath.Parse(path, "/"), out value))
                 return this.Ok(new HierarchyValueBody
                 {
@@ -77,7 +77,7 @@ namespace Treesor.Service.Endpoints
             if (body.value != null)
                 return this.InternalServerError(new InvalidOperationException("Root may not have a value"));
 
-            this.service.SetValue(HierarchyPath.Create<string>(), new TreesorNodeValue(body.value));
+            this.service.SetValue(HierarchyPath.Create<string>(), new TreesorValue(body.value));
 
             var response = new HierarchyValueBody
             {
@@ -94,7 +94,7 @@ namespace Treesor.Service.Endpoints
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
-            this.service.SetValue(HierarchyPath.Parse(path, "/"), new TreesorNodeValue(body.value));
+            this.service.SetValue(HierarchyPath.Parse(path, "/"), new TreesorValue(body.value));
 
             var response = new HierarchyValueBody
             {
@@ -141,7 +141,7 @@ namespace Treesor.Service.Endpoints
             if (string.IsNullOrEmpty(path))
                 return this.InternalServerError(new ArgumentException("Path may not be null or empty"));
 
-            this.service.SetValue(HierarchyPath.Parse(path, "/"), new TreesorNodeValue(value.value));
+            this.service.SetValue(HierarchyPath.Parse(path, "/"), new TreesorValue(value.value));
 
             return this.Ok(new HierarchyValueBody { value = value.value, path = path });
         }

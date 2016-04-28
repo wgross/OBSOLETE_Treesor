@@ -10,7 +10,7 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            TreesorNodeValueBase nodeValue = new TreesorNodeValueContainer();
+            TreesorNodePayload nodeValue = new TreesorContainer();
 
             // ACT
 
@@ -26,7 +26,7 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            TreesorNodeValueBase nodeValue = new TreesorNodeValue(null);
+            TreesorNodePayload nodeValue = new TreesorValue(null);
 
             // ACT
 
@@ -42,8 +42,8 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            var a = new TreesorNodeValue("test");
-            var b = new TreesorNodeValue("test");
+            var a = new TreesorValue("test");
+            var b = new TreesorValue("test");
 
             // ACT
 
@@ -60,8 +60,8 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            var a = new TreesorNodeValue(null);
-            var b = new TreesorNodeValue(null);
+            var a = new TreesorValue(null);
+            var b = new TreesorValue(null);
 
             // ACT
 
@@ -78,8 +78,8 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            var a = new TreesorNodeValue(null);
-            var b = new TreesorNodeValue("test");
+            var a = new TreesorValue(null);
+            var b = new TreesorValue("test");
 
             // ACT
 
@@ -96,8 +96,8 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            var a = new TreesorNodeValue(17);
-            var b = new TreesorNodeValue("test");
+            var a = new TreesorValue(17);
+            var b = new TreesorValue("test");
 
             // ACT
 

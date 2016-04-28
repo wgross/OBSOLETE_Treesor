@@ -14,14 +14,14 @@ namespace Treesor.Application
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public TreesorService(MutableHierarchy<string, TreesorNodeValueBase> hierarchy)
+        public TreesorService(MutableHierarchy<string, TreesorNodePayload> hierarchy)
         {
             this.hierarchy = hierarchy;
         }
 
-        private readonly MutableHierarchy<string, TreesorNodeValueBase> hierarchy;
+        private readonly MutableHierarchy<string, TreesorNodePayload> hierarchy;
 
-        public void SetValue(HierarchyPath<string> path, TreesorNodeValueBase value)
+        public void SetValue(HierarchyPath<string> path, TreesorNodePayload value)
         {
             log.Debug().Message("Setting value at '{0}' to '{1}'", path, value).Write();
             
@@ -36,7 +36,7 @@ namespace Treesor.Application
             log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }
 
-        public bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodeValueBase value)
+        public bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodePayload value)
         {
             return this.hierarchy.TryGetValue(hierarchyPath, out value);
         }
@@ -75,16 +75,16 @@ namespace Treesor.Application
             }
         }
 
-        public IEnumerable<KeyValuePair<HierarchyPath<string>, TreesorNodeValueBase>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth)
+        public IEnumerable<KeyValuePair<HierarchyPath<string>, TreesorNodePayload>> DescendantsOrSelf(HierarchyPath<string> path, int maxDepth)
         {
             return this.hierarchy.Traverse(path)
                 .DescendantsOrSelf(depthFirst: false, maxDepth: maxDepth)
                 .Select(n =>
                 {
                     if (n.HasValue)
-                        return new KeyValuePair<HierarchyPath<string>, TreesorNodeValueBase>(n.Path, n.Value);
+                        return new KeyValuePair<HierarchyPath<string>, TreesorNodePayload>(n.Path, n.Value);
                     else
-                        return new KeyValuePair<HierarchyPath<string>, TreesorNodeValueBase>(n.Path, null);
+                        return new KeyValuePair<HierarchyPath<string>, TreesorNodePayload>(n.Path, null);
                 });
         }
     }

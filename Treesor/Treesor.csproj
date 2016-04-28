@@ -120,9 +120,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\ITreesorService.cs" />
-    <Compile Include="Application\TreesorNodeValue.cs" />
-    <Compile Include="Application\TreesorNodeValueBase.cs" />
-    <Compile Include="Application\TreesorNodeValueContainer.cs" />
+    <Compile Include="Application\TreesorValue.cs" />
+    <Compile Include="Application\TreesorNodePayload.cs" />
+    <Compile Include="Application\TreesorContainer.cs" />
     <Compile Include="Application\TreesorService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Endpoints\HierarchyNodeController.cs" />

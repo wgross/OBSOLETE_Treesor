@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Treesor.Application
 {
-    public class TreesorNodeValue : TreesorNodeValueBase
+    public class TreesorValue : TreesorNodePayload
     {
-        public TreesorNodeValue(object value)
+        public TreesorValue(object value)
             : base(isContainer: false)
         {
             this.Value = value;
@@ -18,7 +18,7 @@ namespace Treesor.Application
 
         public override bool Equals(object obj)
         {
-            var objAsTreesorNodeValue = obj as TreesorNodeValue;
+            var objAsTreesorNodeValue = obj as TreesorValue;
             if (objAsTreesorNodeValue == null)
                 return false;
 
