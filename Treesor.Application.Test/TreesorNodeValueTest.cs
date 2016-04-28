@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Treesor.Application.Test
 {
@@ -31,7 +26,7 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            TreesorNodeValueBase nodeValue = new TreesorNodeValue();
+            TreesorNodeValueBase nodeValue = new TreesorNodeValue(null);
 
             // ACT
 
@@ -40,6 +35,78 @@ namespace Treesor.Application.Test
             // ASSERT
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ValueNodes_are_equal_if_data_is_equal()
+        {
+            // ARRANGE
+
+            var a = new TreesorNodeValue("test");
+            var b = new TreesorNodeValue("test");
+
+            // ACT
+
+            var result = (a.Equals(b) && b.Equals(a));
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+        }
+
+        [Test]
+        public void ValueNodes_are_equal_if_both_data_is_null()
+        {
+            // ARRANGE
+
+            var a = new TreesorNodeValue(null);
+            var b = new TreesorNodeValue(null);
+
+            // ACT
+
+            var result = (a.Equals(b) && b.Equals(a));
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+        }
+
+        [Test]
+        public void ValueNodes_are_not_equal_if_one_data_is_null()
+        {
+            // ARRANGE
+
+            var a = new TreesorNodeValue(null);
+            var b = new TreesorNodeValue("test");
+
+            // ACT
+
+            var result = (a.Equals(b) && b.Equals(a));
+
+            // ASSERT
+
+            Assert.IsFalse(result);
+            Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
+        }
+
+        [Test]
+        public void ValueNodes_are_not_equal_if_data_isnt_equal()
+        {
+            // ARRANGE
+
+            var a = new TreesorNodeValue(17);
+            var b = new TreesorNodeValue("test");
+
+            // ACT
+
+            var result = (a.Equals(b) && b.Equals(a));
+
+            // ASSERT
+
+            Assert.IsFalse(result);
+            Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
         }
     }
 }
