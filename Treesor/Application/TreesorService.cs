@@ -24,14 +24,20 @@ namespace Treesor.Application
         public void SetValue(HierarchyPath<string> path, TreesorNodePayload value)
         {
             log.Debug().Message("Setting value at '{0}' to '{1}'", path, value).Write();
-            
+
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
             if (path.IsRoot && !value.IsContainer)
                 throw new InvalidOperationException("Root may not have a value");
 
-                this.hierarchy[path] = value;
+            //IHierarchyNode<string, TreesorNodePayload> node;
+            //if (this.hierarchy.Traverse(HierarchyPath.Create<string>()).DescendantAtOrDefault() .TryGetDescendantAt(path, out node))
+            //    if (node.Value.IsContainer)
+            //        if (node.HasChildNodes)
+            //            throw new InvalidOperationException("Container node can't be converted to a 'value' node if it has children");
+
+            this.hierarchy[path] = value;
 
             log.Info().Message("Set value at path '{0}' to '{1}'", path, value).Write();
         }

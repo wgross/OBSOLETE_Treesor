@@ -72,6 +72,25 @@ namespace Treesor.Application.Test
         }
 
         [Test]
+        public void SetValue_fails_for_container_having_children_with_InvalidOperationException()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorContainer());
+
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("test2")));
+
+            // ASSERT
+
+            Assert.That(result.Message.Contains("Container node can't be converted to a 'value' node if it has children"));
+            TreesorNodePayload value;
+            this.service.TryGetValue(HierarchyPath.Create("a"), out value);
+            Assert.IsInstanceOf<TreesorContainer>(value);
+        }
+
+        [Test]
         public void Read_a_value_from_hierarchy()
         {
             // ARRANGE
