@@ -22,7 +22,7 @@ namespace Treesor.Application.Test
         #region SetValue
 
         [Test]
-        public void SetValue_at_hierarchy_node()
+        public void SetValue_at_new_hierarchy_node()
         {
             // ACT
 
@@ -55,7 +55,7 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void SetValue_fails_for_container_nodes()
+        public void SetValue_fails_for_existing_container_nodes()
         {
             // ARRANGE
 
@@ -71,11 +71,29 @@ namespace Treesor.Application.Test
             Assert.That(result.Message.Contains("is a container and may not have a value"));
         }
 
+        [Test]
+        public void SetValue_at_new_value_node_under_exiting_value_node_fails()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
+
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue("test2")));
+
+            // ASSERT
+
+            Assert.That(result.Message.Contains("'a'"));
+            Assert.That(result.Message.Contains("is a value_node and may not have child nodes"));
+        }
+        
         #endregion SetValue
 
+        #region ReadValue
 
         [Test]
-        public void Read_a_value_from_hierarchy()
+        public void Read_a_value_from_hierarchy_value_node()
         {
             // ARRANGE
 
@@ -92,10 +110,32 @@ namespace Treesor.Application.Test
             Assert.AreEqual("test", ((TreesorValue)value).Value);
         }
 
+        [Test]
+        public void Read_a_value_from_a_hierarchy_container_node()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
+
+            // ACT
+
+            TreesorNodePayload value;
+            this.service.TryGetValue(HierarchyPath.Create("a"), out value);
+
+            // ASSERT
+
+            Assert.IsNotNull(value);
+            Assert.IsTrue(value.IsContainer);
+            Assert.IsInstanceOf<TreesorContainer>(value);
+        }
+
+        #endregion ReadValue
+
+
         #region RemoveValue
 
         [Test]
-        public void Delete_a_value_from_hierarchy()
+        public void Delete_a_value_from_a_value_node()
         {
             // ARRANGE
 
@@ -113,7 +153,7 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void Delete_a_value_which_is_missing_returns_false()
+        public void Delete_a_value_from_missing_node_returns_false()
         {
             // ACT
 

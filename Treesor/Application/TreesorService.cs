@@ -37,20 +37,24 @@ namespace Treesor.Application
             try
             {
                 IHierarchyNode<string, TreesorNodePayload> node = this.hierarchy.Traverse(path);
+
+                if (!node.Parent().Value.IsContainer)
+                    throw new InvalidOperationException($"Node at '{path.Parent()}' is a value node and may not have children");
+                
                 if (node.Value == null || !node.Value.IsContainer)
                     this.hierarchy[path] = value;
                 else throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
 
                 log.Info().Message($"Set value at path '{path}' to '{value}'").Write();
             }
-            catch(KeyNotFoundException)
+            catch (KeyNotFoundException)
             {
                 log.Debug().Message($"Node at '{path}' doesn't exist and is created").Write();
 
                 this.hierarchy[path] = value;
 
                 log.Info().Message($"Set value at path '{path}' to '{value}'").Write();
-            } 
+            }
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodePayload value)
