@@ -72,11 +72,11 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void SetValue_at_new_value_node_under_exiting_value_node_fails()
+        public void SetValue_at_new_value_node_under_existing_value_node_fails()
         {
             // ARRANGE
 
-            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("value"));
 
             // ACT
 
@@ -85,9 +85,46 @@ namespace Treesor.Application.Test
             // ASSERT
 
             Assert.That(result.Message.Contains("'a'"));
-            Assert.That(result.Message.Contains("is a value_node and may not have child nodes"));
+            Assert.That(result.Message.Contains("is a value node and may not have child nodes"));
         }
-        
+
+        [Test]
+        public void SetValue_at_new_value_node_under_container_node()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
+
+            // ACT
+
+            this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue("test2"));
+
+            // ASSERT
+
+            TreesorNodePayload value;
+            Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b"), out value));
+            Assert.AreEqual("test2", ((TreesorValue)value).Value);
+        }
+
+        [Test]
+        public void SetValue_at_existing_value_node_under_container_node()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
+            this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue("test1"));
+
+            // ACT
+
+            this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue("test2"));
+
+            // ASSERT
+
+            TreesorNodePayload value;
+            Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b"), out value));
+            Assert.AreEqual("test2", ((TreesorValue)value).Value);
+        }
+
         #endregion SetValue
 
         #region ReadValue
@@ -131,7 +168,6 @@ namespace Treesor.Application.Test
 
         #endregion ReadValue
 
-
         #region RemoveValue
 
         [Test]
@@ -171,8 +207,8 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("test"));
-            this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue("test2"));
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
+            this.service.SetValue(HierarchyPath.Create("a", "a"), new TreesorValue("test2"));
             this.service.SetValue(HierarchyPath.Create("a", "b", "c"), new TreesorValue("test3"));
 
             // ACT
@@ -182,8 +218,12 @@ namespace Treesor.Application.Test
             // ASSERT
 
             TreesorNodePayload value;
-            Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
-            Assert.IsFalse(this.service.TryGetValue(HierarchyPath.Create("a", "b"), out value));
+            Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
+            Assert.IsTrue(value.IsContainer);
+            Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "a"), out value));
+            Assert.IsTrue(value.IsContainer);
+            Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b"), out value));
+            Assert.IsTrue(value.IsContainer);
             Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b", "c"), out value));
             Assert.AreEqual("test3", ((TreesorValue)value).Value);
         }
@@ -215,7 +255,7 @@ namespace Treesor.Application.Test
         {
             // ARRANGE
 
-            this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("test"));
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorContainer());
             this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue("test2"));
 
             // ACT
@@ -228,7 +268,7 @@ namespace Treesor.Application.Test
 
             TreesorNodePayload value;
             Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a"), out value));
-            Assert.AreEqual("test", ((TreesorValue)value).Value);
+            Assert.IsTrue(value.IsContainer);
             Assert.IsTrue(this.service.TryGetValue(HierarchyPath.Create("a", "b"), out value));
             Assert.AreEqual("test2", ((TreesorValue)value).Value);
         }

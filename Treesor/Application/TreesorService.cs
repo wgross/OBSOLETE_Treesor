@@ -1,5 +1,6 @@
 ﻿using Elementary.Hierarchy;
 using Elementary.Hierarchy.Collections;
+using Elementary.Hierarchy.Generic;
 using NLog;
 using NLog.Fluent;
 using System;
@@ -28,33 +29,56 @@ namespace Treesor.Application
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
+            // root value cona contain a TReesorContainer item as a marker
+            // bot no value payload
+
             if (path.IsRoot && !value.IsContainer)
                 throw new InvalidOperationException("Root may not have a value");
 
             // first check if the node stored at position path is a value node and not container.
             // Setting values for containers fails
 
-            try
-            {
-                IHierarchyNode<string, TreesorNodePayload> node = this.hierarchy.Traverse(path);
+            
+            IHierarchyNode<string, TreesorNodePayload> node;
 
-                if (!node.Parent().Value.IsContainer)
-                    throw new InvalidOperationException($"Node at '{path.Parent()}' is a value node and may not have children");
-                
+            var found = this.hierarchy
+                .Traverse(HierarchyPath.Create<string>())
+                .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
+            
+            if(found)
+            {
+                log.Debug().Message($"Node at '{path}' exists and changed").Write();
+
                 if (node.Value == null || !node.Value.IsContainer)
                     this.hierarchy[path] = value;
-                else throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
+                else
+                    throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
 
                 log.Info().Message($"Set value at path '{path}' to '{value}'").Write();
             }
-            catch (KeyNotFoundException)
-            {
+            else
+            { 
                 log.Debug().Message($"Node at '{path}' doesn't exist and is created").Write();
 
                 this.hierarchy[path] = value;
 
                 log.Info().Message($"Set value at path '{path}' to '{value}'").Write();
             }
+        }
+
+        private bool SetValue_TryGetChildNode(IHierarchyNode<string, TreesorNodePayload> parent, string key, out IHierarchyNode<string, TreesorNodePayload> child)
+        {
+            child = null;
+
+            // descending in the hierachy isn't allowed if parent node is a vaue node and not a container node.
+            if (parent.HasValue && !parent.Value.IsContainer)
+                throw new InvalidOperationException($"Node at '{parent.Path}' is a value node and may not have child nodes");
+
+            // parent is a container
+            // retrieve the first child having the right leaf name.
+            child = parent.Children().FirstOrDefault(c => c.Path.Items.Last().Equals(key));
+
+            return child != null;
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodePayload value)
