@@ -6,5 +6,10 @@
             : base(isContainer: true)
         {
         }
+
+        public override string ToString()
+        {
+            return "<Container>";
+        }
     }
 }

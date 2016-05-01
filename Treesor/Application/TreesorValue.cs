@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Treesor.Application
+﻿namespace Treesor.Application
 {
     public class TreesorValue : TreesorNodePayload
     {
@@ -15,6 +9,11 @@ namespace Treesor.Application
         }
 
         public object Value { get; private set; }
+
+        public override string ToString()
+        {
+            return $"Value:{this.Value?.ToString() ?? "<null>"}";
+        }
 
         public override bool Equals(object obj)
         {

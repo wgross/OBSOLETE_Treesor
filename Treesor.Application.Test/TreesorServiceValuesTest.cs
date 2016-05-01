@@ -19,6 +19,8 @@ namespace Treesor.Application.Test
             this.service = new TreesorService(this.hierarchy);
         }
 
+        #region SetValue
+
         [Test]
         public void SetValue_at_hierarchy_node()
         {
@@ -53,7 +55,7 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void SetValue_converts_a_container_if_it_has_no_children()
+        public void SetValue_fails_for_container_nodes()
         {
             // ARRANGE
 
@@ -61,34 +63,16 @@ namespace Treesor.Application.Test
 
             // ACT
 
-            this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("test2"));
-
-            // ASSERT
-
-            TreesorNodePayload value;
-            this.service.TryGetValue(HierarchyPath.Create("a"), out value);
-            Assert.IsInstanceOf<TreesorValue>(value);
-            Assert.AreEqual("test2", ((TreesorValue)value).Value);
-        }
-
-        [Test]
-        public void SetValue_fails_for_container_having_children_with_InvalidOperationException()
-        {
-            // ARRANGE
-
-            this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorContainer());
-
-            // ACT
-
             var result = Assert.Throws<InvalidOperationException>(() => this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("test2")));
 
             // ASSERT
 
-            Assert.That(result.Message.Contains("Container node can't be converted to a 'value' node if it has children"));
-            TreesorNodePayload value;
-            this.service.TryGetValue(HierarchyPath.Create("a"), out value);
-            Assert.IsInstanceOf<TreesorContainer>(value);
+            Assert.That(result.Message.Contains("'a'"));
+            Assert.That(result.Message.Contains("is a container and may not have a value"));
         }
+
+        #endregion SetValue
+
 
         [Test]
         public void Read_a_value_from_hierarchy()
