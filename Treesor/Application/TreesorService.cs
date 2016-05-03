@@ -22,47 +22,55 @@ namespace Treesor.Application
 
         private readonly MutableHierarchy<string, TreesorNodePayload> hierarchy;
 
-        public void SetValue(HierarchyPath<string> path, TreesorNodePayload value)
+        public void SetValue(HierarchyPath<string> path, TreesorNodePayload newValue)
         {
-            log.Debug().Message("Setting value at '{0}' to '{1}'", path, value).Write();
+            log.Debug().Message("Setting value at '{0}' to '{1}'", path, newValue).Write();
 
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
 
             // root value cona contain a TReesorContainer item as a marker
             // bot no value payload
 
-            if (path.IsRoot && !value.IsContainer)
+            if (path.IsRoot && !newValue.IsContainer)
                 throw new InvalidOperationException("Root may not have a value");
 
             // first check if the node stored at position path is a value node and not container.
             // Setting values for containers fails
 
-            
             IHierarchyNode<string, TreesorNodePayload> node;
 
             var found = this.hierarchy
                 .Traverse(HierarchyPath.Create<string>())
+                //.DescendAlongPath(this.SetValue_TryGetChildNode, path);
                 .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
-            
-            if(found)
+
+            if (found)
             {
                 log.Debug().Message($"Node at '{path}' exists and changed").Write();
 
                 if (node.Value == null || !node.Value.IsContainer)
-                    this.hierarchy[path] = value;
-                else
-                    throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
+                {
+                    this.hierarchy[path] = newValue;
+                }
+                else if (node.Value != null && node.Value.IsContainer)
+                {
+                    if (this.hierarchy.Traverse(path).HasChildNodes)
+                        throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
 
-                log.Info().Message($"Set value at path '{path}' to '{value}'").Write();
+                    this.hierarchy[path] = newValue;
+                }
+                else throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
+
+                log.Info().Message($"Set value at path '{path}' to '{newValue}'").Write();
             }
             else
-            { 
+            {
                 log.Debug().Message($"Node at '{path}' doesn't exist and is created").Write();
 
-                this.hierarchy[path] = value;
+                this.hierarchy[path] = newValue;
 
-                log.Info().Message($"Set value at path '{path}' to '{value}'").Write();
+                log.Info().Message($"Set value at path '{path}' to '{newValue}'").Write();
             }
         }
 
@@ -94,8 +102,13 @@ namespace Treesor.Application
 
             if (depthCoalesced == 1)
             {
-                var removed = this.hierarchy.Remove(hierarchyPath);
+                var removed = false;
 
+                TreesorNodePayload value;
+                if (this.hierarchy.TryGetValue(hierarchyPath, out value))
+                    if (!value.IsContainer)
+                        removed = this.hierarchy.Remove(hierarchyPath);
+                
                 if (removed)
                     log.Info().Message("Removed value at '{0}'", hierarchyPath).Write();
                 else
@@ -107,9 +120,10 @@ namespace Treesor.Application
             {
                 var removed = false;
 
-                // remove all nmodes from the hierarchy starting at 'hierarchyPath'
-                foreach (var nodes in this.hierarchy.Traverse(hierarchyPath).DescendantsOrSelf(depthFirst: false, maxDepth: depthCoalesced).ToArray())
-                    removed = this.hierarchy.Remove(nodes.Path) || removed;
+                // remove all nodes from the hierarchy starting at 'hierarchyPath'
+                foreach (var node in this.hierarchy.Traverse(hierarchyPath).DescendantsOrSelf(depthFirst: false, maxDepth: depthCoalesced).ToArray())
+                    if(!node.Value.IsContainer)
+                        removed = this.hierarchy.Remove(node.Path) || removed;
 
                 return removed;
             }
