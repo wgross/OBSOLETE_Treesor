@@ -22,7 +22,39 @@ namespace Treesor.Application
 
         private readonly MutableHierarchy<string, TreesorNodePayload> hierarchy;
 
-        public void SetValue(HierarchyPath<string> path, TreesorNodePayload newValue)
+        public void SetValue(HierarchyPath<string> path, TreesorValue newValue)
+        {
+            log.Debug().Message("Setting value at '{0}' to '{1}'", path, newValue).Write();
+
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+
+            // root value cona contain a TReesorContainer item as a marker
+            // bot no value payload
+
+            if (path.IsRoot && !newValue.IsContainer)
+                throw new InvalidOperationException("Root may not have a value");
+
+            // first check if the node stored at position path is a value node and not container.
+            // Setting values for containers fails
+
+            IHierarchyNode<string, TreesorNodePayload> node;
+
+            var found = this.hierarchy
+                .Traverse(HierarchyPath.Create<string>())
+                .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
+
+            if (found)
+            {
+                SetValueAtExistingNode(path, newValue, node);
+            }
+            else
+            {
+                SetValueAtNewNode(path, newValue);
+            }
+        }
+
+        public void SetValue(HierarchyPath<string> path, TreesorContainer newValue)
         {
             log.Debug().Message("Setting value at '{0}' to '{1}'", path, newValue).Write();
 

@@ -38,7 +38,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodePayload>()), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorValue>()), Times.Never);
         }
 
         [Test]
@@ -138,7 +138,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodePayload>()), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorValue>()), Times.Never);
         }
 
         [Test]
@@ -260,7 +260,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorNodePayload>()), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorValue>()), Times.Never);
             this.service.VerifyAll();
         }
 

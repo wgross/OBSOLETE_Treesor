@@ -5,7 +5,9 @@ namespace Treesor.Application
 {
     public interface ITreesorService
     {
-        void SetValue(HierarchyPath<string> path, TreesorNodePayload value);
+        void SetValue(HierarchyPath<string> path, TreesorValue value);
+
+        void SetValue(HierarchyPath<string> path, TreesorContainer value);
 
         bool TryGetValue(HierarchyPath<string> hierarchyPath, out TreesorNodePayload value);
 
