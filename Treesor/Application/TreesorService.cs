@@ -22,17 +22,18 @@ namespace Treesor.Application
 
         private readonly MutableHierarchy<string, TreesorNodePayload> hierarchy;
 
+        #region SetValue(TreesorValue)
+
         public void SetValue(HierarchyPath<string> path, TreesorValue newValue)
         {
-            log.Debug().Message("Setting value at '{0}' to '{1}'", path, newValue).Write();
+            log.Debug().Message($"Setting {nameof(TreesorValue)} at '{path}' to '{newValue}'").Write();
 
             if (newValue == null)
                 throw new ArgumentNullException(nameof(newValue));
 
-            // root value cona contain a TReesorContainer item as a marker
-            // bot no value payload
+            // root value never has a value
 
-            if (path.IsRoot && !newValue.IsContainer)
+            if (path.IsRoot)
                 throw new InvalidOperationException("Root may not have a value");
 
             // first check if the node stored at position path is a value node and not container.
@@ -54,48 +55,16 @@ namespace Treesor.Application
             }
         }
 
-        public void SetValue(HierarchyPath<string> path, TreesorContainer newValue)
+        private void SetValueAtNewNode(HierarchyPath<string> path, TreesorValue newValue)
         {
-            log.Debug().Message("Setting value at '{0}' to '{1}'", path, newValue).Write();
-
-            if (newValue == null)
-                throw new ArgumentNullException(nameof(newValue));
-
-            // root value cona contain a TReesorContainer item as a marker
-            // bot no value payload
-
-            if (path.IsRoot && !newValue.IsContainer)
-                throw new InvalidOperationException("Root may not have a value");
-
-            // first check if the node stored at position path is a value node and not container.
-            // Setting values for containers fails
-
-            IHierarchyNode<string, TreesorNodePayload> node;
-
-            var found = this.hierarchy
-                .Traverse(HierarchyPath.Create<string>())
-                .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
-
-            if (found)
-            {
-                SetValueAtExistingNode(path, newValue, node);
-            }
-            else
-            {
-                SetValueAtNewNode(path, newValue);
-            }
-        }
-
-        private void SetValueAtNewNode(HierarchyPath<string> path, TreesorNodePayload newValue)
-        {
-            log.Debug().Message($"Node at '{path}' doesn't exist and is created").Write();
+            log.Debug().Message($"Creating {nameof(TreesorValue)} at '{path}'").Write();
 
             this.hierarchy[path] = newValue;
 
-            log.Info().Message($"Set value at path '{path}' to '{newValue}'").Write();
+            log.Info().Message($"Created {nameof(TreesorValue)} at path '{path}' with '{newValue}'").Write();
         }
 
-        private void SetValueAtExistingNode(HierarchyPath<string> path, TreesorNodePayload newValue, IHierarchyNode<string, TreesorNodePayload> node)
+        private void SetValueAtExistingNode(HierarchyPath<string> path, TreesorValue newValue, IHierarchyNode<string, TreesorNodePayload> node)
         {
             log.Debug().Message($"Node at '{path}' exists and changed").Write();
 
@@ -114,6 +83,65 @@ namespace Treesor.Application
 
             log.Info().Message($"Set value at path '{path}' to '{newValue}'").Write();
         }
+
+        #endregion SetValue(TreesorValue)
+
+        #region SetValue(TreesorContainer)
+
+        public void SetValue(HierarchyPath<string> path, TreesorContainer newContainer)
+        {
+            log.Debug().Message($"Setting {nameof(TreesorContainer)} value at '{path}' to '{newContainer?.GetHashCode()}'").Write();
+
+            if (newContainer == null)
+                throw new ArgumentNullException(nameof(newContainer));
+
+            // first check if the node stored at position path is a value node and not container.
+            // Setting values for containers fails
+
+            IHierarchyNode<string, TreesorNodePayload> node;
+
+            var found = this.hierarchy
+                .Traverse(HierarchyPath.Create<string>())
+                .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
+
+            if (found)
+            {
+                this.SetValueAtExistingNode(path, newContainer, node);
+            }
+            else if (!found)
+            {
+                SetValueAtNewNode(path, newContainer);
+            }
+        }
+
+        private void SetValueAtNewNode(HierarchyPath<string> path, TreesorContainer newContainer)
+        {
+            log.Debug().Message($"Creating {nameof(TreesorContainer)} at '{path}'").Write();
+
+            this.hierarchy[path] = newContainer;
+
+            log.Info().Message($"Created {nameof(TreesorContainer)} at path '{path}' to '{newContainer.GetHashCode()}'").Write();
+        }
+
+        private void SetValueAtExistingNode(HierarchyPath<string> path, TreesorContainer newValue, IHierarchyNode<string, TreesorNodePayload> node)
+        {
+            log.Debug().Message($"Changing {nameof(TreesorContainer)} at '{path}'").Write();
+
+            if (node.Value == null || !node.Value.IsContainer)
+            {
+                this.hierarchy[path] = newValue;
+            }
+            else if (node.Value != null && node.Value.IsContainer)
+            {
+                if (this.hierarchy.Traverse(path).HasChildNodes)
+                    throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
+
+                this.hierarchy[path] = newValue;
+            }
+            else throw new InvalidOperationException($"Changed {nameof(TreesorContainer)} at '{path}' to {newValue.GetHashCode()}");
+        }
+
+        #endregion SetValue(TreesorContainer)
 
         private bool SetValue_TryGetChildNode(IHierarchyNode<string, TreesorNodePayload> parent, string key, out IHierarchyNode<string, TreesorNodePayload> child)
         {

@@ -158,7 +158,7 @@ namespace Treesor.Application.Test
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("newValue", result.ParamName);
+            Assert.AreEqual("newContainer", result.ParamName);
         }
 
         [Test]
