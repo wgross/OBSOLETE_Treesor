@@ -112,6 +112,9 @@ namespace Treesor.PowershellDriveProvider
 
         public virtual TreesorNode SetValue(TreesorNodePath path, object newItemValue)
         {
+            if (path.IsDrive)
+                throw new InvalidOperationException("Root may not have a value");
+
             object container;
             if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out container))
                 throw new InvalidOperationException("Container may not have a value");
@@ -124,6 +127,9 @@ namespace Treesor.PowershellDriveProvider
 
         public virtual void RemoveValue(TreesorNodePath path)
         {
+            if (path.IsDrive)
+                throw new InvalidOperationException("Root may not have a value");
+
             object container;
             if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out container))
                 throw new InvalidOperationException("Container may not have a value");

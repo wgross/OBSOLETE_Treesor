@@ -65,13 +65,18 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            PSObject result = this.powershell.AddStatement().AddCommand("Get-Item").AddParameter("Path", "treesor:/").Invoke().Single();
+            PSObject result = this.powershell
+                .AddStatement()
+                .AddCommand("Get-Item")
+                .AddParameter("Path", "treesor:/")
+                .Invoke()
+                .Single();
 
             // ASSERT
 
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.BaseObject);
-            Assert.IsInstanceOf(typeof(Treesor.PowershellDriveProvider.TreesorDriveInfo), result.BaseObject);
+            Assert.IsInstanceOf(typeof(TreesorDriveInfo), result.BaseObject);
 
             var driveInfo = result.BaseObject as TreesorDriveInfo;
 
@@ -94,7 +99,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             this.treesorService
                 .Setup(s => s.SetValue(TreesorNodePath.Create(), "value"))
-                .Throws(new InvalidOperationException("Container may not have a value"));
+                .Throws(new InvalidOperationException("Root may not have a value"));
 
             // ACT
 
@@ -125,10 +130,13 @@ namespace Treesor.PowershellDriveProvider.Test
 
             TreesorNode rootContainer = new TreesorContainerItem(TreesorNodePath.RootPath);
 
-            this.treesorService.Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer)).Returns(true);
+            this.treesorService
+                .Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer))
+                .Returns(true);
+
             this.treesorService
                 .Setup(s => s.RemoveValue(TreesorNodePath.Create()))
-                .Throws(new InvalidOperationException("Container may not have a value"));
+                .Throws(new InvalidOperationException("Root may not have a value"));
 
             // ACT
 
