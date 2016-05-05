@@ -47,7 +47,7 @@
             //}
 
             TreesorDriveInfo treesorDriveInfo = drive as TreesorDriveInfo;
-            
+
             if (treesorDriveInfo == null)
             {
                 treesorDriveInfo = new TreesorDriveInfo(drive);

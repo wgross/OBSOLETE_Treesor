@@ -138,7 +138,7 @@
         internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
             var itemTypeNameCoalesced = itemTypeName ?? "Value";
-            
+
             if ("Container".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase))
             {
                 log.Debug().Message($"Creating {nameof(TreesorContainerItem)} at '{path}'").Write();

@@ -208,7 +208,8 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             Assert.IsFalse(this.powershell.HadErrors);
-
+            Assert.AreEqual(0, result.Count);
+            
             this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child"), "value"), Times.Once);
             this.treesorService.VerifyAll();
         }
@@ -280,6 +281,80 @@ namespace Treesor.PowershellDriveProvider.Test
             this.treesorService.VerifyAll();
         }
 
+        [Test]
+        public void Powershell_SetItem_parent_of_deep_existing_ValueItem()
+        {
+            // ARRANGE
+
+            var valueNode = new TreesorValueItem(TreesorNodePath.RootPath);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value"))
+                .Returns(valueNode);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value2"))
+                .Returns(valueNode);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", "treesor:/child/grandchild")
+                    .AddParameter("Value", "value")
+                .AddStatement()
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", "treesor:/child")
+                    .AddParameter("Value", "value2")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value"), Times.Once);
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child"), "value2"), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
+        [Test]
+        public void Powershell_SetItem_child_of_existing_ValueItem()
+        {
+            // ARRANGE
+
+            var valueNode = new TreesorValueItem(TreesorNodePath.RootPath);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value2"))
+                .Returns(valueNode);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value"))
+                .Returns(valueNode);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", "treesor:/child")
+                    .AddParameter("Value", "value")
+                .AddStatement()
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", "treesor:/child/grandchild")
+                    .AddParameter("Value", "value2")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value2"), Times.Once);
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child"), "value"), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
         #endregion Set-Item -Value
 
         #region Get-Item
@@ -317,8 +392,6 @@ namespace Treesor.PowershellDriveProvider.Test
         [Test]
         public void GetItem_fails_if_node_doesn_exist()
         {
-            // ACT
-
             // ARRANGE
 
             TreesorNode value = null;
