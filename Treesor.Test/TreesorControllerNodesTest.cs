@@ -30,7 +30,7 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create<string>(), 2)).Returns(Enumerable.Empty<KeyValuePair<HierarchyPath<string>, object>>());
+            this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create<string>(), 2)).Returns(Enumerable.Empty<KeyValuePair<HierarchyPath<string>, TreesorNodePayload>>());
 
             // ACT
 
@@ -49,13 +49,13 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            Func<HierarchyPath<string>, string, KeyValuePair<HierarchyPath<string>, object>> kv = (k, v) => new KeyValuePair<HierarchyPath<string>, object>(k, v);
+            Func<HierarchyPath<string>, TreesorNodePayload, KeyValuePair<HierarchyPath<string>, TreesorNodePayload>> kv = (k, v) => new KeyValuePair<HierarchyPath<string>, TreesorNodePayload>(k, v);
 
             var descandants = new[]
             {
-                kv(HierarchyPath.Create<string>(), "root"),
-                kv(HierarchyPath.Create("a"), "a"),
-                kv(HierarchyPath.Create("b"), "b"),
+                kv(HierarchyPath.Create<string>(), new TreesorValue("root")),
+                kv(HierarchyPath.Create("a"),new TreesorValue("a")),
+                kv(HierarchyPath.Create("b"), new TreesorValue("b")),
             };
 
             this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create<string>(), 2)).Returns(descandants);
@@ -78,13 +78,13 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            Func<HierarchyPath<string>, string, KeyValuePair<HierarchyPath<string>, object>> kv = (k, v) => new KeyValuePair<HierarchyPath<string>, object>(k, v);
+            Func<HierarchyPath<string>, TreesorNodePayload, KeyValuePair<HierarchyPath<string>, TreesorNodePayload>> kv = (k, v) => new KeyValuePair<HierarchyPath<string>, TreesorNodePayload>(k, v);
 
             var descandants = new[]
             {
-                kv(HierarchyPath.Create("a"), "a"),
-                kv(HierarchyPath.Create("a","a"), "a/a"),
-                kv(HierarchyPath.Create("a","b"), "a/b"),
+                kv(HierarchyPath.Create("a"), new TreesorValue("a")),
+                kv(HierarchyPath.Create("a","a"), new TreesorValue("a/a")),
+                kv(HierarchyPath.Create("a","b"), new TreesorValue("a/b")),
             };
 
             this.service.Setup(s => s.DescendantsOrSelf(HierarchyPath.Create("a"), 2)).Returns(descandants);

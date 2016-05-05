@@ -33,14 +33,14 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = TreesorService.Factory(driveInfo.Root);
+            this.treesorService = TreesorNodeService.Factory(driveInfo.Root);
         }
 
         //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
         //{
         //}
 
-        private readonly TreesorService treesorService;
+        private readonly TreesorNodeService treesorService;
 
         #endregion Creation and initialization of this instance
 
@@ -59,24 +59,24 @@
         {
             log.Debug().Message($"Trying to get container '{path}')").Write();
 
-            TreesorContainerNode containerNode;
-            if (this.treesorService.TryGetContainer(path, out containerNode))
+            TreesorNode containerNode;
+            if (this.treesorService.TryGetNode(path, out containerNode))
             {
-                log.Info().Message($"Got {nameof(TreesorContainerNode)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
+                log.Info().Message($"Got {nameof(TreesorNode)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
                 return true;
             }
 
-            log.Info().Message($"{nameof(TreesorContainerNode)} at '{path}' wasn't found").Write();
+            log.Info().Message($"{nameof(TreesorNode)} at '{path}' wasn't found").Write();
             return false;
         }
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
-            log.Debug().Message($"Getting {nameof(TreesorContainerNode)} at '{path}')").Write();
+            log.Debug().Message($"Getting {nameof(TreesorContainerItem)} at '{path}')").Write();
 
-            var item = this.treesorService.GetContainer(path);
+            var item = this.treesorService.GetNode(path);
 
-            log.Info().Message($"Got {nameof(TreesorContainerNode)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
+            log.Info().Message($"Got {nameof(TreesorContainerItem)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
 
             return item;
         }
@@ -137,36 +137,37 @@
 
         internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
-            log.Debug().Message($"Creating {nameof(TreesorContainerNode)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
+            var itemTypeNameCoalesced = itemTypeName ?? "Value";
 
-            isContainer = true;
-            var node = this.treesorService.CreateContainer(path, newItemValue);
+            if ("Container".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase))
+            {
+                log.Debug().Message($"Creating {nameof(TreesorContainerItem)} at '{path}'").Write();
 
-            log.Info().Message($"Created {nameof(TreesorContainerNode)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
+                isContainer = true;
+                var node = this.treesorService.CreateContainer(path);
 
-            return node;
+                log.Info().Message($"Created {nameof(TreesorContainerItem)} at '{path}'): GetHashCode={node?.GetHashCode()}").Write();
 
-            #region // Currently only directories are created
+                return node;
+            }
+            else if ("Value".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase) && newItemValue == null)
+            {
+                Log.Error().Message($"Creating a {nameof(TreesorValueItem)} requires an initial value").Write();
 
-            //isContainer = null;
+                throw new PSInvalidOperationException($"Creating a {nameof(TreesorValueItem)} requires a initial value");
+            }
+            else if ("Value".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase) && newItemValue != null)
+            {
+                log.Debug().Message($"Creating {nameof(TreesorValueItem)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
 
-            //if ("Directory".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    isContainer = true;
-            //    return this.treesorService.CreateContainer(treesorNodePath);
-            //}
-            //else if ("File".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    isContainer = false;
+                isContainer = false;
+                var node = this.treesorService.CreateValue(path, newItemValue);
 
-            //    // create a odata endpoint at the specified place path from the latest parameter set depending
-            //    // on te given creation parameters
+                log.Info().Message($"Created {nameof(TreesorValueItem)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
 
-            //    return this.treesorService.SetValue(treesorNodePath, newItemValue);
-            //}
-            //else throw new InvalidOperationException($"Item type '{itemTypeName}' isn't supported");
-
-            #endregion // Currently only directories are created
+                return node;
+            }
+            else throw new PSInvalidOperationException($"ItemType {itemTypeName} isn't supported");
         }
 
         internal object NewItemDynamicParameters(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
@@ -178,20 +179,20 @@
 
         internal void RemoveItem(TreesorNodePath path, bool recurse)
         {
-            log.Debug().Message($"Deleting {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
+            log.Debug().Message($"Deleting {nameof(TreesorContainerItem)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
 
             this.treesorService.RemoveContainer(path, recurse);
 
-            log.Info().Message($"Deleted {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
+            log.Info().Message($"Deleted {nameof(TreesorContainerItem)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
         }
 
         internal bool HasChildItems(TreesorNodePath path)
         {
-            log.Debug().Message($"Checking if {nameof(TreesorContainerNode)} at '{path}' has children").Write();
+            log.Debug().Message($"Checking if {nameof(TreesorContainerItem)} at '{path}' has children").Write();
 
             var hasChildren = this.treesorService.HasChildNodes(path);
 
-            log.Info().Message($"Checked if {nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
+            log.Info().Message($"Checked if {nameof(TreesorContainerItem)} at '{path}' has children: {hasChildren}").Write();
 
             return hasChildren;
         }
@@ -199,7 +200,7 @@
         internal IEnumerable<string> GetChildNames(TreesorNodePath path, ReturnContainers returnContainers)
         {
             //if (returnContainers == ReturnContainers.ReturnAllContainers)
-            log.Debug().Message($"Retrieving {nameof(TreesorContainerNode)} names under:'{path}',{returnContainers}").Write();
+            log.Debug().Message($"Retrieving {nameof(TreesorContainerItem)} names under:'{path}',{returnContainers}").Write();
 
             return this.treesorService.GetContainerChildren(path).Select(c => c.Name);
 
@@ -207,7 +208,7 @@
             //    throw new PSNotImplementedException(string.Format("GetChildNames(path={0},returnContainers={1})", path, returnContainers));
         }
 
-        internal TreesorContainerNode RenameItem(TreesorNodePath path, string newName)
+        internal TreesorContainerItem RenameItem(TreesorNodePath path, string newName)
         {
             return this.treesorService.RenameContainer(path, newName);
         }
@@ -234,8 +235,8 @@
 
         internal void ClearProperty(TreesorNodePath treesorNodePath, Collection<string> propertyToClear)
         {
-            TreesorContainerNode treesorNode;
-            if (this.treesorService.TryGetContainer(treesorNodePath, out treesorNode))
+            TreesorNode treesorNode;
+            if (this.treesorService.TryGetNode(treesorNodePath, out treesorNode))
             {
                 foreach (var propertyName in propertyToClear)
                 {
@@ -254,8 +255,8 @@
 
         internal void SetProperty(TreesorNodePath path, PSObject propertyValue)
         {
-            TreesorContainerNode treesorNode;
-            if (this.treesorService.TryGetContainer(path, out treesorNode))
+            TreesorNode treesorNode;
+            if (this.treesorService.TryGetNode(path, out treesorNode))
                 foreach (var property in propertyValue.Properties)
                 {
                     TreesorNodeProperty propertyDefinition;
@@ -274,8 +275,8 @@
         {
             var psObject = new PSObject();
 
-            TreesorContainerNode treesorNode;
-            if (this.treesorService.TryGetContainer(treesorNodePath, out treesorNode))
+            TreesorNode treesorNode;
+            if (this.treesorService.TryGetNode(treesorNodePath, out treesorNode))
             {
                 foreach (var propertyName in providerSpecificPickList)
                 {
@@ -303,9 +304,9 @@
 
         internal void NewProperty(TreesorNodePath path, string propertyName, string propertyTypeName, object value)
         {
-            TreesorContainerNode node;
+            TreesorNode node;
             TreesorNodeProperty propertyDefinition;
-            if (this.treesorService.TryGetContainer(path, out node))
+            if (this.treesorService.TryGetNode(path, out node))
             {
                 if (string.IsNullOrEmpty(propertyTypeName))
                     if (value != null)
@@ -325,10 +326,10 @@
 
         internal void CopyProperty(TreesorNodePath sourceNodePath, string sourcePropertyName, TreesorNodePath destinationNodePath, string destinationPropertyName)
         {
-            TreesorContainerNode sourceNode, destinationNode;
+            TreesorNode sourceNode, destinationNode;
             TreesorNodeProperty sourceProperty, destinationProperty;
-            if (this.treesorService.TryGetContainer(sourceNodePath, out sourceNode))
-                if (this.treesorService.TryGetContainer(destinationNodePath, out destinationNode))
+            if (this.treesorService.TryGetNode(sourceNodePath, out sourceNode))
+                if (this.treesorService.TryGetNode(destinationNodePath, out destinationNode))
                     if (this.treesorService.TryGetNodeProperty(sourcePropertyName, out sourceProperty))
                         if (this.treesorService.TryGetNodeProperty(destinationPropertyName ?? sourcePropertyName, out destinationProperty))
                             this.treesorService.CopyPropertyValue(fromNode: sourceNode, fromProperty: sourceProperty, toNode: destinationNode, toProperty: destinationProperty);
@@ -341,10 +342,10 @@
 
         internal void MoveProperty(TreesorNodePath sourceNodePath, string sourcePropertyName, TreesorNodePath destinationNodePath, string destinationPropertyName)
         {
-            TreesorContainerNode sourceNode, destinationNode;
+            TreesorNode sourceNode, destinationNode;
             TreesorNodeProperty sourceProperty, destinationProperty;
-            if (this.treesorService.TryGetContainer(sourceNodePath, out sourceNode))
-                if (this.treesorService.TryGetContainer(destinationNodePath, out destinationNode))
+            if (this.treesorService.TryGetNode(sourceNodePath, out sourceNode))
+                if (this.treesorService.TryGetNode(destinationNodePath, out destinationNode))
                     if (this.treesorService.TryGetNodeProperty(sourcePropertyName, out sourceProperty))
                         if (this.treesorService.TryGetNodeProperty(destinationPropertyName ?? sourcePropertyName, out destinationProperty))
                             this.treesorService.MovePropertyValue(fromNode: sourceNode, fromProperty: sourceProperty, toNode: destinationNode, toProperty: destinationProperty);

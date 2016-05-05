@@ -47,7 +47,7 @@
             //}
 
             TreesorDriveInfo treesorDriveInfo = drive as TreesorDriveInfo;
-            
+
             if (treesorDriveInfo == null)
             {
                 treesorDriveInfo = new TreesorDriveInfo(drive);
@@ -116,10 +116,10 @@
                 var item = this.GetTreesorDriveInfo().GetItem(treesorNodePath);
 
                 log.Debug()
-                    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item is TreesorContainerNode})")
+                    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item is TreesorContainerItem})")
                     .Write();
 
-                this.WriteItemObject(item, path, isContainer: item is TreesorContainerNode);
+                this.WriteItemObject(item, path, isContainer: item is TreesorContainerItem);
             }
         }
 
@@ -171,10 +171,10 @@
             foreach (var childItem in this.GetTreesorDriveInfo().GetChildItem(TreesorNodePath.Parse(path), recurse))
             {
                 log.Trace()
-                    .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem is TreesorContainerNode})")
+                    .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem is TreesorContainerItem})")
                     .Write();
 
-                this.WriteItemObject(childItem, childItem.Path.ToString(), childItem is TreesorContainerNode);
+                this.WriteItemObject(childItem, childItem.Path.ToString(), childItem is TreesorContainerItem);
             }
         }
 

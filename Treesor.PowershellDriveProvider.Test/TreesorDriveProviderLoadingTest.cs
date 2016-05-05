@@ -55,10 +55,10 @@ namespace Treesor.PowershellDriveProvider.Test
             // ARRANGE
 
             var remoteHierachy = new Mock<IHierarchy<string, object>>();
-            var treesorService = new Mock<TreesorService>(remoteHierachy.Object);
+            var treesorService = new Mock<TreesorNodeService>(remoteHierachy.Object);
 
             string  givenUri = null;
-            TreesorService.Factory = uri =>
+            TreesorNodeService.Factory = uri =>
             {
                 givenUri = uri;
                 return treesorService.Object;

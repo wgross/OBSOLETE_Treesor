@@ -20,7 +20,84 @@ namespace Treesor.Test
             this.controller = new HierarchyValueController(this.service.Object);
         }
 
-        #region POST /api/values/{path}, POST /api/values
+        #region POST,DELETE,PUT,GET /api/values
+
+        [Test]
+        public void Write_value_to_root_fails_with_InvalidOperationException()
+        {
+            // ARRANGE
+
+            object value = "text";
+
+            // ACT
+
+            var result = this.controller.Post(new HierarchyValueRequestBody { value = value }) as ExceptionResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
+
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), new TreesorValue(value)), Times.Never);
+            this.service.VerifyAll();
+        }
+
+        [Test]
+        public void Read_value_from_root_node_fails_with_InvalidOperationException()
+        {
+            // ACT
+
+            var result = this.controller.Get() as ExceptionResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
+
+            TreesorNodePayload value = null;
+            this.service.Verify(s => s.TryGetValue(It.IsAny<HierarchyPath<string>>(), out value), Times.Never);
+            this.service.VerifyAll();
+        }
+
+        [Test]
+        public void Delete_value_from_root_node_fails_with_InvalidOperationException()
+        {
+            // ACT
+
+            var result = this.controller.Delete((int?)null) as ExceptionResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
+
+            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), 1), Times.Never);
+            this.service.VerifyAll();
+        }
+
+        [Test]
+        public void Update_value_of_root_fails_with_InvalidOperationException()
+        {
+            // ARRANGE
+
+            object value = "text";
+
+            // ACT
+
+            var result = this.controller.Put(new HierarchyValueRequestBody { value = value }) as ExceptionResult;
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
+
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), new TreesorValue(value)), Times.Never);
+            this.service.VerifyAll();
+        }
+
+        #endregion POST,DELETE,PUT,GET /api/values
+
+        #region POST /api/values/{path}
 
         [Test]
         public void Write_value_to_hierarchy_with_empty_path_fails()
@@ -38,27 +115,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<object>()), Times.Never);
-        }
-
-        [Test]
-        public void Write_value_to_root_fails()
-        {
-            // ARRANGE
-
-            object value = "text";
-
-            // ACT
-
-            var result = this.controller.Post(new HierarchyValueRequestBody { value = value }) as ExceptionResult;
-
-            // ASSERT
-
-            Assert.IsNotNull(result);
-            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
-
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Never);
-            this.service.VerifyAll();
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorValue>()), Times.Never);
         }
 
         [Test]
@@ -77,19 +134,19 @@ namespace Treesor.Test
             Assert.AreSame(value, result.Content.value);
             Assert.AreEqual("a/b", result.RouteValues["path"]);
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), value), Times.Once);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue(value)), Times.Once);
         }
 
-        #endregion POST /api/values/{path}, POST /api/values
+        #endregion POST /api/values/{path}
 
-        #region GET /api/values/{path}, GET /api/values
+        #region GET /api/values/{path}
 
         [Test]
         public void Read_value_from_a_subnode()
         {
             // ARRANGE
 
-            object value = new { test = "text" };
+            TreesorNodePayload value = new TreesorValue("text");
 
             this.service.Setup(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value)).Returns(true);
 
@@ -111,7 +168,7 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            object value = null;
+            TreesorNodePayload value = new TreesorValue(null);
 
             this.service.Setup(s => s.TryGetValue(HierarchyPath.Create("a", "b"), out value)).Returns(false);
 
@@ -138,45 +195,12 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<object>()), Times.Never);
-        }
-
-        [Test]
-        public void Read_value_from_root_node_fails_with_InvalidOperationException()
-        {
-            // ACT
-
-            var result = this.controller.Get() as ExceptionResult;
-
-            // ASSERT
-
-            Assert.IsNotNull(result);
-            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
-
-            object value = null;
-            this.service.Verify(s => s.TryGetValue(It.IsAny<HierarchyPath<string>>(), out value), Times.Never);
-            this.service.VerifyAll();
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorValue>()), Times.Never);
         }
 
         #endregion GET /api/values/{path}, GET /api/values
 
-        #region DELETE /api/v1/values/{path}?$expand, DELETE /api/v1/values?$expand
-
-        [Test]
-        public void Delete_value_from_root_node_fails_with_InvalidOperationException()
-        {
-            // ACT
-
-            var result = this.controller.Delete((int?)null) as ExceptionResult;
-
-            // ASSERT
-
-            Assert.IsNotNull(result);
-            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
-
-            this.service.Verify(s => s.RemoveValue(HierarchyPath.Create<string>(), 1), Times.Never);
-            this.service.VerifyAll();
-        }
+        #region DELETE /api/v1/values/{path}?$expand
 
         [Test]
         public void Delete_value_from_a_sub_node()
@@ -221,7 +245,7 @@ namespace Treesor.Test
 
         #endregion DELETE /api/v1/values/{path}?$expand, DELETE /api/v1/values?$expand
 
-        #region PUT /api/v1/values/{*path}, PUT /api/v1/values
+        #region PUT /api/v1/values/{*path}
 
         [Test]
         public void Update_value_of_a_sub_node()
@@ -240,7 +264,8 @@ namespace Treesor.Test
             Assert.AreSame(value, result.Content.value);
             Assert.AreEqual("a/b", result.Content.path);
 
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), value), Times.Once);
+            this.service.Verify(s => s.SetValue(HierarchyPath.Create("a", "b"), new TreesorValue(value)), Times.Once);
+            this.service.VerifyAll();
         }
 
         [Test]
@@ -248,7 +273,7 @@ namespace Treesor.Test
         {
             // ARRANGE
 
-            object value = new { test = "text" };
+            object value = "text";
 
             // ACT
 
@@ -259,26 +284,7 @@ namespace Treesor.Test
             Assert.IsNotNull(result);
             Assert.That(result.Exception.Message.Contains("may not be null or empty"));
 
-            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<object>()), Times.Never);
-        }
-
-        [Test]
-        public void Update_value_of_root_fails_with_InvalidOperationException()
-        {
-            // ARRANGE
-
-            object value = "text";
-
-            // ACT
-
-            var result = this.controller.Put(new HierarchyValueRequestBody { value = value }) as ExceptionResult;
-
-            // ASSERT
-
-            Assert.IsNotNull(result);
-            Assert.That(result.Exception.Message.Contains("Root may not have a value"));
-
-            this.service.Verify(s => s.SetValue(HierarchyPath.Create<string>(), value), Times.Never);
+            this.service.Verify(s => s.SetValue(It.IsAny<HierarchyPath<string>>(), It.IsAny<TreesorValue>()), Times.Never);
             this.service.VerifyAll();
         }
 
