@@ -74,7 +74,7 @@
         {
             log.Debug().Message($"Getting {nameof(TreesorContainerItem)} at '{path}')").Write();
 
-            var item = this.treesorService.GetContainer(path);
+            var item = this.treesorService.GetNode(path);
 
             log.Info().Message($"Got {nameof(TreesorContainerItem)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
 

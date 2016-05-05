@@ -139,7 +139,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            object remoteValue;
+            object remoteValue = null;
 
             this.remoteHierarchy
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue))
@@ -154,7 +154,6 @@ namespace Treesor.PowershellDriveProvider.Test
 
             Assert.IsFalse(result);
             Assert.IsNull(resultNode);
-            Assert.IsInstanceOf<TreesorContainerItem>(resultNode);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
             this.remoteHierarchy.VerifyAll();
@@ -177,7 +176,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            var result = this.treesorService.GetContainer(TreesorNodePath.Create());
+            var result = this.treesorService.GetNode(TreesorNodePath.Create());
 
             // ASSERT
 
@@ -201,7 +200,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            var result = this.treesorService.GetContainer(TreesorNodePath.Create("a"));
+            var result = this.treesorService.GetNode(TreesorNodePath.Create("a"));
 
             // ASSERT
 

@@ -189,8 +189,8 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Returns(true);
 
                 this.treesorService
-                    .Setup(s => s.GetContainer(TreesorNodePath.Create()))
-                    .Returns((TreesorContainerItem)rootContainer);
+                    .Setup(s => s.GetNode(TreesorNodePath.Create()))
+                    .Returns(rootContainer);
 
                 var nodes = new[]
                 {
@@ -213,7 +213,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 this.treesorService.VerifyAll();
                 this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
-                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Once);
+                this.treesorService.Verify(s => s.GetNode(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create()), Times.Once);
 
                 Assert.IsFalse(this.powershell.HadErrors);
@@ -233,8 +233,8 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Returns(true);
 
                 this.treesorService
-                    .Setup(s => s.GetContainer(TreesorNodePath.Create()))
-                    .Returns((TreesorContainerItem)rootContainer);
+                    .Setup(s => s.GetNode(TreesorNodePath.Create()))
+                    .Returns(rootContainer);
 
                 var nodes = new[]
                 {
@@ -258,7 +258,7 @@ namespace Treesor.PowershellDriveProvider.Test
                 // ASSERT
 
                 this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
-                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Exactly(2)); // from IsItemContainer
+                this.treesorService.Verify(s => s.GetNode(TreesorNodePath.Create()), Times.Exactly(2)); // from IsItemContainer
                 this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.VerifyAll();
 
@@ -280,7 +280,7 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Returns(true);
 
                 this.treesorService
-                    .Setup(s => s.GetContainer(TreesorNodePath.Create("a")))
+                    .Setup(s => s.GetNode(TreesorNodePath.Create("a")))
                     .Returns((TreesorContainerItem)innerNodeContainer);
 
                 var nodes = new[]
@@ -304,7 +304,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 this.treesorService.VerifyAll();
                 this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
-                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create("a")), Times.Once);
+                this.treesorService.Verify(s => s.GetNode(TreesorNodePath.Create("a")), Times.Once);
                 this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create("a")), Times.Once);
 
                 Assert.AreEqual(2, result.Count);
@@ -324,7 +324,7 @@ namespace Treesor.PowershellDriveProvider.Test
                     .Returns(true);
 
                 this.treesorService
-                    .Setup(s => s.GetContainer(TreesorNodePath.Create("a")))
+                    .Setup(s => s.GetNode(TreesorNodePath.Create("a")))
                     .Returns((TreesorContainerItem)innerNodeContainer);
 
                 var nodes = new[]
@@ -350,7 +350,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 this.treesorService.VerifyAll();
                 this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
-                this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create("a")), Times.Exactly(2));
+                this.treesorService.Verify(s => s.GetNode(TreesorNodePath.Create("a")), Times.Exactly(2));
                 this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create("a")), Times.Once);
 
                 Assert.AreEqual(3, result.Count);

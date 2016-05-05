@@ -40,9 +40,9 @@ namespace Treesor.PowershellDriveProvider
         /// Containers ar always created on demand
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="containerNode"></param>
+        /// <param name="node"></param>
         /// <returns></returns>
-        public virtual bool _TryGetContainer(TreesorNodePath path, out TreesorContainerItem containerNode)
+        public virtual bool TryGetNode(TreesorNodePath path, out TreesorNode node)
         {
             log.Debug().Message($"Retrieving container '{path}'").Write();
 
@@ -53,31 +53,17 @@ namespace Treesor.PowershellDriveProvider
             if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue))
             {
                 log.Info().Message($"Retrieved container {path}").Write();
-                containerNode = new TreesorContainerItem(path);
+                node = new TreesorContainerItem(path);
                 return true;
             }
             else
             {
                 log.Warn().Message($"Couldn't retrieve container {path}").Write();
-                containerNode = null;
+                node = null;
                 return false;
             }
         }
-
-        public virtual bool TryGetNode(TreesorNodePath treesorNodePath, out TreesorNode value)
-        {
-            throw new NotImplementedException();
-        }
         
-        public virtual TreesorContainerItem GetContainer(TreesorNodePath path)
-        {
-            object remoteValue;
-
-            this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
-
-            return new TreesorContainerItem(path);
-        }
-
         public virtual TreesorNode GetNode(TreesorNodePath path)
         {
             object remoteValue;
@@ -182,6 +168,5 @@ namespace Treesor.PowershellDriveProvider
         {
             throw new NotImplementedException();
         }
-
-            }
+    }
 }

@@ -81,7 +81,7 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.AreSame(typeof(TreesorDriveCmdletProvider), driveInfo.Provider.ImplementingType);
 
             this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
-            this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Never);
+            this.treesorService.Verify(s => s.GetNode(TreesorNodePath.Create()), Times.Never);
             this.treesorService.VerifyAll();
         }
 
@@ -293,6 +293,10 @@ namespace Treesor.PowershellDriveProvider.Test
             this.treesorService
                 .Setup(s => s.TryGetNode(TreesorNodePath.Create("child"), out value))
                 .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetNode(TreesorNodePath.Create("child")))
+                .Returns(value);
 
             // ACT
 
