@@ -42,7 +42,7 @@ namespace Treesor.PowershellDriveProvider
         /// <param name="path"></param>
         /// <param name="containerNode"></param>
         /// <returns></returns>
-        public virtual bool TryGetContainer(TreesorNodePath path, out TreesorContainerNode containerNode)
+        public virtual bool TryGetContainer(TreesorNodePath path, out TreesorContainerItem containerNode)
         {
             log.Debug().Message($"Retrieving container '{path}'").Write();
 
@@ -53,7 +53,7 @@ namespace Treesor.PowershellDriveProvider
             if (this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue))
             {
                 log.Info().Message($"Retrieved container {path}").Write();
-                containerNode = new TreesorContainerNode(path);
+                containerNode = new TreesorContainerItem(path);
                 return true;
             }
             else
@@ -64,13 +64,13 @@ namespace Treesor.PowershellDriveProvider
             }
         }
 
-        public virtual TreesorContainerNode GetContainer(TreesorNodePath path)
+        public virtual TreesorContainerItem GetContainer(TreesorNodePath path)
         {
             object remoteValue;
 
             this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
 
-            return new TreesorContainerNode(path);
+            return new TreesorContainerItem(path);
         }
 
         public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath path)
@@ -95,7 +95,7 @@ namespace Treesor.PowershellDriveProvider
             return this.remoteHierarchy
                 .Traverse(path.HierarchyPath)
                 .Children()
-                .Select(n => new TreesorContainerNode(TreesorNodePath.Create(n.Path)));
+                .Select(n => new TreesorContainerItem(TreesorNodePath.Create(n.Path)));
         }
 
         public virtual TreesorValueNode CreateValue(TreesorNodePath path, object value)
@@ -103,11 +103,11 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public virtual TreesorContainerNode CreateContainer(TreesorNodePath path)
+        public virtual TreesorContainerItem CreateContainer(TreesorNodePath path)
         {
             this.remoteHierarchy[path.HierarchyPath] = null;
 
-            return new TreesorContainerNode(path);
+            return new TreesorContainerItem(path);
         }
 
         public virtual TreesorNode SetValue(TreesorNodePath path, object newItemValue)
@@ -134,7 +134,7 @@ namespace Treesor.PowershellDriveProvider
             return this.remoteHierarchy.Remove(path.HierarchyPath, recursive ? int.MaxValue : 1);
         }
 
-        public TreesorContainerNode RenameContainer(TreesorNodePath path, string newName)
+        public TreesorContainerItem RenameContainer(TreesorNodePath path, string newName)
         {
             throw new NotImplementedException();
         }
@@ -159,12 +159,12 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public void CopyPropertyValue(TreesorContainerNode fromNode, TreesorNodeProperty fromProperty, TreesorContainerNode toNode, TreesorNodeProperty toProperty)
+        public void CopyPropertyValue(TreesorContainerItem fromNode, TreesorNodeProperty fromProperty, TreesorContainerItem toNode, TreesorNodeProperty toProperty)
         {
             throw new NotImplementedException();
         }
 
-        public void MovePropertyValue(TreesorContainerNode fromNode, TreesorNodeProperty fromProperty, TreesorContainerNode toNode, TreesorNodeProperty toProperty)
+        public void MovePropertyValue(TreesorContainerItem fromNode, TreesorNodeProperty fromProperty, TreesorContainerItem toNode, TreesorNodeProperty toProperty)
         {
             throw new NotImplementedException();
         }

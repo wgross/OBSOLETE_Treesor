@@ -25,7 +25,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            object root = new TreesorContainerNode();
+            object root = new TreesorContainerItem();
 
             this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out root)).Returns(true);
 
@@ -46,7 +46,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            object root = new TreesorContainerNode();
+            object root = new TreesorContainerItem();
 
             this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out root)).Returns(true);
 
@@ -67,7 +67,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            object a = new TreesorContainerNode();
+            object a = new TreesorContainerItem();
 
             this.remoteHierarchy.Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out a)).Returns(true);
 
@@ -96,7 +96,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            TreesorContainerNode resultNode;
+            TreesorContainerItem resultNode;
             var result = this.treesorService.TryGetContainer(TreesorNodePath.Create(), out resultNode);
 
             // ASSERT
@@ -121,7 +121,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            TreesorContainerNode resultNode;
+            TreesorContainerItem resultNode;
             var result = this.treesorService.TryGetContainer(TreesorNodePath.Create("a"), out resultNode);
 
             // ASSERT
@@ -146,7 +146,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            TreesorContainerNode resultNode;
+            TreesorContainerItem resultNode;
             var result = this.treesorService.TryGetContainer(TreesorNodePath.Create("a"), out resultNode);
 
             // ASSERT

@@ -59,24 +59,24 @@
         {
             log.Debug().Message($"Trying to get container '{path}')").Write();
 
-            TreesorContainerNode containerNode;
+            TreesorContainerItem containerNode;
             if (this.treesorService.TryGetContainer(path, out containerNode))
             {
-                log.Info().Message($"Got {nameof(TreesorContainerNode)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
+                log.Info().Message($"Got {nameof(TreesorContainerItem)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
                 return true;
             }
 
-            log.Info().Message($"{nameof(TreesorContainerNode)} at '{path}' wasn't found").Write();
+            log.Info().Message($"{nameof(TreesorContainerItem)} at '{path}' wasn't found").Write();
             return false;
         }
 
         internal TreesorNode GetItem(TreesorNodePath path)
         {
-            log.Debug().Message($"Getting {nameof(TreesorContainerNode)} at '{path}')").Write();
+            log.Debug().Message($"Getting {nameof(TreesorContainerItem)} at '{path}')").Write();
 
             var item = this.treesorService.GetContainer(path);
 
-            log.Info().Message($"Got {nameof(TreesorContainerNode)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
+            log.Info().Message($"Got {nameof(TreesorContainerItem)} at '{path}: GetHashCode='{item?.GetHashCode()}").Write();
 
             return item;
         }
@@ -141,12 +141,12 @@
             
             if ("Container".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase))
             {
-                log.Debug().Message($"Creating {nameof(TreesorContainerNode)} at '{path}'").Write();
+                log.Debug().Message($"Creating {nameof(TreesorContainerItem)} at '{path}'").Write();
 
                 isContainer = true;
                 var node = this.treesorService.CreateContainer(path);
 
-                log.Info().Message($"Created {nameof(TreesorContainerNode)} at '{path}'): GetHashCode={node?.GetHashCode()}").Write();
+                log.Info().Message($"Created {nameof(TreesorContainerItem)} at '{path}'): GetHashCode={node?.GetHashCode()}").Write();
 
                 return node;
             }
@@ -179,20 +179,20 @@
 
         internal void RemoveItem(TreesorNodePath path, bool recurse)
         {
-            log.Debug().Message($"Deleting {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
+            log.Debug().Message($"Deleting {nameof(TreesorContainerItem)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
 
             this.treesorService.RemoveContainer(path, recurse);
 
-            log.Info().Message($"Deleted {nameof(TreesorContainerNode)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
+            log.Info().Message($"Deleted {nameof(TreesorContainerItem)} at {nameof(path)}={path}, {nameof(recurse)}={recurse}").Write();
         }
 
         internal bool HasChildItems(TreesorNodePath path)
         {
-            log.Debug().Message($"Checking if {nameof(TreesorContainerNode)} at '{path}' has children").Write();
+            log.Debug().Message($"Checking if {nameof(TreesorContainerItem)} at '{path}' has children").Write();
 
             var hasChildren = this.treesorService.HasChildNodes(path);
 
-            log.Info().Message($"Checked if {nameof(TreesorContainerNode)} at '{path}' has children: {hasChildren}").Write();
+            log.Info().Message($"Checked if {nameof(TreesorContainerItem)} at '{path}' has children: {hasChildren}").Write();
 
             return hasChildren;
         }
@@ -200,7 +200,7 @@
         internal IEnumerable<string> GetChildNames(TreesorNodePath path, ReturnContainers returnContainers)
         {
             //if (returnContainers == ReturnContainers.ReturnAllContainers)
-            log.Debug().Message($"Retrieving {nameof(TreesorContainerNode)} names under:'{path}',{returnContainers}").Write();
+            log.Debug().Message($"Retrieving {nameof(TreesorContainerItem)} names under:'{path}',{returnContainers}").Write();
 
             return this.treesorService.GetContainerChildren(path).Select(c => c.Name);
 
@@ -208,7 +208,7 @@
             //    throw new PSNotImplementedException(string.Format("GetChildNames(path={0},returnContainers={1})", path, returnContainers));
         }
 
-        internal TreesorContainerNode RenameItem(TreesorNodePath path, string newName)
+        internal TreesorContainerItem RenameItem(TreesorNodePath path, string newName)
         {
             return this.treesorService.RenameContainer(path, newName);
         }
@@ -235,7 +235,7 @@
 
         internal void ClearProperty(TreesorNodePath treesorNodePath, Collection<string> propertyToClear)
         {
-            TreesorContainerNode treesorNode;
+            TreesorContainerItem treesorNode;
             if (this.treesorService.TryGetContainer(treesorNodePath, out treesorNode))
             {
                 foreach (var propertyName in propertyToClear)
@@ -255,7 +255,7 @@
 
         internal void SetProperty(TreesorNodePath path, PSObject propertyValue)
         {
-            TreesorContainerNode treesorNode;
+            TreesorContainerItem treesorNode;
             if (this.treesorService.TryGetContainer(path, out treesorNode))
                 foreach (var property in propertyValue.Properties)
                 {
@@ -275,7 +275,7 @@
         {
             var psObject = new PSObject();
 
-            TreesorContainerNode treesorNode;
+            TreesorContainerItem treesorNode;
             if (this.treesorService.TryGetContainer(treesorNodePath, out treesorNode))
             {
                 foreach (var propertyName in providerSpecificPickList)
@@ -304,7 +304,7 @@
 
         internal void NewProperty(TreesorNodePath path, string propertyName, string propertyTypeName, object value)
         {
-            TreesorContainerNode node;
+            TreesorContainerItem node;
             TreesorNodeProperty propertyDefinition;
             if (this.treesorService.TryGetContainer(path, out node))
             {
@@ -326,7 +326,7 @@
 
         internal void CopyProperty(TreesorNodePath sourceNodePath, string sourcePropertyName, TreesorNodePath destinationNodePath, string destinationPropertyName)
         {
-            TreesorContainerNode sourceNode, destinationNode;
+            TreesorContainerItem sourceNode, destinationNode;
             TreesorNodeProperty sourceProperty, destinationProperty;
             if (this.treesorService.TryGetContainer(sourceNodePath, out sourceNode))
                 if (this.treesorService.TryGetContainer(destinationNodePath, out destinationNode))
@@ -342,7 +342,7 @@
 
         internal void MoveProperty(TreesorNodePath sourceNodePath, string sourcePropertyName, TreesorNodePath destinationNodePath, string destinationPropertyName)
         {
-            TreesorContainerNode sourceNode, destinationNode;
+            TreesorContainerItem sourceNode, destinationNode;
             TreesorNodeProperty sourceProperty, destinationProperty;
             if (this.treesorService.TryGetContainer(sourceNodePath, out sourceNode))
                 if (this.treesorService.TryGetContainer(destinationNodePath, out destinationNode))
