@@ -33,14 +33,14 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = TreesorService.Factory(driveInfo.Root);
+            this.treesorService = TreesorNodeService.Factory(driveInfo.Root);
         }
 
         //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
         //{
         //}
 
-        private readonly TreesorService treesorService;
+        private readonly TreesorNodeService treesorService;
 
         #endregion Creation and initialization of this instance
 

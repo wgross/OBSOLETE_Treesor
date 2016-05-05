@@ -97,7 +97,7 @@
     <Compile Include="TreesorNode.cs" />
     <Compile Include="TreesorNodePath.cs" />
     <Compile Include="TreesorNodeProperty.cs" />
-    <Compile Include="TreesorService.cs" />
+    <Compile Include="TreesorNodeService.cs" />
     <Compile Include="TreesorSetPropertyDynamicParameters.cs" />
     <Compile Include="TreesorValueItem.cs" />
   </ItemGroup>

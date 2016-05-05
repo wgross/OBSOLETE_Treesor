@@ -15,16 +15,16 @@ namespace Treesor.PowershellDriveProvider.Test
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private PowerShell powershell;
-        private Mock<TreesorService> treesorService;
+        private Mock<TreesorNodeService> treesorService;
         private Mock<IHierarchy<string, object>> remoteHierachy;
 
         [SetUp]
         public void ArrangeAllTests()
         {
             this.remoteHierachy = new Mock<IHierarchy<string, object>>();
-            this.treesorService = new Mock<TreesorService>(this.remoteHierachy.Object);
+            this.treesorService = new Mock<TreesorNodeService>(this.remoteHierachy.Object);
 
-            TreesorService.Factory = h => this.treesorService.Object;
+            TreesorNodeService.Factory = h => this.treesorService.Object;
 
             this.powershell = PowerShell.Create();
 
@@ -45,7 +45,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ACT
 
-            var result = TreesorService.Factory(null);
+            var result = TreesorNodeService.Factory(null);
 
             // ASSERT
 
