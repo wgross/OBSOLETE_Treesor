@@ -75,7 +75,7 @@ namespace Treesor.PowershellDriveProvider.Test
             this.remoteHierarchy.VerifyAll();
         }
 
-        #endregion SetValue/RemoveValue/TreGetValue("/")
+        #endregion SetValue/RemoveValue/TryGetValue("/")
 
         #region Set-Item -Value -> SetValue
 

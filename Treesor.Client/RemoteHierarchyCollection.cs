@@ -5,6 +5,7 @@ using Flurl.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using Treesor.Service.Endpoints;
 
@@ -50,14 +51,14 @@ namespace Treesor.Client
                 .AppendPathSegment("values")
                 .AppendPathSegments(hierarchyPath.Items);
 
-            if(maxDepth!=null)
+            if (maxDepth != null)
             {
                 query = query.SetQueryParam("$expand", $"{int.MaxValue}");
             }
 
-            query.DeleteAsync().Wait();
-
-            return true;
+            return query
+                .AllowHttpStatus(HttpStatusCode.OK, HttpStatusCode.NotModified)
+                .DeleteAsync().Result.StatusCode == HttpStatusCode.OK;
         }
 
         public bool TryGetValue(HierarchyPath<string> hierarchyPath, out object value)
