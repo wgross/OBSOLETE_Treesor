@@ -42,7 +42,7 @@ namespace Treesor.PowershellDriveProvider
         /// <param name="path"></param>
         /// <param name="containerNode"></param>
         /// <returns></returns>
-        public virtual bool TryGetContainer(TreesorNodePath path, out TreesorContainerItem containerNode)
+        public virtual bool _TryGetContainer(TreesorNodePath path, out TreesorContainerItem containerNode)
         {
             log.Debug().Message($"Retrieving container '{path}'").Write();
 
@@ -173,12 +173,12 @@ namespace Treesor.PowershellDriveProvider
             throw new NotImplementedException();
         }
 
-        public void CopyPropertyValue(TreesorContainerItem fromNode, TreesorNodeProperty fromProperty, TreesorContainerItem toNode, TreesorNodeProperty toProperty)
+        public void CopyPropertyValue(TreesorNode fromNode, TreesorNodeProperty fromProperty, TreesorNode toNode, TreesorNodeProperty toProperty)
         {
             throw new NotImplementedException();
         }
 
-        public void MovePropertyValue(TreesorContainerItem fromNode, TreesorNodeProperty fromProperty, TreesorContainerItem toNode, TreesorNodeProperty toProperty)
+        public void MovePropertyValue(TreesorNode fromNode, TreesorNodeProperty fromProperty, TreesorNode toNode, TreesorNodeProperty toProperty)
         {
             throw new NotImplementedException();
         }

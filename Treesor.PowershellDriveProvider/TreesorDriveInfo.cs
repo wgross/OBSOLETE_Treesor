@@ -235,8 +235,8 @@
 
         internal void ClearProperty(TreesorNodePath treesorNodePath, Collection<string> propertyToClear)
         {
-            TreesorContainerItem treesorNode;
-            if (this.treesorService.TryGetContainer(treesorNodePath, out treesorNode))
+            TreesorNode treesorNode;
+            if (this.treesorService.TryGetNode(treesorNodePath, out treesorNode))
             {
                 foreach (var propertyName in propertyToClear)
                 {
@@ -255,8 +255,8 @@
 
         internal void SetProperty(TreesorNodePath path, PSObject propertyValue)
         {
-            TreesorContainerItem treesorNode;
-            if (this.treesorService.TryGetContainer(path, out treesorNode))
+            TreesorNode treesorNode;
+            if (this.treesorService.TryGetNode(path, out treesorNode))
                 foreach (var property in propertyValue.Properties)
                 {
                     TreesorNodeProperty propertyDefinition;
@@ -275,8 +275,8 @@
         {
             var psObject = new PSObject();
 
-            TreesorContainerItem treesorNode;
-            if (this.treesorService.TryGetContainer(treesorNodePath, out treesorNode))
+            TreesorNode treesorNode;
+            if (this.treesorService.TryGetNode(treesorNodePath, out treesorNode))
             {
                 foreach (var propertyName in providerSpecificPickList)
                 {
@@ -304,9 +304,9 @@
 
         internal void NewProperty(TreesorNodePath path, string propertyName, string propertyTypeName, object value)
         {
-            TreesorContainerItem node;
+            TreesorNode node;
             TreesorNodeProperty propertyDefinition;
-            if (this.treesorService.TryGetContainer(path, out node))
+            if (this.treesorService.TryGetNode(path, out node))
             {
                 if (string.IsNullOrEmpty(propertyTypeName))
                     if (value != null)
@@ -326,10 +326,10 @@
 
         internal void CopyProperty(TreesorNodePath sourceNodePath, string sourcePropertyName, TreesorNodePath destinationNodePath, string destinationPropertyName)
         {
-            TreesorContainerItem sourceNode, destinationNode;
+            TreesorNode sourceNode, destinationNode;
             TreesorNodeProperty sourceProperty, destinationProperty;
-            if (this.treesorService.TryGetContainer(sourceNodePath, out sourceNode))
-                if (this.treesorService.TryGetContainer(destinationNodePath, out destinationNode))
+            if (this.treesorService.TryGetNode(sourceNodePath, out sourceNode))
+                if (this.treesorService.TryGetNode(destinationNodePath, out destinationNode))
                     if (this.treesorService.TryGetNodeProperty(sourcePropertyName, out sourceProperty))
                         if (this.treesorService.TryGetNodeProperty(destinationPropertyName ?? sourcePropertyName, out destinationProperty))
                             this.treesorService.CopyPropertyValue(fromNode: sourceNode, fromProperty: sourceProperty, toNode: destinationNode, toProperty: destinationProperty);
@@ -342,10 +342,10 @@
 
         internal void MoveProperty(TreesorNodePath sourceNodePath, string sourcePropertyName, TreesorNodePath destinationNodePath, string destinationPropertyName)
         {
-            TreesorContainerItem sourceNode, destinationNode;
+            TreesorNode sourceNode, destinationNode;
             TreesorNodeProperty sourceProperty, destinationProperty;
-            if (this.treesorService.TryGetContainer(sourceNodePath, out sourceNode))
-                if (this.treesorService.TryGetContainer(destinationNodePath, out destinationNode))
+            if (this.treesorService.TryGetNode(sourceNodePath, out sourceNode))
+                if (this.treesorService.TryGetNode(destinationNodePath, out destinationNode))
                     if (this.treesorService.TryGetNodeProperty(sourcePropertyName, out sourceProperty))
                         if (this.treesorService.TryGetNodeProperty(destinationPropertyName ?? sourcePropertyName, out destinationProperty))
                             this.treesorService.MovePropertyValue(fromNode: sourceNode, fromProperty: sourceProperty, toNode: destinationNode, toProperty: destinationProperty);

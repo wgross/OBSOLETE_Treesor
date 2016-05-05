@@ -96,8 +96,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            TreesorContainerItem resultNode;
-            var result = this.treesorService.TryGetContainer(TreesorNodePath.Create(), out resultNode);
+            TreesorNode resultNode;
+            var result = this.treesorService.TryGetNode(TreesorNodePath.Create(), out resultNode);
 
             // ASSERT
 
@@ -106,6 +106,7 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.AreEqual(TreesorNodePath.RootPath, resultNode.Path);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out remoteValue), Times.Once);
+            this.remoteHierarchy.VerifyAll();
         }
 
         [Test]
@@ -121,8 +122,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            TreesorContainerItem resultNode;
-            var result = this.treesorService.TryGetContainer(TreesorNodePath.Create("a"), out resultNode);
+            TreesorNode resultNode;
+            var result = this.treesorService.TryGetNode(TreesorNodePath.Create("a"), out resultNode);
 
             // ASSERT
 
@@ -146,15 +147,17 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ACT
 
-            TreesorContainerItem resultNode;
-            var result = this.treesorService.TryGetContainer(TreesorNodePath.Create("a"), out resultNode);
+            TreesorNode resultNode;
+            var result = this.treesorService.TryGetNode(TreesorNodePath.Create("a"), out resultNode);
 
             // ASSERT
 
             Assert.IsFalse(result);
             Assert.IsNull(resultNode);
+            Assert.IsInstanceOf<TreesorContainerItem>(resultNode);
 
             this.remoteHierarchy.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out remoteValue), Times.Once);
+            this.remoteHierarchy.VerifyAll();
         }
 
         #endregion TryGetContainer
