@@ -98,9 +98,14 @@ namespace Treesor.PowershellDriveProvider
                 .Select(n => new TreesorContainerNode(TreesorNodePath.Create(n.Path)));
         }
 
-        public virtual TreesorContainerNode CreateContainer(TreesorNodePath path, object value = null)
+        public virtual TreesorValueNode CreateValue(TreesorNodePath path, object value)
         {
-            this.remoteHierarchy[path.HierarchyPath] = value;
+            throw new NotImplementedException();
+        }
+
+        public virtual TreesorContainerNode CreateContainer(TreesorNodePath path)
+        {
+            this.remoteHierarchy[path.HierarchyPath] = null;
 
             return new TreesorContainerNode(path);
         }

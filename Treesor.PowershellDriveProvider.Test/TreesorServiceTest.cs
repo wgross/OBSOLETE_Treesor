@@ -297,7 +297,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ACT
 
-            var result = this.treesorService.CreateContainer(TreesorNodePath.Create("a"), null);
+            var result = this.treesorService.CreateContainer(TreesorNodePath.Create("a"));
 
             // ASSERT
 

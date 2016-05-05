@@ -1,7 +1,6 @@
 ﻿using Elementary.Hierarchy.Collections;
 using Moq;
 using NLog;
-using NLog.Config;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -53,6 +52,8 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.IsNotNull(result);
             Assert.AreSame(this.treesorService.Object, result);
         }
+
+        #region Get-/Set-/Clear-Item -Path treesor:/, Test-Path -Path treesor:/
 
         [Test]
         public void Powershell_GetItem_root_returns_DriveInfo()
@@ -157,7 +158,7 @@ namespace Treesor.PowershellDriveProvider.Test
             // ARRANGE
 
             var rootContainer = new TreesorContainerNode(TreesorNodePath.RootPath);
-            
+
             this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
 
             // ACT
@@ -177,5 +178,106 @@ namespace Treesor.PowershellDriveProvider.Test
             this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
             this.treesorService.VerifyAll();
         }
+
+        #endregion Get-/Set-/Clear-Item -Path treesor:/, Test-Path -Path treesor:/
+
+        #region Set-Item -Value
+
+        [Test]
+        public void Powershell_SetItem_inner_node_creates_new_value_node()
+        {
+            // ARRANGE
+
+            var valueNode = new TreesorValueNode(TreesorNodePath.RootPath);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value"))
+                .Returns(valueNode);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                .AddCommand("Set-Item")
+                .AddParameter("Path", "treesor:/child")
+                .AddParameter("Value", "value")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child"), "value"), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
+        [Test]
+        public void Powershell_SetItem_inner_node_twice_changes_value_node()
+        {
+            // ARRANGE
+
+            var valueNode = new TreesorValueNode(TreesorNodePath.RootPath);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value"))
+                .Returns(valueNode)
+                .Callback(delegate { });
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value2"))
+                .Returns(valueNode);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", "treesor:/child")
+                    .AddParameter("Value", "value")
+                .AddStatement()
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", "treesor:/child")
+                    .AddParameter("Value", "value2")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(0, result.Count);
+
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child"), "value"), Times.Once);
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child"), "value2"), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
+        [Test]
+        public void Powershell_SetItem_inner_node_deep_creates_new_value_node()
+        {
+            // ARRANGE
+
+            var valueNode = new TreesorValueNode(TreesorNodePath.RootPath);
+
+            this.treesorService
+                .Setup(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value"))
+                .Returns(valueNode);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                .AddCommand("Set-Item")
+                .AddParameter("Path", "treesor:/child/grandchild")
+                .AddParameter("Value", "value")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value"), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion Set-Item -Value
     }
 }

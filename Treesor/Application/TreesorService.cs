@@ -43,7 +43,7 @@ namespace Treesor.Application
 
             var found = this.hierarchy
                 .Traverse(HierarchyPath.Create<string>())
-                .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
+                .TryGetDescendantAt(this.TryGetChildNodeForSettingValue, path, out node);
 
             if (found)
             {
@@ -61,12 +61,12 @@ namespace Treesor.Application
 
             this.hierarchy[path] = newValue;
 
-            log.Info().Message($"Created {nameof(TreesorValue)} at path '{path}' with '{newValue}'").Write();
+            log.Info().Message($"Created {nameof(TreesorValue)} at '{path}' with '{newValue}'").Write();
         }
 
         private void SetValueAtExistingNode(HierarchyPath<string> path, TreesorValue newValue, IHierarchyNode<string, TreesorNodePayload> node)
         {
-            log.Debug().Message($"Node at '{path}' exists and changed").Write();
+            log.Debug().Message($"Changing {nameof(TreesorNodePayload)} at '{path}'").Write();
 
             if (node.Value == null || !node.Value.IsContainer)
             {
@@ -75,13 +75,13 @@ namespace Treesor.Application
             else if (node.Value != null && node.Value.IsContainer)
             {
                 if (this.hierarchy.Traverse(path).HasChildNodes)
-                    throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
+                    throw new InvalidOperationException($"Node at '{path}' is {nameof(TreesorContainer)} and has children. It may not be converted to a value node.");
 
                 this.hierarchy[path] = newValue;
             }
             else throw new InvalidOperationException($"Node at '{path}' is a container and may not have a value");
 
-            log.Info().Message($"Set value at path '{path}' to '{newValue}'").Write();
+            log.Info().Message($"Changed {nameof(TreesorNodePayload)} value at '{path}' to '{newValue}'").Write();
         }
 
         #endregion SetValue(TreesorValue)
@@ -102,7 +102,7 @@ namespace Treesor.Application
 
             var found = this.hierarchy
                 .Traverse(HierarchyPath.Create<string>())
-                .TryGetDescendantAt(this.SetValue_TryGetChildNode, path, out node);
+                .TryGetDescendantAt(this.TryGetChildNodeForSettingValue, path, out node);
 
             if (found)
             {
@@ -110,7 +110,7 @@ namespace Treesor.Application
             }
             else if (!found)
             {
-                SetValueAtNewNode(path, newContainer);
+                this.SetValueAtNewNode(path, newContainer);
             }
         }
 
@@ -143,16 +143,22 @@ namespace Treesor.Application
 
         #endregion SetValue(TreesorContainer)
 
-        private bool SetValue_TryGetChildNode(IHierarchyNode<string, TreesorNodePayload> parent, string key, out IHierarchyNode<string, TreesorNodePayload> child)
+        /// <summary>
+        /// This helper is unsed in SetValue procesing to reterieve the node which is changed.
+        /// It immediatyl throws if the node to change is below an value node because a value node may never
+        /// have children.
+        /// </summary>
+        private bool TryGetChildNodeForSettingValue(IHierarchyNode<string, TreesorNodePayload> parent, string key, out IHierarchyNode<string, TreesorNodePayload> child)
         {
             child = null;
 
-            // descending in the hierachy isn't allowed if parent node is a vaue node and not a container node.
-            if (parent.HasValue && !parent.Value.IsContainer)
+            // descending in the hierarchy isn't allowed if parent node is a vaue node and not a container node.
+            if (!parent.Value.IsContainer)
                 throw new InvalidOperationException($"Node at '{parent.Path}' is a value node and may not have child nodes");
 
             // parent is a container
             // retrieve the first child having the right leaf name.
+
             child = parent.Children().FirstOrDefault(c => c.Path.Items.Last().Equals(key));
 
             return child != null;

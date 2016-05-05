@@ -99,6 +99,7 @@
     <Compile Include="TreesorNodeProperty.cs" />
     <Compile Include="TreesorService.cs" />
     <Compile Include="TreesorSetPropertyDynamicParameters.cs" />
+    <Compile Include="TreesorValueNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

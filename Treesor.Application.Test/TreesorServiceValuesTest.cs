@@ -174,7 +174,7 @@ namespace Treesor.Application.Test
         }
 
         [Test]
-        public void SetValue_at_existing_container_node_with_children_fails_with_InvaidOperationException()
+        public void SetValue_at_existing_container_node_with_children_fails_with_InvalidOperationException()
         {
             // ARRANGE
 
@@ -188,7 +188,7 @@ namespace Treesor.Application.Test
             // ASSERT
 
             Assert.That(result.Message.Contains("'a'"));
-            Assert.That(result.Message.Contains("is a container and may not have a value"));
+            Assert.That(result.Message.Contains("It may not be converted to a value node"));
         }
 
         [Test]
@@ -218,6 +218,23 @@ namespace Treesor.Application.Test
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() => this.service.SetValue(HierarchyPath.Create("a", "b"), new TreesorContainer()));
+
+            // ASSERT
+
+            Assert.That(result.Message.Contains("'a'"));
+            Assert.That(result.Message.Contains("is a value node and may not have child nodes"));
+        }
+
+        [Test]
+        public void SetValue_at_new_container_node_deep_under_existing_value_node_fails_with_InvalidOperationException()
+        {
+            // ARRANGE
+
+            this.service.SetValue(HierarchyPath.Create("a"), new TreesorValue("value"));
+
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.service.SetValue(HierarchyPath.Create("a", "b","c"), new TreesorContainer()));
 
             // ASSERT
 

@@ -137,36 +137,37 @@
 
         internal TreesorNode NewItem(TreesorNodePath path, string itemTypeName, object newItemValue, out bool? isContainer)
         {
-            log.Debug().Message($"Creating {nameof(TreesorContainerNode)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
+            var itemTypeNameCoalesced = itemTypeName ?? "Value";
+            
+            if ("Container".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase))
+            {
+                log.Debug().Message($"Creating {nameof(TreesorContainerNode)} at '{path}'").Write();
 
-            isContainer = true;
-            var node = this.treesorService.CreateContainer(path, newItemValue);
+                isContainer = true;
+                var node = this.treesorService.CreateContainer(path);
 
-            log.Info().Message($"Created {nameof(TreesorContainerNode)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
+                log.Info().Message($"Created {nameof(TreesorContainerNode)} at '{path}'): GetHashCode={node?.GetHashCode()}").Write();
 
-            return node;
+                return node;
+            }
+            else if ("Value".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase) && newItemValue == null)
+            {
+                Log.Error().Message($"Creating a {nameof(TreesorValueNode)} requires an initial value").Write();
 
-            #region // Currently only directories are created
+                throw new PSInvalidOperationException($"Creating a {nameof(TreesorValueNode)} requires a initial value");
+            }
+            else if ("Value".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase) && newItemValue != null)
+            {
+                log.Debug().Message($"Creating {nameof(TreesorValueNode)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
 
-            //isContainer = null;
+                isContainer = false;
+                var node = this.treesorService.CreateValue(path, newItemValue);
 
-            //if ("Directory".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    isContainer = true;
-            //    return this.treesorService.CreateContainer(treesorNodePath);
-            //}
-            //else if ("File".Equals(itemTypeName, StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    isContainer = false;
+                log.Info().Message($"Created {nameof(TreesorValueNode)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
 
-            //    // create a odata endpoint at the specified place path from the latest parameter set depending
-            //    // on te given creation parameters
-
-            //    return this.treesorService.SetValue(treesorNodePath, newItemValue);
-            //}
-            //else throw new InvalidOperationException($"Item type '{itemTypeName}' isn't supported");
-
-            #endregion // Currently only directories are created
+                return node;
+            }
+            else throw new PSInvalidOperationException($"ItemType {itemTypeName} isn't supported");
         }
 
         internal object NewItemDynamicParameters(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
