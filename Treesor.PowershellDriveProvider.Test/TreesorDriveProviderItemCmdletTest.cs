@@ -186,7 +186,7 @@ namespace Treesor.PowershellDriveProvider.Test
         #region Set-Item -Value
 
         [Test]
-        public void Powershell_SetItem_inner_node_creates_new_value_node()
+        public void Powershell_SetItem_inner_node_creates_new_ValueItem()
         {
             // ARRANGE
 
@@ -390,7 +390,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void GetItem_fails_if_node_doesn_exist()
+        public void GetItem_fails_silently_if_node_doesn_exist()
         {
             // ARRANGE
 
@@ -410,11 +410,80 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
 
             Assert.IsTrue(this.powershell.HadErrors);
-
+            Assert.AreEqual(PSInvocationState.Completed, this.powershell.InvocationStateInfo.State);
+            
             this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("child"), out value), Times.Once);
             this.treesorService.VerifyAll();
         }
 
         #endregion Get-Item
+
+        #region Clear-Item
+
+        [Test]
+        public void Powershell_ClearItem_inner_ValueItem()
+        {
+            // ARRANGE
+
+            TreesorNode valueNode = new TreesorValueItem(TreesorNodePath.Create("child"));
+
+            this.treesorService
+                .Setup(s => s.TryGetNode(TreesorNodePath.Create("child"), out valueNode))
+                .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.RemoveValue(TreesorNodePath.Create("child")));
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                .AddCommand("Clear-Item")
+                .AddParameter("Path", "treesor:/child")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService
+                .Verify(s => s.TryGetNode(TreesorNodePath.Create("child"), out valueNode), Times.Once);
+
+            this.treesorService
+                .Verify(s => s.RemoveValue(TreesorNodePath.Create("child")), Times.Once);
+
+            this.treesorService.VerifyAll();
+        }
+
+        [Test]
+        public void Powershell_ClearItem_fails_if_node_doesntExist()
+        {
+            // ARRANGE
+
+            TreesorNode valueNode = null;
+
+            this.treesorService
+                .Setup(s => s.TryGetNode(TreesorNodePath.Create("child"), out valueNode))
+                .Returns(false);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                .AddCommand("Clear-Item")
+                .AddParameter("Path", "treesor:/child")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsTrue(this.powershell.HadErrors);
+
+            this.treesorService
+                .Verify(s => s.TryGetNode(TreesorNodePath.Create("child"), out valueNode), Times.Once);
+
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion 
     }
 }
