@@ -152,18 +152,18 @@
             }
             else if ("Value".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase) && newItemValue == null)
             {
-                Log.Error().Message($"Creating a {nameof(TreesorValueNode)} requires an initial value").Write();
+                Log.Error().Message($"Creating a {nameof(TreesorValueItem)} requires an initial value").Write();
 
-                throw new PSInvalidOperationException($"Creating a {nameof(TreesorValueNode)} requires a initial value");
+                throw new PSInvalidOperationException($"Creating a {nameof(TreesorValueItem)} requires a initial value");
             }
             else if ("Value".Equals(itemTypeNameCoalesced, StringComparison.OrdinalIgnoreCase) && newItemValue != null)
             {
-                log.Debug().Message($"Creating {nameof(TreesorValueNode)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
+                log.Debug().Message($"Creating {nameof(TreesorValueItem)} at '{path}', {nameof(itemTypeName)}={itemTypeName}, {nameof(newItemValue)}.GetHashCode={newItemValue?.GetHashCode()}").Write();
 
                 isContainer = false;
                 var node = this.treesorService.CreateValue(path, newItemValue);
 
-                log.Info().Message($"Created {nameof(TreesorValueNode)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
+                log.Info().Message($"Created {nameof(TreesorValueItem)} at '{path}'): GetHashCode={node?.GetHashCode()}, {nameof(isContainer)}={isContainer}").Write();
 
                 return node;
             }

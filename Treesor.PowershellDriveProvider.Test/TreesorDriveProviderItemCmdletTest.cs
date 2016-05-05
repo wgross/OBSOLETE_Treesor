@@ -188,7 +188,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var valueNode = new TreesorValueNode(TreesorNodePath.RootPath);
+            var valueNode = new TreesorValueItem(TreesorNodePath.RootPath);
 
             this.treesorService
                 .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value"))
@@ -216,7 +216,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var valueNode = new TreesorValueNode(TreesorNodePath.RootPath);
+            var valueNode = new TreesorValueItem(TreesorNodePath.RootPath);
 
             this.treesorService
                 .Setup(s => s.SetValue(TreesorNodePath.Create("child"), "value"))
@@ -255,7 +255,7 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var valueNode = new TreesorValueNode(TreesorNodePath.RootPath);
+            var valueNode = new TreesorValueItem(TreesorNodePath.RootPath);
 
             this.treesorService
                 .Setup(s => s.SetValue(TreesorNodePath.Create("child", "grandchild"), "value"))

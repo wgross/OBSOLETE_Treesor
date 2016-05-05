@@ -80,7 +80,7 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                var childContainer = new TreesorValueNode(TreesorNodePath.Create("child"));
+                var childContainer = new TreesorValueItem(TreesorNodePath.Create("child"));
                 
                 // ACT
 
@@ -102,7 +102,7 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                var childContainer = new TreesorValueNode(TreesorNodePath.Create("child"));
+                var childContainer = new TreesorValueItem(TreesorNodePath.Create("child"));
 
                 this.treesorService.Setup(s => s.CreateValue(TreesorNodePath.Create("child"), "test")).Returns(childContainer);
 
@@ -119,8 +119,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 Assert.IsFalse(this.powershell.HadErrors);
                 Assert.AreEqual(1, result.Count);
-                Assert.IsInstanceOf<TreesorValueNode>(result.Single().BaseObject);
-                Assert.AreEqual("child", ((TreesorValueNode)(result.Single().BaseObject)).Name);
+                Assert.IsInstanceOf<TreesorValueItem>(result.Single().BaseObject);
+                Assert.AreEqual("child", ((TreesorValueItem)(result.Single().BaseObject)).Name);
 
                 this.treesorService.Verify(s => s.CreateValue(TreesorNodePath.Create("child"), "test"), Times.Once);
                 this.treesorService.VerifyAll();
@@ -131,7 +131,7 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                var childContainer = new TreesorValueNode(TreesorNodePath.Create("child"));
+                var childContainer = new TreesorValueItem(TreesorNodePath.Create("child"));
 
                 this.treesorService.Setup(s => s.CreateValue(TreesorNodePath.Create("child"), "value")).Returns(childContainer);
 
@@ -147,8 +147,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 Assert.IsFalse(this.powershell.HadErrors);
                 Assert.AreEqual(1, result.Count);
-                Assert.IsInstanceOf<TreesorValueNode>(result.Single().BaseObject);
-                Assert.AreEqual("child", ((TreesorValueNode)(result.Single().BaseObject)).Name);
+                Assert.IsInstanceOf<TreesorValueItem>(result.Single().BaseObject);
+                Assert.AreEqual("child", ((TreesorValueItem)(result.Single().BaseObject)).Name);
                 //?//Assert.AreEqual("value", ((TreesorContainerNode)(result.Single().BaseObject)).Value));
 
                 this.treesorService.Verify(s => s.CreateValue(TreesorNodePath.Create("child"), "value"), Times.Once);

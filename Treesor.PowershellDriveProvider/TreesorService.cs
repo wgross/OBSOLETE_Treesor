@@ -98,7 +98,7 @@ namespace Treesor.PowershellDriveProvider
                 .Select(n => new TreesorContainerItem(TreesorNodePath.Create(n.Path)));
         }
 
-        public virtual TreesorValueNode CreateValue(TreesorNodePath path, object value)
+        public virtual TreesorValueItem CreateValue(TreesorNodePath path, object value)
         {
             throw new NotImplementedException();
         }
