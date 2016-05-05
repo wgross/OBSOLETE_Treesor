@@ -183,14 +183,14 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                TreesorContainerItem rootContainer = new TreesorContainerItem();
+                TreesorNode rootContainer = new TreesorContainerItem();
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer))
                     .Returns(true);
 
                 this.treesorService
                     .Setup(s => s.GetContainer(TreesorNodePath.Create()))
-                    .Returns(rootContainer);
+                    .Returns((TreesorContainerItem)rootContainer);
 
                 var nodes = new[]
                 {
@@ -212,7 +212,7 @@ namespace Treesor.PowershellDriveProvider.Test
                 // ASSERT
 
                 this.treesorService.VerifyAll();
-                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
                 this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create()), Times.Once);
 
@@ -227,14 +227,14 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                TreesorContainerItem rootContainer = new TreesorContainerItem();
+                TreesorNode rootContainer = new TreesorContainerItem();
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer))
                     .Returns(true);
 
                 this.treesorService
                     .Setup(s => s.GetContainer(TreesorNodePath.Create()))
-                    .Returns(rootContainer);
+                    .Returns((TreesorContainerItem)rootContainer);
 
                 var nodes = new[]
                 {
@@ -257,7 +257,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
                 // ASSERT
 
-                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
                 this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Exactly(2)); // from IsItemContainer
                 this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create()), Times.Once);
                 this.treesorService.VerifyAll();
@@ -274,14 +274,14 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                TreesorContainerItem innerNodeContainer = new TreesorContainerItem();
+                TreesorNode innerNodeContainer = new TreesorContainerItem();
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create("a"), out innerNodeContainer))
                     .Returns(true);
 
                 this.treesorService
                     .Setup(s => s.GetContainer(TreesorNodePath.Create("a")))
-                    .Returns(innerNodeContainer);
+                    .Returns((TreesorContainerItem)innerNodeContainer);
 
                 var nodes = new[]
                 {
@@ -303,7 +303,7 @@ namespace Treesor.PowershellDriveProvider.Test
                 // ASSERT
 
                 this.treesorService.VerifyAll();
-                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
                 this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create("a")), Times.Once);
                 this.treesorService.Verify(s => s.GetContainerChildren(TreesorNodePath.Create("a")), Times.Once);
 
@@ -318,14 +318,14 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                TreesorContainerItem innerNodeContainer = new TreesorContainerItem();
+                TreesorNode innerNodeContainer = new TreesorContainerItem();
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create("a"), out innerNodeContainer))
                     .Returns(true);
 
                 this.treesorService
                     .Setup(s => s.GetContainer(TreesorNodePath.Create("a")))
-                    .Returns(innerNodeContainer);
+                    .Returns((TreesorContainerItem)innerNodeContainer);
 
                 var nodes = new[]
                 {
@@ -349,7 +349,7 @@ namespace Treesor.PowershellDriveProvider.Test
                 // ASSERT
 
                 this.treesorService.VerifyAll();
-                this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out innerNodeContainer), Times.Once);
                 this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create("a")), Times.Exactly(2));
                 this.treesorService.Verify(s => s.GetContainerDescendants(TreesorNodePath.Create("a")), Times.Once);
 
@@ -368,10 +368,11 @@ namespace Treesor.PowershellDriveProvider.Test
             public void Powershell_RemoveItem_at_inner_node_deletes_node()
             {
                 // ARRANGE
-                var node = new TreesorContainerItem(TreesorNodePath.Create("a"));
+
+                TreesorNode node = new TreesorContainerItem(TreesorNodePath.Create("a"));
 
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out node))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create("a"), out node))
                     .Returns(true);
 
                 this.treesorService
@@ -389,6 +390,8 @@ namespace Treesor.PowershellDriveProvider.Test
                 Assert.IsFalse(result.Any());
                 Assert.IsFalse(this.powershell.HadErrors);
 
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out node), Times.Once);
+                this.treesorService.Verify(s => s.RemoveContainer(TreesorNodePath.Create("a"), false), Times.Once);
                 this.treesorService.VerifyAll();
             }
 
@@ -396,10 +399,10 @@ namespace Treesor.PowershellDriveProvider.Test
             public void Powershell_RemoveItem_Recursce_at_inner_node_deletes_node_and_descendants()
             {
                 // ARRANGE
-                var node = new TreesorContainerItem(TreesorNodePath.Create("a"));
+                TreesorNode node = new TreesorContainerItem(TreesorNodePath.Create("a"));
 
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out node))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create("a"), out node))
                     .Returns(true);
 
                 this.treesorService
@@ -418,6 +421,8 @@ namespace Treesor.PowershellDriveProvider.Test
                 Assert.IsFalse(result.Any());
                 Assert.IsFalse(this.powershell.HadErrors);
 
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out node), Times.Once);
+                this.treesorService.Verify(s => s.RemoveContainer(TreesorNodePath.Create("a"), true), Times.Once);
                 this.treesorService.VerifyAll();
             }
 
@@ -426,10 +431,10 @@ namespace Treesor.PowershellDriveProvider.Test
             {
                 // ARRANGE
 
-                var node = new TreesorContainerItem(TreesorNodePath.Create("a"));
+                TreesorNode node = new TreesorContainerItem(TreesorNodePath.Create("a"));
 
                 this.treesorService
-                    .Setup(s => s.TryGetContainer(TreesorNodePath.Create("a"), out node))
+                    .Setup(s => s.TryGetNode(TreesorNodePath.Create("a"), out node))
                     .Returns(true);
 
                 this.treesorService
@@ -452,6 +457,9 @@ namespace Treesor.PowershellDriveProvider.Test
                 Assert.IsFalse(result.Any());
                 Assert.IsFalse(this.powershell.HadErrors);
 
+                this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("a"), out node),Times.Once);
+                this.treesorService.Verify(s => s.RemoveContainer(TreesorNodePath.Create("a"), true),Times.Once);
+                this.treesorService.Verify(s => s.HasChildNodes(TreesorNodePath.Create("a")), Times.Once);
                 this.treesorService.VerifyAll();
             }
 

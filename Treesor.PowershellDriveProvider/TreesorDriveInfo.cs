@@ -59,14 +59,14 @@
         {
             log.Debug().Message($"Trying to get container '{path}')").Write();
 
-            TreesorContainerItem containerNode;
-            if (this.treesorService.TryGetContainer(path, out containerNode))
+            TreesorNode containerNode;
+            if (this.treesorService.TryGetNode(path, out containerNode))
             {
-                log.Info().Message($"Got {nameof(TreesorContainerItem)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
+                log.Info().Message($"Got {nameof(TreesorNode)} '{path}': GetHashCode='{containerNode?.GetHashCode()}'").Write();
                 return true;
             }
 
-            log.Info().Message($"{nameof(TreesorContainerItem)} at '{path}' wasn't found").Write();
+            log.Info().Message($"{nameof(TreesorNode)} at '{path}' wasn't found").Write();
             return false;
         }
 

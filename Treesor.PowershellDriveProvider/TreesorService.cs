@@ -64,6 +64,11 @@ namespace Treesor.PowershellDriveProvider
             }
         }
 
+        public virtual bool TryGetNode(TreesorNodePath treesorNodePath, out TreesorNode value)
+        {
+            throw new NotImplementedException();
+        }
+        
         public virtual TreesorContainerItem GetContainer(TreesorNodePath path)
         {
             object remoteValue;
@@ -71,6 +76,15 @@ namespace Treesor.PowershellDriveProvider
             this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
 
             return new TreesorContainerItem(path);
+        }
+
+        public virtual TreesorNode GetNode(TreesorNodePath path)
+        {
+            object remoteValue;
+
+            this.remoteHierarchy.TryGetValue(path.HierarchyPath, out remoteValue);
+
+            return new TreesorValueItem(path);
         }
 
         public virtual IEnumerable<TreesorNode> GetContainerDescendants(TreesorNodePath path)
@@ -168,5 +182,6 @@ namespace Treesor.PowershellDriveProvider
         {
             throw new NotImplementedException();
         }
-    }
+
+            }
 }

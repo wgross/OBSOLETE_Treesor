@@ -60,8 +60,8 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            TreesorContainerItem rootContainer = new TreesorContainerItem();
-            this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
+            TreesorNode rootContainer = new TreesorContainerItem();
+            this.treesorService.Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer)).Returns(true);
 
             // ACT
 
@@ -80,7 +80,7 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.IsInstanceOf(typeof(ProviderInfo), driveInfo.Provider);
             Assert.AreSame(typeof(TreesorDriveCmdletProvider), driveInfo.Provider.ImplementingType);
 
-            this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+            this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
             this.treesorService.Verify(s => s.GetContainer(TreesorNodePath.Create()), Times.Never);
             this.treesorService.VerifyAll();
         }
@@ -123,9 +123,9 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var rootContainer = new TreesorContainerItem(TreesorNodePath.RootPath);
+            TreesorNode rootContainer = new TreesorContainerItem(TreesorNodePath.RootPath);
 
-            this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
+            this.treesorService.Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer)).Returns(true);
             this.treesorService
                 .Setup(s => s.RemoveValue(TreesorNodePath.Create()))
                 .Throws(new InvalidOperationException("Container may not have a value"));
@@ -147,7 +147,7 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.IsTrue(this.powershell.InvocationStateInfo.Reason.Message.Contains("Clear-Item"));
             Assert.IsTrue(this.powershell.InvocationStateInfo.Reason.Message.Contains("isn't supported"));
 
-            this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+            this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
             this.treesorService.Verify(s => s.RemoveValue(TreesorNodePath.Create()), Times.Once);
             this.treesorService.VerifyAll();
         }
@@ -157,9 +157,11 @@ namespace Treesor.PowershellDriveProvider.Test
         {
             // ARRANGE
 
-            var rootContainer = new TreesorContainerItem(TreesorNodePath.RootPath);
+            TreesorNode rootContainer = new TreesorContainerItem(TreesorNodePath.RootPath);
 
-            this.treesorService.Setup(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer)).Returns(true);
+            this.treesorService
+                .Setup(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer))
+                .Returns(true);
 
             // ACT
 
@@ -175,7 +177,7 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.IsInstanceOf(typeof(bool), result.Single().BaseObject);
             Assert.IsTrue((bool)result.Single().BaseObject);
 
-            this.treesorService.Verify(s => s.TryGetContainer(TreesorNodePath.Create(), out rootContainer), Times.Once);
+            this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create(), out rootContainer), Times.Once);
             this.treesorService.VerifyAll();
         }
 
@@ -279,5 +281,63 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         #endregion Set-Item -Value
+
+        #region Get-Item
+
+        [Test]
+        public void Powershell_GetItem_returns_value_of_node()
+        {
+            // ARRANGE
+
+            TreesorNode value = new TreesorValueItem(TreesorNodePath.Create("child"));
+            this.treesorService
+                .Setup(s => s.TryGetNode(TreesorNodePath.Create("child"), out value))
+                .Returns(true);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                .AddCommand("Get-Item")
+                .AddParameter("Path", "treesor:/child")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.AreEqual(1, result.Count);
+
+            this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("child"), out value), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
+        [Test]
+        public void GetItem_fails_if_node_doesn_exist()
+        {
+            // ACT
+
+            // ARRANGE
+
+            TreesorNode value = null;
+            this.treesorService
+                .Setup(s => s.TryGetNode(TreesorNodePath.Create("child"), out value))
+                .Returns(false);
+
+            // ACT
+
+            var result = this.powershell
+                .AddStatement()
+                .AddCommand("Get-Item")
+                .AddParameter("Path", "treesor:/child")
+                .Invoke();
+
+            // ASSERT
+
+            Assert.IsTrue(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.TryGetNode(TreesorNodePath.Create("child"), out value), Times.Once);
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion Get-Item
     }
 }
